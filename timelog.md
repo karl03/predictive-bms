@@ -43,3 +43,11 @@
 ### 03 Oct 2023
 
 * *2 hours* Copied folder structure, created GitHub repo, filled out time log and edited templates
+
+### 04 Oct 2023
+
+* *2 hours* Hardware research on voltage sensing and beginning to read relevant research papers
+
+* *0.5 hours* Supervisor meeting
+
+* *0.5 hours* Editing and uploading meeting minutes
