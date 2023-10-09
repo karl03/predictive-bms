@@ -51,3 +51,15 @@
 * *0.5 hours* Supervisor meeting
 
 * *0.5 hours* Editing and uploading meeting minutes
+
+### 08 Oct 2023
+
+* *2 hours* Finding and reading relevant papers.
+
+* *2 hours* Researched hardware requirements for voltage sensing.
+
+## Week 4
+
+### 09 Oct 2023
+
+* *1 hour* Continued hardware research and collated findings.
