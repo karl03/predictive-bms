@@ -63,3 +63,43 @@
 ### 09 Oct 2023
 
 * *1 hour* Continued hardware research and collated findings.
+
+### 10 Oct 2023
+
+* *2 hours* Further hardware research, ordered parts.
+
+* *1 hour* Continued reading research papers.
+
+### 11 Oct 2023
+
+* *0.5 hour* Meeting preparation.
+
+* *0.5 hour* Supervisor meeting
+
+* *0.5 hour* Summarising and uploading meeting minutes.
+
+## Week 5
+
+### 16 Oct 2023
+
+* *2 hours* Attempted to install Batemo/ use Simulink.
+
+### 17 Oct 2023
+
+* *1 hour* Continued Simulink simulation setup.
+
+## Week 6
+
+### 23 Oct 2023
+
+* *1 hour* Set up arduino project using Platform.io.
+
+### 24 Oct 2023
+
+* *2 hours* Finished setup and ran initial simulations in Simulink using Batemo.
+
+### 25 Oct 2023
+
+* *0.5 hours* Running further simulations, meeting prep.
+* *0.5 hours* Supervisor meeting.
+* *0.5 hours* Summarising and updating meeting minutes.
