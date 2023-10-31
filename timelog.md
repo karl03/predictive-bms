@@ -103,3 +103,13 @@
 * *0.5 hours* Running further simulations, meeting prep.
 * *0.5 hours* Supervisor meeting.
 * *0.5 hours* Summarising and updating meeting minutes.
+
+## Week 7
+
+### 30 Oct 2023
+
+* *1 hours* Research into wiring
+
+### 31 Oct 2023
+
+* *5.5 hours* Planning, soldering, coding and testing voltage measurement, finding and installing libraries and adding OLED display.
