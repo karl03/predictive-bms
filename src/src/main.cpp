@@ -44,14 +44,14 @@ void loop() {
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
   u8g2->setCursor(0, u8g2->getMaxCharHeight());
-  u8g2->print(busVoltage_V);
-  u8g2->print("V  ");
   u8g2->print(voltage[0]);
+  u8g2->print("V  ");
+  u8g2->print(voltage[1]);
   u8g2->print("V");
   u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-  u8g2->print(voltage[1]);
-  u8g2->print("V  ");
   u8g2->print(voltage[2]);
+  u8g2->print("V  ");
+  u8g2->print(busVoltage_V);
   u8g2->print("V");
   u8g2->sendBuffer();
 
