@@ -118,3 +118,4 @@
 
 * *1 hour* Adding current measurement and refresh rate.
 * *0.5 hour* Advisor meeting.
+* *0.5 hour* Voltage accuracy checking, updated display to show cell voltages.
