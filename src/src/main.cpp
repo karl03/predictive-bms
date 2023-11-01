@@ -8,6 +8,11 @@ U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_P
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 
+float busVoltage_V = 0.0;
+float voltage[3];
+float current_mA = 0.0;
+unsigned long cur_time = 0;
+
 void setup() {
 
   u8g2->begin();
@@ -29,17 +34,17 @@ void setup() {
 
   ina3221.begin();
   ina3221.reset();
-
+  cur_time = millis();
 }
 
 void loop() {
-  float busVoltage_V = 0.0;
-  float voltage[3];
 
   busVoltage_V = ina226.getBusVoltage_V();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
+  current_mA = ina226.getCurrent_mA();
+  
 
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
@@ -53,7 +58,12 @@ void loop() {
   u8g2->print("V  ");
   u8g2->print(busVoltage_V);
   u8g2->print("V");
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
+  u8g2->print(current_mA);
+  u8g2->print("mA  ");
+  u8g2->print(1000 / (millis() - cur_time));
+  u8g2->print("hz");
   u8g2->sendBuffer();
 
-  delay(1000);
+  cur_time = millis();
 }
