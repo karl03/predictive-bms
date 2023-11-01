@@ -113,3 +113,8 @@
 ### 31 Oct 2023
 
 * *5.5 hours* Planning, soldering, coding and testing voltage measurement, finding and installing libraries and adding OLED display.
+
+### 01 Nov 2023
+
+* *1 hour* Adding current measurement and refresh rate.
+* *0.5 hour* Advisor meeting.
