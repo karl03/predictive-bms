@@ -119,3 +119,15 @@
 * *1 hour* Adding current measurement and refresh rate.
 * *0.5 hour* Advisor meeting.
 * *0.5 hour* Voltage accuracy checking, updated display to show cell voltages.
+
+## Week 7
+
+### 07 Nov 2023
+
+* *1 hour* Researching and beginning SoC implementation
+
+## Week 8
+
+### 13 Nov 2023
+
+* *0.5 hours* Soldering to current shunt resistor

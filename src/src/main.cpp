@@ -3,6 +3,7 @@
 #include <U8g2lib.h>
 #include <INA226_WE.h>
 #include <INA3221.h>
+#include <defines.h>
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 INA226_WE ina226 = INA226_WE(0x40);
@@ -12,6 +13,10 @@ float busVoltage_V = 0.0;
 float voltage[3];
 float current_mA = 0.0;
 unsigned long cur_time = 0;
+
+float SoC;
+// On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
+// After initial SoC has been measured begin coloumb counting.
 
 void setup() {
 
@@ -23,12 +28,12 @@ void setup() {
   u8g2->sendBuffer();
   delay(500);
 
-  if(!ina226.init()){
-  u8g2->clearBuffer();
-  u8g2->setFont(u8g2_font_profont17_mr);
-  u8g2->setCursor(0, 49);
-  u8g2->print("INA226 INIT FAIL");
-  u8g2->sendBuffer();
+  if(!ina226.init()) {
+    u8g2->clearBuffer();
+    u8g2->setFont(u8g2_font_profont17_mr);
+    u8g2->setCursor(0, 49);
+    u8g2->print("INA226 INIT FAIL");
+    u8g2->sendBuffer();
     while(1){}
   }
 
