@@ -19,14 +19,34 @@ float SoC;
 // After initial SoC has been measured begin coloumb counting.
 
 void setup() {
-
   u8g2->begin();
   u8g2->clearBuffer();
-  u8g2->setFont(u8g2_font_inr46_mf);
-  u8g2->setCursor(0, 49);
-  u8g2->print("VLT");
-  u8g2->sendBuffer();
-  delay(500);
+
+  if (ser_log) {
+    u8g2->setFont(u8g2_font_profont17_mr);
+    u8g2->setCursor(0, 49);
+    u8g2->print("Connecting...");
+    u8g2->sendBuffer();
+
+    Serial.begin(115200);
+    while (Serial.readString() != "hello") {
+      delay(10);
+    };
+    Serial.println("BMS");
+    u8g2->clearBuffer();
+    u8g2->setCursor(0, 49);
+    u8g2->print("Connected!");
+    u8g2->sendBuffer();
+    delay(1000);
+    u8g2->clearBuffer();
+    u8g2->sendBuffer();
+  } else {
+    u8g2->setFont(u8g2_font_inr46_mf);
+    u8g2->setCursor(0, 49);
+    u8g2->print("VLT");
+    u8g2->sendBuffer();
+    delay(500);
+  }
 
   if(!ina226.init()) {
     u8g2->clearBuffer();
@@ -50,25 +70,34 @@ void loop() {
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
   current_mA = ina226.getCurrent_mA();
   
-
-  u8g2->clearBuffer();
-  u8g2->setFont(u8g2_font_profont17_mr);
-  u8g2->setCursor(0, u8g2->getMaxCharHeight());
-  u8g2->print(voltage[0], 3);
-  u8g2->print("V  ");
-  u8g2->print(voltage[1] - voltage[0], 3);
-  u8g2->print("V");
-  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-  u8g2->print(voltage[2] - voltage[1], 3);
-  u8g2->print("V  ");
-  u8g2->print(busVoltage_V - voltage[2], 3);
-  u8g2->print("V");
-  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-  u8g2->print(current_mA, 0);
-  u8g2->print("mA  ");
-  u8g2->print(1000 / (millis() - cur_time));
-  u8g2->print("hz");
-  u8g2->sendBuffer();
+  if (ser_log) {
+    Serial.print("v1,");
+    Serial.println(voltage[0]);
+    Serial.print("v2,");
+    Serial.println(voltage[1] - voltage[0]);
+    Serial.print("v3,");
+    Serial.println(voltage[2] - voltage[1]);
+    Serial.print("v4,");
+    Serial.println(busVoltage_V - voltage[2]);
+    delay(1000);
+  } else {
+    u8g2->clearBuffer();
+    u8g2->setFont(u8g2_font_profont17_mr);
+    u8g2->setCursor(0, u8g2->getMaxCharHeight());
+    u8g2->print(voltage[0], 3);
+    u8g2->print("V  ");
+    u8g2->print(voltage[1] - voltage[0], 3);
+    u8g2->print("V");
+    u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
+    u8g2->print(voltage[2] - voltage[1], 3);
+    u8g2->print("V  ");
+    u8g2->print(busVoltage_V - voltage[2], 3);
+    u8g2->print("V");
+    u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
+    u8g2->print(current_mA, 0);
+    u8g2->print("mA  ");
+    u8g2->sendBuffer();
+  }
 
   cur_time = millis();
 }
