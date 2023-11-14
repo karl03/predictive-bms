@@ -9,6 +9,7 @@ U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_P
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 
+bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
 float current_mA = 0.0;
@@ -22,16 +23,23 @@ void setup() {
   u8g2->begin();
   u8g2->clearBuffer();
 
-  if (ser_log) {
+  if (serial_timeout > 0) {
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, 49);
     u8g2->print("Connecting...");
     u8g2->sendBuffer();
 
     Serial.begin(115200);
-    while (Serial.readString() != "hello") {
-      delay(10);
+    long start_time = millis();
+    while ((millis() - start_time) < (serial_timeout * 1000)) {
+      if (Serial.readString() == "hello") {
+        serial_mode = true;
+        break;
+      }
     };
+  }
+
+  if (serial_mode) {
     Serial.println("BMS");
     u8g2->clearBuffer();
     u8g2->setCursor(0, 49);
@@ -70,7 +78,7 @@ void loop() {
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
   current_mA = ina226.getCurrent_mA();
   
-  if (ser_log) {
+  if (serial_mode) {
     Serial.print("v1,");
     Serial.println(voltage[0]);
     Serial.print("v2,");
