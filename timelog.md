@@ -131,3 +131,8 @@
 ### 13 Nov 2023
 
 * *0.5 hours* Soldering to current shunt resistor
+
+### 15 Nov 2023
+
+* *2.5 hours* Creating data logging application, begin working on communication
+* *8 hours* Creating circuit for testing, rewiring shunt resistor, removing INA226 onboard shunt, creating capacity counting code, refactoring, multiple calibration attempts with different techniques.
