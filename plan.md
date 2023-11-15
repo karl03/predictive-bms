@@ -16,7 +16,9 @@ Week-by-week plan for the whole project. Update this as you go along.
 * **Week 5**
 * **Week 6**
 * **Week 7**
-* **Week 8** Calibrate current properly, adding offset. See ardupilot code for example calibration methods. Run test discharge, store data. Add this as starting point for SoC estimation. Add temperature sensor.
+* **Week 8** 
+    Calibrate current properly, adding offset. See ardupilot code for example calibration methods. Run test discharge, store data. Add this as starting point for SoC estimation. Add temperature sensor.
+    Look into INA226_WE code, and potentially modify INA3221 library to have similar functionality.
 * **Week 9**
 * **Week 10**
 * **Week 11 [PROJECT WEEK]**
