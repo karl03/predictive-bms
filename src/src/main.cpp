@@ -13,7 +13,13 @@ bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
 float current_mA = 0.0;
+float Ws_charged = 0;
 unsigned long cur_time = 0;
+unsigned long prev_time = 0;
+unsigned long last_avg = 0;
+float v_iter = 0;
+float mA_iter = 0;
+int iter_counter = 0;
 
 float SoC;
 // On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
@@ -65,18 +71,36 @@ void setup() {
     while(1){}
   }
 
+  ina226.setResistorRange(0.00041229385, 200.0);
+  ina226.setAverage(AVERAGE_256);
+
   ina3221.begin();
   ina3221.reset();
-  cur_time = millis();
+  prev_time = millis();
 }
 
 void loop() {
+  cur_time = millis();
 
   busVoltage_V = ina226.getBusVoltage_V();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
   current_mA = ina226.getCurrent_mA();
+
+  if (last_avg == 0) {
+    last_avg = cur_time;
+  } else if ((cur_time - last_avg) > avg_ms) {
+    Ws_charged += ((((mA_iter / 1000) / iter_counter) * (v_iter / iter_counter)) * ((cur_time - last_avg) / 1000));
+    last_avg = cur_time;
+    v_iter = 0;
+    mA_iter = 0;
+    iter_counter = 0;
+  } else {
+    v_iter += busVoltage_V;
+    mA_iter += current_mA;
+    iter_counter ++;
+  }
   
   if (serial_mode) {
     Serial.print("v1,");
@@ -87,7 +111,6 @@ void loop() {
     Serial.println(voltage[2] - voltage[1]);
     Serial.print("v4,");
     Serial.println(busVoltage_V - voltage[2]);
-    delay(1000);
   } else {
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_profont17_mr);
@@ -104,8 +127,12 @@ void loop() {
     u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
     u8g2->print(current_mA, 0);
     u8g2->print("mA  ");
+    u8g2->print((Ws_charged / 3600), 2);
+    u8g2->print("Wh");
     u8g2->sendBuffer();
   }
+  
+  delay(100 - (cur_time - prev_time));
 
-  cur_time = millis();
+  prev_time = millis();
 }

@@ -1,4 +1,5 @@
-#define serial_timeout 20
+#define serial_timeout 0
+#define avg_ms 1000
 #define end_voltage 3.5
 // Measure voltages over a very gradual discharge to build a table of (almost) open circuit voltages.
 // From these results, build lookup table, mapping percentage of capacity to voltage.
