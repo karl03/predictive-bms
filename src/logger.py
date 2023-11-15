@@ -1,9 +1,10 @@
+import os
 import serial
 from serial.tools import list_ports
 import time
 
 filepath = "./logs"
-port = "COM4"
+port = ""
 
 connected = False
 ser = serial.Serial()
@@ -36,6 +37,8 @@ else:
 
 if connected:
     print(f"Connected Successfully to {ser.port}")
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
     file = open((filepath + f"/test-{time.strftime('%Y%m%d-%H%M%S')}.csv"), "x")
 else:
     print("Failed to Connect")

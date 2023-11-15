@@ -7,9 +7,7 @@ from tkinter import ttk
 root = Tk()
 root.title('BMS Logger')
 port = StringVar()
-port.set("AUTO")
-ports = StringVar()
-ports.set(list_ports.comports())
+port.set("")
 
 filepath = "./logs"
 
@@ -18,8 +16,12 @@ ser = serial.Serial()
 ser.baudrate = 115200
 ser.timeout = 1
 
-def refresh(menu):
-    ports.set([info[0] for info in list_ports.comports()])
+def refresh():
+    selector.set_menu(*["AUTO"] + [info[0] for info in list_ports.comports()])
+    output.insert(END, "Refreshed Ports\n")
+
+def clear():
+    output.delete("1.0", END)
 
 def autoConnect():
     for port in list_ports.comports():
@@ -75,9 +77,16 @@ frame.grid(column=0, row=0, sticky=(N, W, E, S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
-selector = ttk.OptionMenu(frame, port, *["AUTO", ports.get()]).grid(column=0, row=0, sticky=(N, W))
-connectBtn = ttk.Button(frame, text=("Connect" if connected == False else "Disconnect")).grid(column=1, row=0, sticky=(N))
-refreshBtn = ttk.Button(frame, text="Refresh", command=refresh).grid(column=2, row=0, sticky=(N, E))
+selector = ttk.OptionMenu(frame, port, "AUTO", *["AUTO"] + [info[0] for info in list_ports.comports()])
+selector.grid(column=0, row=0, sticky=(N, W))
+connectBtn = ttk.Button(frame, text=("Connect" if connected == False else "Disconnect"))
+connectBtn.grid(column=0, row=0, sticky=(N))
+refreshBtn = ttk.Button(frame, text="Refresh", command=refresh)
+refreshBtn.grid(column=0, row=0, sticky=(N, E))
+clearBtn = ttk.Button(frame, text="Clear Output", command=clear)
+clearBtn.grid(column=2, row=0, sticky=(N, E))
+output = Text(frame)
+output.grid(column=0, row=1, columnspan=3)
 
 
 
