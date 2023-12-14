@@ -136,3 +136,19 @@
 
 * *2.5 hours* Creating data logging application, begin working on communication
 * *8 hours* Creating circuit for testing, rewiring shunt resistor, removing INA226 onboard shunt, creating capacity counting code, refactoring, multiple calibration attempts with different techniques.
+
+## Week 12
+
+### 12 Dec 2023
+
+* *1 hour* Wiring up SD card module/ formatting for usage
+* *4 hours* Learned basics of SD interaction, added ability to run without display. Logs data upon startup if logging is enabled and an SD card is found.
+
+### 13 Dec 2023
+
+* *1 hour* Begun trying to figure out implementation of battery model equations.
+* *1 hour* Mounted device on drone, and completed a flight to gather test data.
+
+### 14 Dec 2023
+
+* *6 hours* Continued attempt to figure out battery model equations, created python implementation and compared to results from original model in Matlab, not working correctly yet.
