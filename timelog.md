@@ -137,6 +137,10 @@
 * *2.5 hours* Creating data logging application, begin working on communication
 * *8 hours* Creating circuit for testing, rewiring shunt resistor, removing INA226 onboard shunt, creating capacity counting code, refactoring, multiple calibration attempts with different techniques.
 
+## Week 9
+
+Note: I was ill and unable to do any work for weeks 9 and 10.
+
 ## Week 12
 
 ### 12 Dec 2023
@@ -153,3 +157,8 @@
 
 * *6 hours* Continued attempt to figure out battery model equations, created python implementation and compared to results from original model in Matlab, not working correctly yet.
 * *2.5 hours* Updated shunt voltage to current conversion (current calibration) method, then calibrated. Calibration seems to be working well now. Implemented Wh counting.
+
+### 15 Dec 2023
+
+* *2 hour* Researched methods for estimating performance, focusing on internal resistance estimation and compensation.
+* *2 hours* Wrote status report, submitted.

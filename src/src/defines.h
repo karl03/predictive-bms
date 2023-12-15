@@ -5,6 +5,7 @@
 #define sd_logging 0
 #define current_offset -982.8158579
 #define current_scale 3.7834625
+#define A_ms_to_A_h 0.00000027777777777778
 // Measure voltages over a very gradual discharge to build a table of (almost) open circuit voltages.
 // From these results, build lookup table, mapping percentage of capacity to voltage.
 // Next create function to interpolate if between percentage values.

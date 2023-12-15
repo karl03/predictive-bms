@@ -139,8 +139,7 @@ void loop() {
   if (last_avg == 0) {
     last_avg = cur_time;
   } else if (iter_counter > 0 && (cur_time - last_avg) > avg_ms) {
-    // Ws_charged += ((((A_iter / 1000000) / iter_counter) * (v_iter / iter_counter)) * ((cur_time - last_avg) / 1000));
-    Wh_charged += ((A_iter / iter_counter) * (cur_time - last_avg) * 0.0000002778f) * (v_iter / iter_counter);
+    Wh_charged += ((A_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h) * (v_iter / iter_counter);
     last_avg = cur_time;
     v_iter = 0;
     A_iter = 0;
