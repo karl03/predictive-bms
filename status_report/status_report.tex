@@ -1,0 +1,77 @@
+    
+\documentclass[11pt]{article}
+\usepackage{times}
+    \usepackage{fullpage}
+    
+    \title{ {{Battery Management System with Cell Health Estimation and Failure Prediction for Autonomous Drones}} }
+    \author{ {{Karl Hartmann}} - {{2566374h}} }
+
+    \begin{document}
+    \maketitle
+    
+    
+     
+
+\section{Status report}
+
+\subsection{Proposal}\label{proposal}
+
+\subsubsection{Motivation}\label{motivation}
+
+Drones are currently more popular than ever before, and their usage is still increasing across a variety of sectors. Due to the high power and energy density requirements, lithium-ion batteries are predominantly used as a power source, and these degrade over time. Knowing roughly which performance to expect from a battery in terms of flight time and power capability is highly important, especially when drones may be used in high-risk scenarios.
+
+\subsubsection{Aims}\label{aims}
+
+The end goal of this project is to develop a system which can estimate the characteristics of a lithium-ion battery based on its performance measured during a discharge cycle. This information should include the estimated capacity, as well as data on the difference in performance between cells, allowing for specific poorly performing cells to be detected. The success will be measured by running several test flights with a range of batteries of known performance, and comparing the resulting values to the known values.
+
+\subsection{Progress}\label{progress}
+
+\begin{itemize}
+    \item Development tools chosen, using Platform.IO for library management as well as building and flashing the code, C++ for code.
+    \item Some research completed on SoC (state of charge) and SoH (state of health) measurement/ estimation methodologies, research started on battery modelling solutions.
+    \item Hardware decided upon and built, using ESP8266 microcontroller, and INA226 and INA3221 for per-cell voltage measurement, and overall current measurement, with 200A 75mV shunt resistor.
+    \item SD card slot and small OLED display added for monitoring/ logging.
+    \item Code written for monitoring and logging data, with toggleable features.
+    \item Calibration implemented and completed for current measurement.
+    \item Watt-hour measurement (coulomb counting) implemented, and tested to reasonable accuracy.
+\end{itemize}    
+
+\subsection{Problems and risks}\label{problems-and-risks}
+
+\subsubsection{Problems}\label{problems}
+
+\begin{itemize}
+    \item Many existing papers take a highly theoretical approach, making researching methods difficult.
+    \item Finding a voltage sensor which supported the battery voltage was difficult, as most only support 5V, and using a voltage divider would reduce reliability of values.
+    \item Initially, calibrating the current was seemingly not possible, as the internal settings of the library used were poorly documented. After changing approach to taking the raw ADC value and calculating the current locally I was able to complete this.
+    \item Due to an illness during the final few weeks of the semester I was unable to complete work due to needing to focus entirely on other assignments once recovered to meet deadlines, but I will continue work during my first week of winter break to make up this time.
+\end{itemize}
+
+\subsubsection{Risks}\label{risks}
+
+\begin{itemize}
+    \item Running many real tests may be difficult due to weather and time restrictions. Mitigation: I will log the data from flights when possible, and reuse this data to test new code.
+    \item Some voltage data appears to contain unrealistic spikes. Mitigation: Implement filtering on this data, initially through averaging.
+    \item Implementation method for estimating battery performance not yet decided. Mitigation: Spend time comparing potential approaches.
+\end{itemize}
+
+\subsection{Plan}\label{plan}
+
+\begin{itemize}
+    \item First week of break: Run battery discharge test, research performance estimation methods. Gather data from various drone flights.
+    \item Semester 2 Week 1: General code cleanup, refactor to use external files rather than a single file.
+    \item Week 2-4: Further research, decide on and implement performance estimation methods.
+    \item Week 5: Test the implemented method, gather results.
+    \item Week 6: Implement automatic warnings, triggered based on battery performance.
+    \item Week 7: Run final tests, gather data as required to sufficiently evaluate functionality.
+    \item Week 8: Finalise code, begin analysis of results and writing of dissertation.
+    \item Week 9-10: Finish first draft of dissertation, hand in early to allow for time to be checked by supervisor, and improved afterwards, work on final presentation.
+    \item Week 11: Final dissertation submission.
+\end{itemize}
+
+    
+\subsection{Ethics and data}\label{ethics}
+
+This project does not involve human subjects or data. No approval required.
+
+\end{document}

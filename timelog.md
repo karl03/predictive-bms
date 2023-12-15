@@ -160,5 +160,5 @@ Note: I was ill and unable to do any work for weeks 9 and 10.
 
 ### 15 Dec 2023
 
-* *2 hour* Researched methods for estimating performance, focusing on internal resistance estimation and compensation.
+* *2 hours* Researched methods for estimating performance, focusing on internal resistance estimation and compensation.
 * *2 hours* Wrote status report, submitted.
