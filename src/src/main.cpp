@@ -15,13 +15,15 @@ File log_file;
 bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
-float current_mA = 0.0;
+float current_A = 0.0;
+float shunt_voltage = 0.0;
 float Ws_charged = 0;
+float Wh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long prev_time = 0;
 unsigned long last_avg = 0;
 float v_iter = 0;
-float mA_iter = 0;
+float A_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
 
@@ -130,19 +132,22 @@ void loop() {
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
-  current_mA = ina226.getCurrent_mA();
+  // current_mA = ina226.getCurrent_mA();
+  shunt_voltage = ina226.getShuntVoltage_mV();
+  current_A = (shunt_voltage / current_scale) * 10 + (current_offset / 1000);
 
   if (last_avg == 0) {
     last_avg = cur_time;
-  } else if ((cur_time - last_avg) > avg_ms) {
-    Ws_charged += ((((mA_iter / 1000) / iter_counter) * (v_iter / iter_counter)) * ((cur_time - last_avg) / 1000));
+  } else if (iter_counter > 0 && (cur_time - last_avg) > avg_ms) {
+    // Ws_charged += ((((A_iter / 1000000) / iter_counter) * (v_iter / iter_counter)) * ((cur_time - last_avg) / 1000));
+    Wh_charged += ((A_iter / iter_counter) * (cur_time - last_avg) * 0.0000002778f) * (v_iter / iter_counter);
     last_avg = cur_time;
     v_iter = 0;
-    mA_iter = 0;
+    A_iter = 0;
     iter_counter = 0;
   } else {
     v_iter += busVoltage_V;
-    mA_iter += current_mA;
+    A_iter += current_A;
     iter_counter ++;
   }
 
@@ -165,8 +170,8 @@ void loop() {
       // V4
       log_file.print(busVoltage_V - voltage[2]);
       log_file.print(",");
-      // Current
-      log_file.print(current_mA);
+      // Shunt Voltage
+      log_file.print(shunt_voltage);
       log_file.println(",");
       log_file.close();
     }
@@ -195,14 +200,16 @@ void loop() {
     u8g2->print(busVoltage_V - voltage[2], 3);
     u8g2->print("V");
     u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-    u8g2->print(current_mA, 0);
-    u8g2->print("mA  ");
-    u8g2->print((Ws_charged / 3600), 2);
+    // u8g2->print(current_A, 3);
+    // u8g2->print("A  ");
+    u8g2->print((busVoltage_V * current_A), 0);
+    u8g2->print("W  ");
+    u8g2->print(Wh_charged, 2);
     u8g2->print("Wh");
     u8g2->sendBuffer();
   }
   
-  delay(100 - (cur_time - prev_time));
+  // delay(100 - (cur_time - prev_time));
 
   prev_time = millis();
 }

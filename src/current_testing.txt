@@ -1,0 +1,56 @@
+Making use of: https://betaflight.com/docs/development/Battery
+
+0.0907a 0.42mV 0.010A
+1.55 0.98 0.024
+
+3.3
+1.64
+0.041
+
+
+4.4
+2.07
+0.052
+
+8.02
+3.4
+0.085
+
+8.18
+3.47
+0.087
+
+8.3
+3.51
+0.088
+
+0.087
+0.41
+0.010
+
+-------------
+Changed values to: scale 3.770414064. offset -9.27148628
+
+0.088
+1.065
+
+1.300
+2.272
+
+3.25
+4.234
+
+4.15
+5.143
+
+8.3
+9.3
+
+9.13
+10.136
+
+-------------
+Changed values to: scale 3.7834625, offset -982.8158579
+
+Seems good!
+As load is not constant (powering charger as load which fluctuates current), it is difficult to perfectly measure the current, but it appears to be quite consistent now!
