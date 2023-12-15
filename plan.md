@@ -23,7 +23,7 @@ Week-by-week plan for the whole project. Update this as you go along.
 * **Week 10**
 * **Week 11 [PROJECT WEEK]**
 * **Week 12 [PROJECT WEEK]** 
-    Implement proper calibration equation with offset and multiplier, calibrate using high accuracy volt meter.
+    Implement proper calibration equation with offset and multiplier, calibrate using external ammeter.
     Once this is completed, run test discharge as previously described.
     Begin trying to figure out how to estimate battery parameters based on test data.
     Status report submitted.

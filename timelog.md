@@ -152,3 +152,4 @@
 ### 14 Dec 2023
 
 * *6 hours* Continued attempt to figure out battery model equations, created python implementation and compared to results from original model in Matlab, not working correctly yet.
+* *2.5 hours* Updated shunt voltage to current conversion (current calibration) method, then calibrated. Calibration seems to be working well now. Implemented Wh counting.
