@@ -12,7 +12,6 @@ U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_P
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
-BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8);
 
 bool serial_mode = false;
 float busVoltage_V = 0.0;
@@ -34,6 +33,9 @@ float SoC;
 // After initial SoC has been measured begin coloumb counting.
 
 void run_model_tests() {
+  unsigned long timer = micros();
+  BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8);
+  timer = micros() - timer;
   u8g2->begin();
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
@@ -44,12 +46,25 @@ void run_model_tests() {
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
   u8g2->setCursor(0, u8g2->getMaxCharHeight());
+  u8g2->print("Time to initialise:");
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
+  u8g2->print(timer);
+  u8g2->print("micros");
+  u8g2->sendBuffer();
+  delay(3000);
+  u8g2->clearBuffer();
+  u8g2->setCursor(0, u8g2->getMaxCharHeight());
   u8g2->print("K=");
   u8g2->print(test_model->GetK(), 8);
   u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
   u8g2->print("test=");
-  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
+  timer = micros();
   u8g2->print(test_model->Simulate(3.5, 15), 8);
+  timer = micros() - timer;
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
+  u8g2->print("Time:");
+  u8g2->print(timer);
+  u8g2->print("micros");
   u8g2->sendBuffer();
   delay(100000);
 };

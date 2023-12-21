@@ -187,6 +187,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 ### 21 Dec 2023
 
-* *1 hour* Translated Python model to C++, created relevant class.
+* *1.5 hours* Translated Python model to C++, created relevant class.
 * *0.5 hours* Supervisor meeting.
 * *0.5 hours* Updated/ uploaded meeting minutes.
+* *2 hours* Troubleshooting C++ model, added necessary functions, tested to ensure functionality, checked time needed to run on hardware.
