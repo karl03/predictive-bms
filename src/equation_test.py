@@ -24,6 +24,7 @@ print(f"A: {A}\nB: {B}\nK: {K}\nE0: {E0}")
 def liion_discharge(used_capacity, low_freq_current):
     return E0 - (K * (capacity/(capacity - used_capacity)) * low_freq_current) + ((-K) * (capacity / (capacity - used_capacity)) * used_capacity) + (A * math.exp((-B) * used_capacity))
 
+print(f"Test = {liion_discharge(3.5, 15)}")
 
 results = []
 r2 = []

@@ -18,7 +18,7 @@ void BattModel::CalculateParameters() {
     A_ = full_voltage_ - exponential_voltage_;
     B_ = 3 / exponential_capacity_;
     E0_ = full_voltage_ + internal_resistance_ * curve_current_ - A_;
-    K_ = ((capacity_ - exponential_capacity_) * (E0_ - internal_resistance_ * curve_current_ + A_ * exp(-B_ * exponential_capacity_) - exponential_capacity_)) / (capacity_ * (exponential_capacity_ + curve_current_));
+    K_ = ((capacity_ - exponential_capacity_) * (E0_ - internal_resistance_ * curve_current_ + A_ * exp(-B_ * exponential_capacity_) - exponential_voltage_)) / (capacity_ * (exponential_capacity_ + curve_current_));
 };
 
 float BattModel::Simulate(float used_capacity, float current) {
