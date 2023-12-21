@@ -166,3 +166,14 @@ Note: I was ill and unable to do any work for weeks 9 and 10.
 ### 18 Dec 2023
 
 * *1 hour* Attempted to generate code from Matlab model for battery.
+* *2 hours* Continued research on available battery models.
+
+### 19 Dec 2023
+
+* *2 hours* Completed further research, found origin of Matlab model, 'Tremblay Model', begun attempting to implement.
+* *3 hours* Continued implementation attempt, but not yet fully working.
+
+### 20 Dec 2023
+
+* *2 hours* Attempting to figure out equation for 'polarisation constant' / K.
+* *6 hours* After many attempts, finally successfully derived updated function for E0 and K by rearranging given formulas in research paper. Updated graphing code to display new results.
