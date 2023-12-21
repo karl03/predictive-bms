@@ -5,12 +5,14 @@
 #include <U8g2lib.h>
 #include <INA226_WE.h>
 #include <INA3221.h>
-#include <defines.h>
+#include "batt_model.h"
+#include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
+BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8);
 
 bool serial_mode = false;
 float busVoltage_V = 0.0;
@@ -31,7 +33,40 @@ float SoC;
 // On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
 // After initial SoC has been measured begin coloumb counting.
 
+void run_model_tests() {
+  u8g2->begin();
+  u8g2->clearBuffer();
+  u8g2->setFont(u8g2_font_profont17_mr);
+  u8g2->setCursor(0, 49);
+  u8g2->print("Model Tests");
+  u8g2->sendBuffer();
+  delay(500);
+  u8g2->clearBuffer();
+  u8g2->setFont(u8g2_font_profont17_mr);
+  u8g2->setCursor(0, u8g2->getMaxCharHeight());
+  u8g2->print("A=");
+  u8g2->print(test_model->GetA(), 8);
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
+  u8g2->print("B=");
+  u8g2->print(test_model->GetB(), 8);
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
+  u8g2->print("K=");
+  u8g2->print(test_model->GetK(), 8);
+  u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 4));
+  u8g2->print("E0=");
+  u8g2->print(test_model->GetE0(), 8);
+  u8g2->sendBuffer();
+  delay(10000);
+  u8g2->clearBuffer();
+  u8g2->setCursor(0, u8g2->getMaxCharHeight());
+  u8g2->print("E0=");
+  u8g2->print(test_model->GetE0(), 8);
+  u8g2->sendBuffer();
+  delay(100000);
+};
+
 void setup() {
+  run_model_tests();
   if (sd_logging == 1) {
     if (!SD.begin(15)) {
       while(1){};

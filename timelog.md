@@ -139,7 +139,14 @@
 
 ## Week 9
 
-Note: I was ill and unable to do any work for weeks 9 and 10.
+Note: I was ill and unable to complete work for weeks 9 and 10.
+
+## Week 10
+
+### 29 Nov 2023
+
+* *0.5 hours* Supervisor meeting.
+* *0.5 hours* Uploading meeting minutes.
 
 ## Week 12
 
@@ -177,3 +184,9 @@ Note: I was ill and unable to do any work for weeks 9 and 10.
 
 * *2 hours* Attempting to figure out equation for 'polarisation constant' / K.
 * *6 hours* After many attempts, finally successfully derived updated function for E0 and K by rearranging given formulas in research paper. Updated graphing code to display new results.
+
+### 21 Dec 2023
+
+* *1 hour* Translated Python model to C++, created relevant class.
+* *0.5 hours* Supervisor meeting.
+* *0.5 hours* Updated/ uploaded meeting minutes.
