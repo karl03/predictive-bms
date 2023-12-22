@@ -10,6 +10,7 @@ exponential_voltage = 1.28
 exponential_capacity = 1.3
 curve_current = 1.3
 min_voltage = 0.8
+reaction_time = 30
 
 
 A = full_voltage - exponential_voltage
@@ -17,13 +18,16 @@ B = 3 / exponential_capacity
 E0 = full_voltage + internal_resistance * curve_current - A
 # Finally working, derived from functions on page 4 of "Experimental Validation of a Battery Dynamic Model for EV Applications, Olivier Tremblay"
 K = ((capacity - exponential_capacity) * (E0 - internal_resistance * curve_current + A * math.exp(-B * exponential_capacity) - exponential_voltage)) / (capacity * (exponential_capacity + curve_current))
+filtered_current = 0
 
 print(f"A: {A}\nB: {B}\nK: {K}\nE0: {E0}")
 
 
-def liion_discharge(used_capacity, low_freq_current):
+def liion_discharge(used_capacity, instant_current, time_since_last_measurement):
+    filtered_current = instant_current * (1 - math.exp(time_since_last_measurement / reaction_time))
+
     # From Tremblay paper 2009:
-    return E0 - (K * (capacity/(capacity - used_capacity)) * used_capacity) - (internal_resistance * low_freq_current) + (A * math.exp(-B * used_capacity)) - (K * (capacity/(capacity - used_capacity)) * low_freq_current)
+    return E0 - (K * (capacity/(capacity - used_capacity)) * used_capacity) - (internal_resistance * instant_current) + (A * math.exp(-B * used_capacity)) - (K * (capacity/(capacity - used_capacity)) * filtered_current)
     # From Matlab:
     # return E0 - (K * (capacity/(capacity - used_capacity)) * low_freq_current) + ((-K) * (capacity / (capacity - used_capacity)) * used_capacity) + (A * math.exp((-B) * used_capacity))
 
