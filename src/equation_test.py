@@ -22,7 +22,10 @@ print(f"A: {A}\nB: {B}\nK: {K}\nE0: {E0}")
 
 
 def liion_discharge(used_capacity, low_freq_current):
-    return E0 - (K * (capacity/(capacity - used_capacity)) * low_freq_current) + ((-K) * (capacity / (capacity - used_capacity)) * used_capacity) + (A * math.exp((-B) * used_capacity))
+    # From Tremblay paper 2009:
+    return E0 - (K * (capacity/(capacity - used_capacity)) * used_capacity) - (internal_resistance * low_freq_current) + (A * math.exp(-B * used_capacity)) - (K * (capacity/(capacity - used_capacity)) * low_freq_current)
+    # From Matlab:
+    # return E0 - (K * (capacity/(capacity - used_capacity)) * low_freq_current) + ((-K) * (capacity / (capacity - used_capacity)) * used_capacity) + (A * math.exp((-B) * used_capacity))
 
 print(f"Test = {liion_discharge(3.5, 15)}")
 
@@ -33,17 +36,17 @@ r3 = []
 
 for x in range(int(capacity * 100)):
     if liion_discharge(x/100, 6.5) >= min_voltage:
-        results.append(((x/100 * capacity) / 6.5, liion_discharge(x/100, 6.5)))
+        results.append(liion_discharge(x/100, 6.5))
     if liion_discharge(x/100, 13) >= min_voltage:
-        r2.append(((x/100 * capacity) / 13, liion_discharge(x/100, 13)))
+        r2.append(liion_discharge(x/100, 13))
     if liion_discharge(x/100, 32.5) >= min_voltage:
-        r3.append(((x/100 * capacity) / 32.5, liion_discharge(x/100, 32.5)))
+        r3.append(liion_discharge(x/100, 32.5))
 
-plt.plot([x[0] * 10 for x in results], [x[1] for x in results], label="6.5A")
-plt.plot([x[0] * 10 for x in r2], [x[1] for x in r2], label="13A")
-plt.plot([x[0] * 10 for x in r3], [x[1] for x in r3], label="32.5A")
+plt.plot(results, label="6.5A")
+plt.plot(r2, label="13A")
+plt.plot(r3, label="32.5A")
 plt.legend()
-plt.xlabel("Time (minutes)")
+plt.xlabel("Capacity Used (Ah)")
 plt.ylabel("Voltage (V)")
 plt.title(f"Simulation of 6.5Ah, 1.2V NiMH Battery\nA={round(A, 4)}, B={round(B, 4)}, R={internal_resistance}, K={round(K, 4)}, E0={round(E0, 4)}")
 plt.show()
