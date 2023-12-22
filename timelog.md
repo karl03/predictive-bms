@@ -191,3 +191,9 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *0.5 hours* Supervisor meeting.
 * *0.5 hours* Updated/ uploaded meeting minutes.
 * *2 hours* Troubleshooting C++ model, added necessary functions, tested to ensure functionality, checked time needed to run on hardware.
+
+### 22 Dec 2023
+
+* *4 hours* Implementing low-pass filter in python for testing.
+* *2 hours* Translating filter to C++, testing on hardware.
+* *2 hours* Calculating equation needed to bring filtered value within distance of actual value for a certain delay number.

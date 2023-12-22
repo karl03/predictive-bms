@@ -34,7 +34,7 @@ float SoC;
 
 void run_model_tests() {
   unsigned long timer = micros();
-  BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8);
+  BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8, 30);
   timer = micros() - timer;
   u8g2->begin();
   u8g2->clearBuffer();
@@ -59,7 +59,7 @@ void run_model_tests() {
   u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
   u8g2->print("test=");
   timer = micros();
-  u8g2->print(test_model->Simulate(3.5, 15), 8);
+  u8g2->print(test_model->Simulate(3.5, 15, 30), 8);
   timer = micros() - timer;
   u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
   u8g2->print("Time:");

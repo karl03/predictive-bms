@@ -1,4 +1,5 @@
 #include <cmath>
+#include "LPF.h"
 
 class BattModel {
     private:
@@ -15,6 +16,7 @@ class BattModel {
         float B_;
         float E0_;
         float K_;
+        LPF *low_pass_;
         void CalculateParameters();
     
     public:
@@ -48,6 +50,7 @@ class BattModel {
         void SetE0(float E0) { E0_ = E0; }
         void SetK(float K) { K_ = K; }
         
-        BattModel(float v_full, float cap, float v_nom, float cap_nom, float r_int, float v_exp, float cap_exp, float cur_curve, float v_min);
-        float Simulate(float used_capacity, float current);
+        BattModel(float v_full, float cap, float v_nom, float cap_nom, float r_int, float v_exp, float cap_exp, float cur_curve, float v_min, int reaction_time);
+        void ResetFilter(unsigned long time, float current);
+        float Simulate(float used_capacity, float current, unsigned long time);
 };

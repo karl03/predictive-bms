@@ -67,10 +67,10 @@ print(f"A: {A}\nB: {B}\nK: {K}\nE0: {E0}")
 
 filtered_current = 0
 def liionDischarge(used_capacity, instant_current, time_since_last_measurement):
-    # global filtered_current
-    # filter_val = math.exp(-time_since_last_measurement / reaction_time)
-    # filtered_current = filtered_current * (1- filter_val) + instant_current * filter_val
-    filtered_current = instant_current
+    global filtered_current
+    filter_val = math.exp(-time_since_last_measurement / reaction_time)
+    filtered_current = filtered_current * (1- filter_val) + instant_current * filter_val
+    # filtered_current = instant_current
 
     # From Tremblay paper 2009:
     return E0 - (K * (capacity/(capacity - used_capacity)) * used_capacity) - (internal_resistance * instant_current) + (A * math.exp(-B * used_capacity)) - (K * (capacity/(capacity - used_capacity)) * filtered_current)
