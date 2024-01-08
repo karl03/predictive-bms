@@ -54,3 +54,19 @@ Changed values to: scale 3.7834625, offset -982.8158579
 
 Seems good!
 As load is not constant (powering charger as load which fluctuates current), it is difficult to perfectly measure the current, but it appears to be quite consistent now!
+-------------
+
+Testing INA226 Onboard Shunt
+
+Layout:
+BMS Measured Current (A)
+Multimeter Measured Current (A)
+
+0.914
+0.091
+
+2
+0.2
+
+-------------
+Changed values to: scale 996.3302752, offset -7.339449541

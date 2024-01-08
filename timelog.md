@@ -197,3 +197,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *4 hours* Implementing low-pass filter in python for testing.
 * *2 hours* Translating filter to C++, testing on hardware.
 * *2 hours* Calculating equation needed to bring filtered value within distance of actual value for a certain delay number.
+
+## Week 13
+
+### 08 Jan 2024

@@ -70,7 +70,7 @@ void run_model_tests() {
 };
 
 void setup() {
-  run_model_tests();
+  // run_model_tests();
   if (sd_logging == 1) {
     if (!SD.begin(15)) {
       while(1){};
@@ -238,10 +238,10 @@ void loop() {
     u8g2->print(busVoltage_V - voltage[2], 3);
     u8g2->print("V");
     u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-    // u8g2->print(current_A, 3);
-    // u8g2->print("A  ");
-    u8g2->print((busVoltage_V * current_A), 0);
-    u8g2->print("W  ");
+    u8g2->print(current_A, 3);
+    u8g2->print("A  ");
+    // u8g2->print((busVoltage_V * current_A), 0);
+    // u8g2->print("W  ");
     u8g2->print(Wh_charged, 2);
     u8g2->print("Wh");
     u8g2->sendBuffer();
