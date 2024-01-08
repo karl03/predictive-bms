@@ -201,3 +201,5 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ## Week 13
 
 ### 08 Jan 2024
+
+* *3.5 hours* Soldered, calibrated and tested other INA226 module, using onboard shunt for low current, high accuracy testing, allowing for discharge tests to take place to generate lookup table. Modified code to print Wh to csv.

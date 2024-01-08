@@ -16,16 +16,18 @@ File log_file;
 bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
-float current_A = 0.0;
+// float current_A = 0.0;
 float current_mA = 0.0;
 float shunt_voltage = 0.0;
 float Ws_charged = 0;
-float Wh_charged = 0;
+// float Wh_charged = 0;
+float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long prev_time = 0;
 unsigned long last_avg = 0;
 float v_iter = 0;
-float A_iter = 0;
+// float A_iter = 0;
+float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
 
@@ -81,10 +83,10 @@ void setup() {
       }
       log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
 
-      if (log_file) {
-        log_file.println("BMS Logging");
-        log_file.close();
-      }
+      // if (log_file) {
+      //   log_file.println("BMS Logging");
+      //   log_file.close();
+      // }
     }
   }
 
@@ -158,7 +160,6 @@ void setup() {
   }
 
   ina226.setResistorRange(0.00041229385, 200.0);
-  ina226.setAverage(AVERAGE_256);
 
   ina3221.begin();
   ina3221.reset();
@@ -172,22 +173,21 @@ void loop() {
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
-  // current_mA = ina226.getCurrent_mA();
   shunt_voltage = ina226.getShuntVoltage_mV();
-  current_A = (shunt_voltage / current_scale) * 10 + (current_offset / 1000);
+  // current_A = (shunt_voltage / current_scale) * 10 + (current_offset / 1000);
   current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
   if (last_avg == 0) {
     last_avg = cur_time;
   } else if (iter_counter > 0 && (cur_time - last_avg) > avg_ms) {
-    Wh_charged += ((A_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h) * (v_iter / iter_counter);
+    mWh_charged += ((mA_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h) * (v_iter / iter_counter);
     last_avg = cur_time;
     v_iter = 0;
-    A_iter = 0;
+    mA_iter = 0;
     iter_counter = 0;
   } else {
     v_iter += busVoltage_V;
-    A_iter += current_A;
+    mA_iter += current_mA;
     iter_counter ++;
   }
 
@@ -211,7 +211,9 @@ void loop() {
       log_file.print(busVoltage_V - voltage[2]);
       log_file.print(",");
       // Shunt Voltage
-      log_file.print(shunt_voltage);
+      log_file.print(current_mA);
+      log_file.print(",");
+      log_file.print(mWh_charged);
       log_file.println(",");
       log_file.close();
     }
@@ -244,8 +246,8 @@ void loop() {
     u8g2->print("mA ");
     // u8g2->print((busVoltage_V * current_A), 0);
     // u8g2->print("W  ");
-    u8g2->print(Wh_charged, 2);
-    u8g2->print("Wh");
+    // u8g2->print(Wh_charged, 2);
+    // u8g2->print("Wh");
     u8g2->sendBuffer();
   }
   
