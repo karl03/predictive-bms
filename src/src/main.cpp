@@ -17,6 +17,7 @@ bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
 float current_A = 0.0;
+float current_mA = 0.0;
 float shunt_voltage = 0.0;
 float Ws_charged = 0;
 float Wh_charged = 0;
@@ -174,6 +175,7 @@ void loop() {
   // current_mA = ina226.getCurrent_mA();
   shunt_voltage = ina226.getShuntVoltage_mV();
   current_A = (shunt_voltage / current_scale) * 10 + (current_offset / 1000);
+  current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
   if (last_avg == 0) {
     last_avg = cur_time;
@@ -238,8 +240,8 @@ void loop() {
     u8g2->print(busVoltage_V - voltage[2], 3);
     u8g2->print("V");
     u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-    u8g2->print(current_A, 3);
-    u8g2->print("A  ");
+    u8g2->print(current_mA, 1);
+    u8g2->print("mA ");
     // u8g2->print((busVoltage_V * current_A), 0);
     // u8g2->print("W  ");
     u8g2->print(Wh_charged, 2);

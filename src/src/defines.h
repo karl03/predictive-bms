@@ -4,8 +4,8 @@
 #define use_display 1
 #define sd_logging 0
 // Values for INA226 onboard shunt
-#define current_offset -7.339449541
-#define current_scale 996.3302752
+#define current_offset -1.63992595  // mA
+#define current_scale 999.5734377   // mV/10A
 // Values for 200A shunt:
 // #define current_offset -982.8158579
 // #define current_scale 3.7834625

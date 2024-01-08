@@ -70,3 +70,94 @@ Multimeter Measured Current (A)
 
 -------------
 Changed values to: scale 996.3302752, offset -7.339449541
+
+0.085
+0.0906
+
+0.027
+0.0327
+
+-------------
+Changed values to: scale 998.0510529, offset -1.582972857
+Now using mA
+
+90.5
+90.3
+
+22.2
+22.1
+
+32.7
+32.7
+
+-------------
+Changed values to: scale 1000.18514, offset -1.579552641
+
+32.6
+33.6
+
+22.1
+23.1
+
+90.1
+91.1
+
+-------------
+Changed values to: scale 1000.18514, offset -0.5795526406
+
+23.3
+22.3
+
+33.7
+32.7
+
+91.4
+91.2
+
+-------------
+Changed values to: scale 987.870142, offset -1.91292576
+
+22.1
+22.1
+
+32.7
+32.6
+
+91.2
+90.4
+
+-------------
+Changed values to: scale 999.5734377, offset -1.63992595
+
+22
+22
+
+32.5
+32.6
+
+90.4
+90.3
+
+Accurate up to 100mA which will be used in discharge test, so using this calibration.
+-------------
+Changed values to: scale 1001.70784, offset -1.536790334
+
+22.1
+23
+
+32.6
+33.6
+
+90.8
+90.8
+-------------
+Changed values to: scale 1016.412702, offset -0.182189931
+
+23.3
+23.1
+
+33.6
+33.6
+
+90.3
+91.3
