@@ -19,7 +19,8 @@ float voltage[3];
 // float current_A = 0.0;
 float current_mA = 0.0;
 float shunt_voltage = 0.0;
-float Ws_charged = 0;
+float step_mAh_charged = 0;
+float mAh_charged = 0;
 // float Wh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
@@ -180,7 +181,9 @@ void loop() {
   if (last_avg == 0) {
     last_avg = cur_time;
   } else if (iter_counter > 0 && (cur_time - last_avg) > avg_ms) {
-    mWh_charged += ((mA_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h) * (v_iter / iter_counter);
+    step_mAh_charged = ((mA_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h);
+    mAh_charged += step_mAh_charged;
+    mWh_charged += step_mAh_charged * (v_iter / iter_counter);
     last_avg = cur_time;
     v_iter = 0;
     mA_iter = 0;
@@ -210,9 +213,13 @@ void loop() {
       // V4
       log_file.print(busVoltage_V - voltage[2]);
       log_file.print(",");
-      // Shunt Voltage
+      // Current
       log_file.print(current_mA);
       log_file.print(",");
+      // mAh Used
+      log_file.print(mAh_charged);
+      log_file.print(",");
+      // mWh Used
       log_file.print(mWh_charged);
       log_file.println(",");
       log_file.close();
@@ -250,8 +257,6 @@ void loop() {
     // u8g2->print("Wh");
     u8g2->sendBuffer();
   }
-  
-  // delay(100 - (cur_time - prev_time));
 
   prev_time = millis();
 }
