@@ -203,3 +203,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 08 Jan 2024
 
 * *3.5 hours* Soldered, calibrated and tested other INA226 module, using onboard shunt for low current, high accuracy testing, allowing for discharge tests to take place to generate lookup table. Modified code to print Wh to csv.
+
+### 09 Jan 2024
+
+* *3 hours* Researching further methods for internal resistance estimation, found several papers and looked at implemented method and comments in ardupilot firmware.
