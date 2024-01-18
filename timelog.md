@@ -207,3 +207,9 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 09 Jan 2024
 
 * *3 hours* Researching further methods for internal resistance estimation, found several papers and looked at implemented method and comments in ardupilot firmware.
+
+## Week 14
+
+### 18 Jan 2024
+
+* *2.5 hours* Tested time for reading voltages and found blocking function to ensure new reading, switched average timing to microseconds for accuracy, added license, added Ardupilot code for resistance estimation, but not yet adapted to my code.
