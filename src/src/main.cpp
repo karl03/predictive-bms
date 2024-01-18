@@ -168,6 +168,11 @@ void setup() {
 }
 
 void loop() {
+  u8g2->clearBuffer();
+  u8g2->setFont(u8g2_font_profont17_mr);
+  u8g2->setCursor(0, 49);
+  u8g2->print(millis() - cur_time);
+  u8g2->sendBuffer();
   cur_time = millis();
 
   busVoltage_V = ina226.getBusVoltage_V();
