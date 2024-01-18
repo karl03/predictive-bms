@@ -24,7 +24,6 @@ float mAh_charged = 0;
 // float Wh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
-unsigned long prev_time = 0;
 unsigned long last_avg = 0;
 float v_iter = 0;
 // float A_iter = 0;
@@ -160,33 +159,31 @@ void setup() {
     }
   }
 
-  ina226.setResistorRange(0.00041229385, 200.0);
 
   ina3221.begin();
   ina3221.reset();
-  prev_time = millis();
 }
 
 void loop() {
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
   u8g2->setCursor(0, 49);
-  u8g2->print(millis() - cur_time);
+  u8g2->print(micros() - cur_time);
   u8g2->sendBuffer();
-  cur_time = millis();
-
+  cur_time = micros();
+  // If simulation is running, timing may be off for averaging, as certain readings will be skipped, so maybe increase averaging onboard ina226 to be nearer to time to run simulation
+  ina226.waitUntilConversionCompleted();  // Ensures at least 1 reading per addition to average
   busVoltage_V = ina226.getBusVoltage_V();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
   shunt_voltage = ina226.getShuntVoltage_mV();
-  // current_A = (shunt_voltage / current_scale) * 10 + (current_offset / 1000);
   current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
   if (last_avg == 0) {
     last_avg = cur_time;
-  } else if (iter_counter > 0 && (cur_time - last_avg) > avg_ms) {
-    step_mAh_charged = ((mA_iter / iter_counter) * (cur_time - last_avg) * A_ms_to_A_h);
+  } else if (iter_counter > 0 && (cur_time - last_avg) > (avg_ms * 1000)) {
+    step_mAh_charged = ((mA_iter / iter_counter) * ((cur_time - last_avg) * 0.001) * A_ms_to_A_h);
     mAh_charged += step_mAh_charged;
     mWh_charged += step_mAh_charged * (v_iter / iter_counter);
     last_avg = cur_time;
@@ -262,6 +259,4 @@ void loop() {
     // u8g2->print("Wh");
     u8g2->sendBuffer();
   }
-
-  prev_time = millis();
 }
