@@ -159,9 +159,13 @@ void setup() {
     }
   }
 
+  ina226.setConversionTime(CONV_TIME_2116);
+  ina226.setAverage(AVERAGE_16);
 
   ina3221.begin();
   ina3221.reset();
+  ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
+  ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
 }
 
 void loop() {
@@ -174,10 +178,10 @@ void loop() {
   // If simulation is running, timing may be off for averaging, as certain readings will be skipped, so maybe increase averaging onboard ina226 to be nearer to time to run simulation
   ina226.waitUntilConversionCompleted();  // Ensures at least 1 reading per addition to average
   busVoltage_V = ina226.getBusVoltage_V();
+  shunt_voltage = ina226.getShuntVoltage_mV();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
   voltage[1] = ina3221.getVoltage(INA3221_CH2);
   voltage[2] = ina3221.getVoltage(INA3221_CH3);
-  shunt_voltage = ina226.getShuntVoltage_mV();
   current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
   if (last_avg == 0) {

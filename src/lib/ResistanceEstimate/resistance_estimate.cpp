@@ -24,7 +24,7 @@
 //     _resistance_timer_ms = now;
 
 //     // estimate short-term resistance
-//     float filt_alpha = constrain_float(loop_interval/(loop_interval + AP_BATT_MONITOR_RES_EST_TC_1), 0.0f, 0.5f);
+//     float filt_alpha = constrain_float(loop_interval/(loop_interval + AP_BATT_MONITOR_RES_EST_TC_1), 0.0f, 0.5f);    // constrain_float(val, min, max) returns val limited to min/ max
 //     float resistance_alpha = MIN(1, AP_BATT_MONITOR_RES_EST_TC_2*fabsf((_state.current_amps-_current_filt_amps)/_current_max_amps));
 //     float resistance_estimate = -(_state.voltage-_voltage_filt)/current_delta;
 //     if (is_positive(resistance_estimate)) {
