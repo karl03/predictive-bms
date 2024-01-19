@@ -164,6 +164,7 @@ void setup() {
 
   ina3221.begin();
   ina3221.reset();
+  ina3221.setShuntMeasDisable();
   ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
   ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
 }
@@ -176,22 +177,19 @@ void loop() {
   u8g2->sendBuffer();
   cur_time = micros();
   // If simulation is running, timing may be off for averaging, as certain readings will be skipped, so maybe increase averaging onboard ina226 to be nearer to time to run simulation
-  ina226.waitUntilConversionCompleted();  // Ensures at least 1 reading per addition to average
-  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
-  u8g2->print(ina226.isBusy());
-  u8g2->sendBuffer();
-  delay(65);
-  ina226.isBusy();
-  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
-  u8g2->print(ina226.isBusy());
-  u8g2->sendBuffer();
-  busVoltage_V = ina226.getBusVoltage_V();
-  delay(500);
-  ina226.waitUntilConversionCompleted();
-  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
-  u8g2->print(ina226.isBusy());
-  u8g2->sendBuffer();
-  delay(500);
+  // Ensures new reading on every loop, block until available if not yet available.
+  delay(100); // Ensures readings are ready, they take approximately 65ms, so can run battery model in that time
+  if (ina226.isBusy()) {
+    ina226.waitUntilConversionCompleted();
+  }
+
+  ina3221.readFlags();
+  while (!ina3221.getConversionReadyFlag()) {
+    ina3221.readFlags();
+  }
+
+  // run battery model here, as this time would otherwise be spent waiting for measurements
+
   busVoltage_V = ina226.getBusVoltage_V();
   shunt_voltage = ina226.getShuntVoltage_mV();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
