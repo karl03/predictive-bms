@@ -171,12 +171,27 @@ void setup() {
 void loop() {
   u8g2->clearBuffer();
   u8g2->setFont(u8g2_font_profont17_mr);
-  u8g2->setCursor(0, 49);
+  u8g2->setCursor(0, u8g2->getMaxCharHeight());
   u8g2->print(micros() - cur_time);
   u8g2->sendBuffer();
   cur_time = micros();
   // If simulation is running, timing may be off for averaging, as certain readings will be skipped, so maybe increase averaging onboard ina226 to be nearer to time to run simulation
   ina226.waitUntilConversionCompleted();  // Ensures at least 1 reading per addition to average
+  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+  u8g2->print(ina226.isBusy());
+  u8g2->sendBuffer();
+  delay(65);
+  ina226.isBusy();
+  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+  u8g2->print(ina226.isBusy());
+  u8g2->sendBuffer();
+  busVoltage_V = ina226.getBusVoltage_V();
+  delay(500);
+  ina226.waitUntilConversionCompleted();
+  u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+  u8g2->print(ina226.isBusy());
+  u8g2->sendBuffer();
+  delay(500);
   busVoltage_V = ina226.getBusVoltage_V();
   shunt_voltage = ina226.getShuntVoltage_mV();
   voltage[0] = ina3221.getVoltage(INA3221_CH1);
