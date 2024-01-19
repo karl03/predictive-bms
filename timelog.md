@@ -213,3 +213,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 18 Jan 2024
 
 * *2.5 hours* Tested time for reading voltages and found blocking function to ensure new reading, switched average timing to microseconds for accuracy, added license, added Ardupilot code for resistance estimation, but not yet adapted to my code.
+
+### 19 Jan 2024
+
+* *3 hours* Continued timing testing, learned how to and added waits for conversion on both INA226 and INA3221, found rough time for conversion of 3221 of 64ms, after disabling shunt measurement. As battery model runs within a couple ms can hopefully aim for 64ms total loop time, running operations in time during which the INA's are measuring/ converting.
