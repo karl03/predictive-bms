@@ -24,12 +24,14 @@ float mAh_charged = 0;
 // float Wh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
+unsigned long loop_time = 0;
 unsigned long last_avg = 0;
 float v_iter = 0;
 // float A_iter = 0;
 float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
+int missed_count = 0;
 
 float SoC;
 // On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
@@ -175,13 +177,21 @@ void loop() {
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, u8g2->getMaxCharHeight());
     u8g2->print(micros() - cur_time);
+    u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+    u8g2->print(missed_count);
     u8g2->sendBuffer();
+    loop_time = micros() - cur_time;
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
     // 3221 checked first, as its conversion time is greater
     ina3221.readFlags();
-    while (!ina3221.getConversionReadyFlag()) {
-        ina3221.readFlags();
+    if (!ina3221.getConversionReadyFlag()) {
+        while (!ina3221.getConversionReadyFlag()) {
+            ina3221.readFlags();
+        }
+    } else {
+        // In-time reading missed, usually due to SD card buffer write taking place
+        missed_count ++;
     }
 
     if (ina226.isBusy()) {
