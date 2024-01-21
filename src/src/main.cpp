@@ -192,6 +192,7 @@ void loop() {
     } else {
         // In-time reading missed, usually due to SD card buffer write taking place
         missed_count ++;
+        // If alert pin on INA is connected to interrupt pin on ESP, could potentially count number of missed readings.
     }
 
     if (ina226.isBusy()) {
@@ -252,6 +253,8 @@ void loop() {
             log_file.print(mWh_charged);
             log_file.println(",");
             log_file.close();
+        } else {
+            while(1){};
         }
     }
   
