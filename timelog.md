@@ -217,3 +217,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 19 Jan 2024
 
 * *3 hours* Continued timing testing, learned how to and added waits for conversion on both INA226 and INA3221, found rough time for conversion of 3221 of 64ms, after disabling shunt measurement. As battery model runs within a couple ms can hopefully aim for 64ms total loop time, running operations in time during which the INA's are measuring/ converting.
+
+### 20 Jan 2024
+
+* *3 hours* Tested timing for SD card operations, added check for missed readings, modified timing code to include display operations. Begun conversion/ implementation of resistance estimation code. Found SD code does occasionally cause missed readings due to taking longer. Came up with idea for tracking missed readings via interrupt pin and alert from INA.
