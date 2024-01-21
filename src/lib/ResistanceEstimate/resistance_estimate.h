@@ -6,7 +6,6 @@
 
 class ResistanceEstimate {
     private:
-        float filtered_current_;
         unsigned long current_time_;
         int reaction_time_;
         float current_max_amps_;
@@ -19,6 +18,6 @@ class ResistanceEstimate {
     public:
         float resistance;
         float voltage_resting_estimate_;
-        ResistanceEstimate();
+        ResistanceEstimate() {};
         void update_resistance_estimate(float current_amps, float voltage, unsigned long now);
 };

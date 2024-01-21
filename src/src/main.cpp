@@ -6,6 +6,7 @@
 #include <INA226_WE.h>
 #include <INA3221.h>
 #include "batt_model.h"
+#include "resistance_estimate.h"
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -37,42 +38,7 @@ float SoC;
 // On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
 // After initial SoC has been measured begin coloumb counting.
 
-void run_model_tests() {
-    unsigned long timer = micros();
-    BattModel *test_model = new BattModel(1.39, 7, 1.18, 6.25, 0.002, 1.28, 1.3, 1.3, 0.8, 30);
-    timer = micros() - timer;
-    u8g2->begin();
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont17_mr);
-    u8g2->setCursor(0, 49);
-    u8g2->print("Model Tests");
-    u8g2->sendBuffer();
-    delay(500);
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont17_mr);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print("Time to initialise:");
-    u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-    u8g2->print(timer);
-    u8g2->print("micros");
-    u8g2->sendBuffer();
-    delay(3000);
-    u8g2->clearBuffer();
-    u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print("K=");
-    u8g2->print(test_model->GetK(), 8);
-    u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-    u8g2->print("test=");
-    timer = micros();
-    u8g2->print(test_model->Simulate(3.5, 15, 30), 8);
-    timer = micros() - timer;
-    u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-    u8g2->print("Time:");
-    u8g2->print(timer);
-    u8g2->print("micros");
-    u8g2->sendBuffer();
-    delay(100000);
-};
+
 
 void setup() {
     // run_model_tests();
