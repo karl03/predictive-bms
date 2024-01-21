@@ -221,3 +221,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 20 Jan 2024
 
 * *3 hours* Tested timing for SD card operations, added check for missed readings, modified timing code to include display operations. Begun conversion/ implementation of resistance estimation code. Found SD code does occasionally cause missed readings due to taking longer. Came up with idea for tracking missed readings via interrupt pin and alert from INA.
+
+### 21 Jan 2024
+
+* *5 hours* Completed initial implementation of resistance estimation. Researched outlier metrics/ detection. Begun implementing battery monitoring as class, added cell Z score for deviation.
