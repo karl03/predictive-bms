@@ -229,3 +229,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 22 Jan 2024
 
 * *2 hours* Figuring out Platformio environment capabilities, begin work on separate discharge test main file.
+* *3.5 hours* Updated serial handshake protocol, now seems to be working reliably. Updated discharge test code to send serial data as required, now planning on storing data through serial for this to ensure no readings are lost, as serial writes are more consistent than SD writes. Fixed bug in timing display code, cleaned up code by removing massive if block.
