@@ -109,11 +109,10 @@ void setup() {
                 Serial.flush();
                 if (Serial.available() <= 0) {
                     Serial.print("BMS");
-                } else {
-                    Serial.flush();
-                    Serial.println(Serial.readStringUntil('\n'));
-                    serial_mode = true;
-                    break;
+                } else if (Serial.readStringUntil('\n') == "hello") {
+                        Serial.println("hello");
+                        serial_mode = true;
+                        break;
                 }
             };
         }
