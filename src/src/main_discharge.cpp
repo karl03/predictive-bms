@@ -27,6 +27,7 @@ float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 unsigned long last_avg = 0;
+unsigned long longest_loop = 0;
 float v_iter = 0;
 // float A_iter = 0;
 float mA_iter = 0;
@@ -64,7 +65,9 @@ void setup() {
             unsigned long start_time = millis();
             while ((millis() - start_time) < (serial_timeout * 1000)) {
                 Serial.flush();
-                if (Serial.available() > 0 && Serial.readStringUntil('\n') == "hello\n") {
+                if (Serial.available() <= 0) {
+                    Serial.println("BMS");
+                } else if (Serial.readStringUntil('\n') == "hello\n") {
                     serial_mode = true;
                     break;
                 }
@@ -72,7 +75,6 @@ void setup() {
         }
 
         if (serial_mode) {
-            Serial.println("BMS");
             u8g2->clearBuffer();
             u8g2->setCursor(0, 49);
             u8g2->print("Connected!");
@@ -104,7 +106,12 @@ void setup() {
             Serial.begin(115200);
             long start_time = millis();
             while ((millis() - start_time) < (serial_timeout * 1000)) {
-                if (Serial.readString() == "hello") {
+                Serial.flush();
+                if (Serial.available() <= 0) {
+                    Serial.print("BMS");
+                } else {
+                    Serial.flush();
+                    Serial.println(Serial.readStringUntil('\n'));
                     serial_mode = true;
                     break;
                 }
@@ -129,6 +136,8 @@ void setup() {
     ina3221.setShuntMeasDisable();  // INA3221 is only used for bus voltages, so shunt measurement is disabled to save time
     ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
+
+    cur_time = micros();
 }
 
 void loop() {
@@ -138,9 +147,14 @@ void loop() {
     u8g2->print(micros() - cur_time);
     u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
     u8g2->print(missed_count);
+    u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
+    u8g2->print(longest_loop);
     u8g2->sendBuffer();
     loop_time = micros() - cur_time;
     cur_time = micros();
+    if (loop_time > longest_loop) {
+        longest_loop = loop_time;
+    }
     // Ensures new reading on every loop, block until available if not yet available.
     // 3221 checked first, as its conversion time is greater
     ina3221.readFlags();

@@ -17,13 +17,17 @@ if port == "":
         ser.port = port[0]
         ser.open()
         if ser.is_open:
-            ser.write(b"hello")
             ser.flush()
-            print("Wrote hello")
-            recvd = ser.readline().decode().strip()
-            print(recvd)
-            if  recvd == "BMS":
+            recvd = ser.read_until(b"BMS").decode()
+            print("Received: " + recvd)
+            if  "BMS" in recvd:
+                print("Received 'BMS'")
                 connected = True
+                ser.flush()
+                ser.write(b"hello")
+                print("Wrote hello")
+                print(ser.readline().decode().strip())
+                ser.close()
                 break
             else:
                 ser.close()
