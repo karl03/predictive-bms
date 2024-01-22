@@ -1,4 +1,4 @@
-#define serial_timeout 0
+#define serial_timeout 5
 #define avg_ms 1000
 #define end_voltage 3.5
 #define use_display 0

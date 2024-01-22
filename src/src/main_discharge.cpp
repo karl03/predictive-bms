@@ -63,7 +63,8 @@ void setup() {
             Serial.begin(115200);
             unsigned long start_time = millis();
             while ((millis() - start_time) < (serial_timeout * 1000)) {
-                if (Serial.readString() == "hello") {
+                Serial.flush();
+                if (Serial.available() > 0 && Serial.readStringUntil('\n') == "hello\n") {
                     serial_mode = true;
                     break;
                 }

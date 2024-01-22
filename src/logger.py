@@ -18,7 +18,11 @@ if port == "":
         ser.open()
         if ser.is_open:
             ser.write(b"hello")
-            if ser.readline().decode().strip() == "BMS":
+            ser.flush()
+            print("Wrote hello")
+            recvd = ser.readline().decode().strip()
+            print(recvd)
+            if  recvd == "BMS":
                 connected = True
                 break
             else:
@@ -29,6 +33,7 @@ else:
     ser.open()
     if ser.is_open:
         ser.write(b"hello")
+        ser.flush()
         if ser.readline().decode().strip() == "BMS":
             connected = True
     else:
