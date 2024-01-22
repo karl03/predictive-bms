@@ -34,14 +34,9 @@ int iter_counter = 0;
 int log_counter = 0;
 int missed_count = 0;
 
-float SoC;
-// On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
-// After initial SoC has been measured begin coloumb counting.
-
 
 
 void setup() {
-    // run_model_tests();
     if (sd_logging == 1) {
         if (!SD.begin(15)) {
             while(1){};
@@ -50,12 +45,9 @@ void setup() {
                 log_counter++;
             }
             log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
-
-            // if (log_file) {
-            //   log_file.println("BMS Logging");
-            //   log_file.close();
-            // }
         }
+    } else {
+        while(1){};
     }
 
     if (use_display == 1) {
@@ -164,8 +156,6 @@ void loop() {
     if (ina226.isBusy()) {
         ina226.waitUntilConversionCompleted();
     }
-
-    // run battery model here, as this time would otherwise be spent waiting for measurements
 
     busVoltage_V = ina226.getBusVoltage_V();
     shunt_voltage = ina226.getShuntVoltage_mV();
