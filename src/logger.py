@@ -19,7 +19,7 @@ if port == "":
         if ser.is_open:
             ser.flush()
             recvd = ser.read_until(b"BMS").decode()
-            if  "BMS" in recvd:
+            if "BMS" in recvd:
                 connected = True
                 ser.write(b"hello")
                 if "hello" not in ser.readline().decode():

@@ -28,10 +28,6 @@ unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 unsigned long last_avg = 0;
 unsigned long longest_loop = 0;
-float v_iter = 0;
-// float A_iter = 0;
-float mA_iter = 0;
-int iter_counter = 0;
 int log_counter = 0;
 int missed_count = 0;
 
@@ -102,6 +98,7 @@ void setup() {
         while(1){};
     }
 
+    // TODO: Test timings with now working loop time function!
     // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
@@ -113,26 +110,13 @@ void setup() {
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
 
     if (serial_mode) {
-        Serial.print("Cell 1");
-        Serial.print(",");
-        Serial.print("Cell 2");
-        Serial.print(",");
-        Serial.print("Cell 3");
-        Serial.print(",");
-        Serial.print("Cell 4");
-        Serial.print(",");
-        Serial.print("Total");
-        Serial.print(",");
-        Serial.print("mA Current");
-        Serial.print(",");
-        Serial.print("mAh Charged");
-        Serial.print(",");
-        Serial.print("mWh Charged");
-        Serial.print(",");
-        Serial.print("Time (ms)");
-        Serial.print(",");
-        Serial.print("Missed readings");
-        Serial.print(",");
+        Serial.print("Cell 1,Cell 2,Cell 3,Cell 4,");
+        Serial.print("Total,");
+        Serial.print("mA Current,");
+        Serial.print("mAh Charged,");
+        Serial.print("mWh Charged,");
+        Serial.print("Time (ms),");
+        Serial.print("Missed readings,");
         Serial.println("");
     }
 
@@ -143,7 +127,7 @@ void loop() {
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print(micros() - cur_time);
+    u8g2->print(loop_time);
     u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
     u8g2->print(missed_count);
     u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
@@ -180,7 +164,7 @@ void loop() {
 
     step_mAh_charged = (current_mA * (loop_time * 0.001) * A_ms_to_A_h);
     mAh_charged += step_mAh_charged;
-    mWh_charged += step_mAh_charged * (v_iter / iter_counter);
+    mWh_charged += step_mAh_charged * busVoltage_V;
 
     if (sd_logging == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);

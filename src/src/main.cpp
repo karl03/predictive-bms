@@ -120,7 +120,7 @@ void loop() {
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print(micros() - cur_time);
+    u8g2->print(loop_time);
     u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
     u8g2->print(missed_count);
     u8g2->sendBuffer();
