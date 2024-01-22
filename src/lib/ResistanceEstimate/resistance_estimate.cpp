@@ -47,7 +47,7 @@ void ResistanceEstimate::update_resistance_estimate(float current_amps, float vo
     voltage_resting_estimate_ = voltage + current_amps * resistance;
 }
 
-float constrain_float(float val, float min, float max) {
+float ResistanceEstimate::constrain_float(float val, float min, float max) {
     if (val > max) {
         return max;
     } else if (val < min) {
@@ -57,6 +57,6 @@ float constrain_float(float val, float min, float max) {
     }
 }
 
-bool is_positive(float val) {
+bool ResistanceEstimate::is_positive(float val) {
     return (val >= __FLT_EPSILON__);
 }

@@ -17,4 +17,11 @@ void BattMonitor::update_consumption(float time_micros, float voltage, float cur
         state_->cell_z_scores[cell] = (cell_voltages[cell] - mean_cell_voltage) / standard_deviation;
     }
 
+    /*
+    Check voltage against simulation given initial parameters, then check against simulation given calculated resistance.
+    If check against original simulation lines up, performance is as expected.
+    If it doesn't, but check against sim with calculated resistance lines up, then likely IR is higher, capacity is similar.
+    Otherwise, if worse than both, battery has worse IR and lower capacity.
+    */
+
 };

@@ -18,6 +18,8 @@ class ResistanceEstimate {
     public:
         float resistance;
         float voltage_resting_estimate_;
+        bool is_positive(float val);
+        float constrain_float(float val, float min, float max);
         ResistanceEstimate() {};
         void update_resistance_estimate(float current_amps, float voltage, unsigned long now);
 };

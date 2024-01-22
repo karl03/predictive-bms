@@ -1,4 +1,5 @@
 #include <cmath>
+#include "batt_model.h"
 
 #define A_ms_to_A_h 0.00000027777777777778
 
@@ -18,5 +19,7 @@ class BattMonitor {
         void update_consumption(float time_delta, float voltage, float current_mA, float cell_voltages[4]);
     
     private:
+        float resistance_;
+
         State* state_;
 };
