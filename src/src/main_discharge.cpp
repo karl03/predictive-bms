@@ -47,8 +47,6 @@ void setup() {
             }
             log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
         }
-    } else {
-        while(1){};
     }
 
     // Required to run even when display is not enabled
@@ -114,6 +112,30 @@ void setup() {
     ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
 
+    if (serial_mode) {
+        Serial.print("Cell 1");
+        Serial.print(",");
+        Serial.print("Cell 2");
+        Serial.print(",");
+        Serial.print("Cell 3");
+        Serial.print(",");
+        Serial.print("Cell 4");
+        Serial.print(",");
+        Serial.print("Total");
+        Serial.print(",");
+        Serial.print("mA Current");
+        Serial.print(",");
+        Serial.print("mAh Charged");
+        Serial.print(",");
+        Serial.print("mWh Charged");
+        Serial.print(",");
+        Serial.print("Time (ms)");
+        Serial.print(",");
+        Serial.print("Missed readings");
+        Serial.print(",");
+        Serial.println("");
+    }
+
     cur_time = micros();
 }
 
@@ -156,21 +178,9 @@ void loop() {
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
     current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
-    if (last_avg == 0) {
-        last_avg = cur_time;
-    } else if (iter_counter > 0 && (cur_time - last_avg) > (avg_ms * 1000)) {
-        step_mAh_charged = ((mA_iter / iter_counter) * ((cur_time - last_avg) * 0.001) * A_ms_to_A_h);
-        mAh_charged += step_mAh_charged;
-        mWh_charged += step_mAh_charged * (v_iter / iter_counter);
-        last_avg = cur_time;
-        v_iter = 0;
-        mA_iter = 0;
-        iter_counter = 0;
-    } else {
-        v_iter += busVoltage_V;
-        mA_iter += current_mA;
-        iter_counter ++;
-    }
+    step_mAh_charged = (current_mA * (loop_time * 0.001) * A_ms_to_A_h);
+    mAh_charged += step_mAh_charged;
+    mWh_charged += step_mAh_charged * (v_iter / iter_counter);
 
     if (sd_logging == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
@@ -207,14 +217,27 @@ void loop() {
     }
   
     if (serial_mode) {
-        Serial.print("v1,");
-        Serial.println(voltage[0]);
-        Serial.print("v2,");
-        Serial.println(voltage[1] - voltage[0]);
-        Serial.print("v3,");
-        Serial.println(voltage[2] - voltage[1]);
-        Serial.print("v4,");
-        Serial.println(busVoltage_V - voltage[2]);
+        Serial.print(voltage[0]);
+        Serial.print(",");
+        Serial.print(voltage[1] - voltage[0]);
+        Serial.print(",");
+        Serial.print(voltage[2] - voltage[1]);
+        Serial.print(",");
+        Serial.print(busVoltage_V - voltage[2]);
+        Serial.print(",");
+        Serial.print(busVoltage_V);
+        Serial.print(",");
+        Serial.print(current_mA);
+        Serial.print(",");
+        Serial.print(mAh_charged);
+        Serial.print(",");
+        Serial.print(mWh_charged);
+        Serial.print(",");
+        Serial.print(millis());
+        Serial.print(",");
+        Serial.print(missed_count);
+        Serial.print(",");
+        Serial.println("");
     } else if (use_display == 1) {
         u8g2->clearBuffer();
         u8g2->setFont(u8g2_font_profont17_mr);
@@ -231,10 +254,6 @@ void loop() {
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA ");
-        // u8g2->print((busVoltage_V * current_A), 0);
-        // u8g2->print("W  ");
-        // u8g2->print(Wh_charged, 2);
-        // u8g2->print("Wh");
         u8g2->sendBuffer();
     }
 }

@@ -41,7 +41,6 @@ float SoC;
 
 
 void setup() {
-    // run_model_tests();
     if (sd_logging == 1) {
         if (!SD.begin(15)) {
             while(1){};
@@ -50,81 +49,60 @@ void setup() {
                 log_counter++;
             }
             log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
-
-            // if (log_file) {
-            //   log_file.println("BMS Logging");
-            //   log_file.close();
-            // }
         }
     }
 
-    if (use_display == 1) {
-        u8g2->begin();
-        u8g2->clearBuffer();
+    // Required to run even when display is not enabled
+    u8g2->begin();
 
-        if (serial_timeout > 0) {
+    if (serial_timeout > 0) {
+        if (use_display) {
+            u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, 49);
             u8g2->print("Connecting...");
             u8g2->sendBuffer();
+        }
 
-            Serial.begin(115200);
-            unsigned long start_time = millis();
-            while ((millis() - start_time) < (serial_timeout * 1000)) {
-                if (Serial.readString() == "hello") {
+        Serial.begin(115200);
+        long start_time = millis();
+        while ((millis() - start_time) < (serial_timeout * 1000)) {
+            Serial.flush();
+            if (Serial.available() <= 0) {
+                Serial.print("BMS");
+            } else if (Serial.readStringUntil('\n') == "hello") {
+                    Serial.println("hello");
                     serial_mode = true;
                     break;
-                }
-            };
-        }
+            }
+        };
+    }
 
-        if (serial_mode) {
-            Serial.println("BMS");
-            u8g2->clearBuffer();
-            u8g2->setCursor(0, 49);
-            u8g2->print("Connected!");
-            u8g2->sendBuffer();
-            delay(1000);
-            u8g2->clearBuffer();
-            u8g2->sendBuffer();
-        } else {
-            u8g2->setFont(u8g2_font_inr46_mf);
-            u8g2->setCursor(0, 49);
-            u8g2->print("VLT");
-            u8g2->sendBuffer();
-            delay(500);
-        }
+    if (serial_mode && use_display) {
+        u8g2->clearBuffer();
+        u8g2->setCursor(0, 49);
+        u8g2->print("Connected!");
+        u8g2->sendBuffer();
+        delay(1000);
+        u8g2->clearBuffer();
+        u8g2->sendBuffer();
+    } else if (use_display) {
+        u8g2->setFont(u8g2_font_inr46_mf);
+        u8g2->setCursor(0, 49);
+        u8g2->print("VLT");
+        u8g2->sendBuffer();
+        delay(500);
+    }
 
-        if(!ina226.init()) {
+    if(!ina226.init()) {
+        if (use_display) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, 49);
             u8g2->print("INA226 INIT FAIL");
             u8g2->sendBuffer();
-            while(1){};
         }
-    } else {
-        // seemingly required to run in all cases
-        u8g2->begin();
-
-        if (serial_timeout > 0) {
-            Serial.begin(115200);
-            long start_time = millis();
-            while ((millis() - start_time) < (serial_timeout * 1000)) {
-                if (Serial.readString() == "hello") {
-                    serial_mode = true;
-                    break;
-                }
-            };
-        }
-
-        if (serial_mode) {
-            Serial.println("BMS");
-        }
-
-        if(!ina226.init()) {
-            while(1){};
-        }
+        while(1){};
     }
 
     // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
