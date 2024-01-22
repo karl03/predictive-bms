@@ -225,3 +225,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 21 Jan 2024
 
 * *5 hours* Completed initial implementation of resistance estimation. Researched outlier metrics/ detection. Begun implementing battery monitoring as class, added cell Z score for deviation.
+
+### 22 Jan 2024
+
+* *2 hours* Figuring out Platformio environment capabilities, begin work on separate discharge test main file.
