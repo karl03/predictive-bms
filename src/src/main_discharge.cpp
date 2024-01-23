@@ -24,10 +24,8 @@ float step_mAh_charged = 0;
 float mAh_charged = 0;
 // float Wh_charged = 0;
 float mWh_charged = 0;
-unsigned long cur_time = 0;
 unsigned long loop_time = 0;
-unsigned long last_avg = 0;
-unsigned long longest_loop = 0;
+unsigned long last_update = 0;
 int log_counter = 0;
 int missed_count = 0;
 
@@ -52,7 +50,7 @@ void setup() {
         if (use_display) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
-            u8g2->setCursor(0, 49);
+            u8g2->setCursor(0, u8g2->getMaxCharHeight());
             u8g2->print("Connecting...");
             u8g2->sendBuffer();
         }
@@ -73,17 +71,25 @@ void setup() {
 
     if (serial_mode && use_display) {
         u8g2->clearBuffer();
-        u8g2->setCursor(0, 49);
+        u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print("Connected!");
         u8g2->sendBuffer();
         delay(1000);
         u8g2->clearBuffer();
-        u8g2->sendBuffer();
+        u8g2->setFont(u8g2_font_profont17_mr);
+        u8g2->setCursor(0, u8g2->getMaxCharHeight());
+        u8g2->print("Serial Mode");
+        u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+        u8g2->print("Time: ");
+        u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
+        u8g2->print("Missed: ");
     } else if (use_display) {
+        u8g2->clearBuffer();
         u8g2->setFont(u8g2_font_inr46_mf);
         u8g2->setCursor(0, 49);
         u8g2->print("VLT");
         u8g2->sendBuffer();
+        u8g2->setFont(u8g2_font_profont17_mr);
         delay(500);
     }
 
@@ -91,7 +97,7 @@ void setup() {
         if (use_display) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
-            u8g2->setCursor(0, 49);
+            u8g2->setCursor(0, u8g2->getMaxCharHeight());
             u8g2->print("INA226 INIT FAIL");
             u8g2->sendBuffer();
         }
@@ -112,32 +118,19 @@ void setup() {
     if (serial_mode) {
         Serial.print("Cell 1,Cell 2,Cell 3,Cell 4,");
         Serial.print("Total,");
+        Serial.print("Shunt Voltage,");
         Serial.print("mA Current,");
         Serial.print("mAh Charged,");
         Serial.print("mWh Charged,");
-        Serial.print("Time (ms),");
-        Serial.print("Missed readings,");
+        Serial.print("Loop Time (micros),");
+        Serial.print("Missed readings");
         Serial.println("");
     }
 
-    cur_time = micros();
+    last_update = micros();
 }
 
 void loop() {
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont17_mr);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print(loop_time);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
-    u8g2->print(missed_count);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
-    u8g2->print(longest_loop);
-    u8g2->sendBuffer();
-    loop_time = micros() - cur_time;
-    cur_time = micros();
-    if (loop_time > longest_loop) {
-        longest_loop = loop_time;
-    }
     // Ensures new reading on every loop, block until available if not yet available.
     // INA226 checked first, as its conversion time is greater
     if (ina226.isBusy()) {
@@ -162,6 +155,8 @@ void loop() {
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
     current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
+    loop_time = micros() - last_update;
+    last_update = micros();
     step_mAh_charged = (current_mA * (loop_time * 0.001) * A_ms_to_A_h);
     mAh_charged += step_mAh_charged;
     mWh_charged += step_mAh_charged * busVoltage_V;
@@ -201,6 +196,13 @@ void loop() {
     }
   
     if (serial_mode) {
+        if (use_display) {
+            u8g2->setCursor(u8g2->getMaxCharWidth() * 6, u8g2->getMaxCharHeight() * 2);
+            u8g2->print(loop_time);
+            u8g2->setCursor(u8g2->getMaxCharWidth() * 8, u8g2->getMaxCharHeight() * 3);
+            u8g2->print(missed_count);
+            u8g2->sendBuffer();
+        }
         Serial.print(voltage[0]);
         Serial.print(",");
         Serial.print(voltage[1] - voltage[0]);
@@ -211,20 +213,20 @@ void loop() {
         Serial.print(",");
         Serial.print(busVoltage_V);
         Serial.print(",");
+        Serial.print(shunt_voltage);
+        Serial.print(",");
         Serial.print(current_mA);
         Serial.print(",");
         Serial.print(mAh_charged);
         Serial.print(",");
         Serial.print(mWh_charged);
         Serial.print(",");
-        Serial.print(millis());
+        Serial.print(loop_time);
         Serial.print(",");
         Serial.print(missed_count);
-        Serial.print(",");
         Serial.println("");
     } else if (use_display == 1) {
         u8g2->clearBuffer();
-        u8g2->setFont(u8g2_font_profont17_mr);
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print(voltage[0], 3);
         u8g2->print("V  ");

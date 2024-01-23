@@ -1,7 +1,7 @@
 #define serial_timeout 10
 #define avg_ms 1000
 #define end_voltage 3.5
-#define use_display 0
+#define use_display 1
 #define sd_logging 0
 // Values for INA226 onboard shunt
 #define current_offset -1.63992595  // mA

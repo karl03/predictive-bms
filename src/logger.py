@@ -70,21 +70,24 @@ else:
     print("Failed to Connect")
 
 
-while connected:
-    try:
-        if ser.in_waiting > 0:
-            line = ser.readline().decode().strip()
-            print(line)
-            file.write(line + "\n")
-    except serial.SerialException:
-        print("Serial Connection Lost")
-        break
-    except KeyboardInterrupt:
-        print("Exiting")
-        break
-    except Exception as exception:
-        print(exception)
-        break
+try:
+    while connected:
+        try:
+            if ser.in_waiting > 0:
+                line = ser.readline().decode().strip()
+                print(line)
+                file.write(line + "\n")
+        except serial.SerialException:
+            print("Serial Connection Lost")
+            break
+        except KeyboardInterrupt:
+            print("Exiting")
+            break
+        except Exception as exception:
+            print(exception)
+            break
+except:
+    print("Exiting")
 
 if connected:
     ser.close()
