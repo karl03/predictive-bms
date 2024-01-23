@@ -1,0 +1,1 @@
+test-20240123-175821.csv - Data gathered during charge cycle from storage voltage - "Good" battery (New CNHL 1500mah 4s black series)
