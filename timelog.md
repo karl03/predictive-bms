@@ -234,3 +234,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 23 Jan 2024
 
 * *2.5 hours* Further serial connection improvements, display and serial code refactoring, now ready to run discharge tests saving to pc directly.
+* *1 hour* Setting up/ running charge test gathering data, attempted to plot data.
