@@ -98,17 +98,17 @@ void setup() {
         while(1){};
     }
 
-    // TODO: Test timings with now working loop time function!
     // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
+    // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
-
+    // Total time = 2.116ms conversion * 2 readings * 16 averages = 67.712ms
     ina3221.begin();
     ina3221.reset();
     ina3221.setShuntMeasDisable();  // INA3221 is only used for bus voltages, so shunt measurement is disabled to save time
-    ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
+    ina3221.setBusConversionTime(INA3221_REG_CONF_CT_1100US);
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
-
+    // Total time = 1.1ms conversion * 3 readings * 16 averages = 52.8ms
     if (serial_mode) {
         Serial.print("Cell 1,Cell 2,Cell 3,Cell 4,");
         Serial.print("Total,");
@@ -139,20 +139,20 @@ void loop() {
         longest_loop = loop_time;
     }
     // Ensures new reading on every loop, block until available if not yet available.
-    // 3221 checked first, as its conversion time is greater
-    ina3221.readFlags();
-    if (!ina3221.getConversionReadyFlag()) {
-        while (!ina3221.getConversionReadyFlag()) {
-            ina3221.readFlags();
-        }
+    // INA226 checked first, as its conversion time is greater
+    if (ina226.isBusy()) {
+        ina226.waitUntilConversionCompleted();
     } else {
         // In-time reading missed, usually due to SD card buffer write taking place
         missed_count ++;
         // If alert pin on INA is connected to interrupt pin on ESP, could potentially count number of missed readings.
     }
 
-    if (ina226.isBusy()) {
-        ina226.waitUntilConversionCompleted();
+    ina3221.readFlags();
+    if (!ina3221.getConversionReadyFlag()) {
+        while (!ina3221.getConversionReadyFlag()) {
+            ina3221.readFlags();
+        }
     }
 
     busVoltage_V = ina226.getBusVoltage_V();

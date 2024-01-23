@@ -18,13 +18,23 @@ if port == "":
         ser.open()
         if ser.is_open:
             ser.flush()
-            recvd = ser.read_until(b"BMS").decode()
+            try:
+                recvd = ser.read_until(b"BMS").decode()
+            except:
+                ser.close()
+                continue
             if "BMS" in recvd:
-                connected = True
                 ser.write(b"hello")
-                if "hello" not in ser.readline().decode():
+                try:
+                    if "hello" not in ser.readline().decode():
+                        ser.close()
+                        continue
+                    else:
+                        connected = True
+                        break
+                except:
                     ser.close()
-                break
+                    continue
             else:
                 ser.close()
 
@@ -32,12 +42,23 @@ else:
     ser.port = port
     ser.open()
     if ser.is_open:
-        ser.write(b"hello")
         ser.flush()
-        if ser.readline().decode().strip() == "BMS":
-            connected = True
-    else:
-        ser.close()
+        try:
+            recvd = ser.read_until(b"BMS").decode()
+        except:
+            ser.close()
+        else:
+            if "BMS" in recvd:
+                ser.write(b"hello")
+                try:
+                    if "hello" not in ser.readline().decode():
+                        ser.close()
+                    else:
+                        connected = True
+                except:
+                    ser.close()
+            else:
+                ser.close()
 
 
 if connected:
