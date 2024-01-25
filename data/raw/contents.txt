@@ -1,1 +1,2 @@
-test-20240123-175821.csv - Data gathered during charge cycle from storage voltage - "Good" battery (New CNHL 1500mah 4s black series)
+test-20240123-175821.csv - Data gathered during charge cycle from storage voltage, "Good" battery (New CNHL 1500mah 4s black series)
+test-20240123-212326.csv - Full discharge test data, New CNHL 1500mah 4s black series
