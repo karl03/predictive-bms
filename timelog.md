@@ -241,3 +241,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *0.5 hours* Checking discharge test, ensuring results so far are as expected, restarting discharge cycle when charger timed out.
 * *0.5 hours* Advisor meeting.
 * *0.5 hours* Editing/ uploading meeting minutes.
+
+### 25 Jan 2024
+
+* *2 hours* Worked on filtering/ cleaning discharge data for visualisation, by adding low-pass filter, averaging, and other helper functions. Produced several visualisations and added to data folder.
