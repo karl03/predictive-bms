@@ -245,3 +245,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 25 Jan 2024
 
 * *2 hours* Worked on filtering/ cleaning discharge data for visualisation, by adding low-pass filter, averaging, and other helper functions. Produced several visualisations and added to data folder.
+* *1.5 hours* Begun added functionality to logger gui, attempted to update simulation based on discharge values, further refinement needed. Tried to get gradients between points to find changes in curve, but not yet working.
