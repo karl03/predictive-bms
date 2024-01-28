@@ -17,18 +17,15 @@ File log_file;
 bool serial_mode = false;
 float busVoltage_V = 0.0;
 float voltage[3];
-// float current_A = 0.0;
 float current_mA = 0.0;
 float shunt_voltage = 0.0;
 float step_mAh_charged = 0;
 float mAh_charged = 0;
-// float Wh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 unsigned long last_avg = 0;
 float v_iter = 0;
-// float A_iter = 0;
 float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
@@ -59,7 +56,7 @@ void setup() {
         if (use_display) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
-            u8g2->setCursor(0, 49);
+            u8g2->setCursor(0, u8g2->getMaxCharHeight());
             u8g2->print("Connecting...");
             u8g2->sendBuffer();
         }
@@ -80,17 +77,19 @@ void setup() {
 
     if (serial_mode && use_display) {
         u8g2->clearBuffer();
-        u8g2->setCursor(0, 49);
+        u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print("Connected!");
         u8g2->sendBuffer();
         delay(1000);
         u8g2->clearBuffer();
         u8g2->sendBuffer();
     } else if (use_display) {
+        u8g2->clearBuffer();
         u8g2->setFont(u8g2_font_inr46_mf);
         u8g2->setCursor(0, 49);
         u8g2->print("VLT");
         u8g2->sendBuffer();
+        u8g2->setFont(u8g2_font_profont17_mr);
         delay(500);
     }
 
@@ -98,7 +97,7 @@ void setup() {
         if (use_display) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
-            u8g2->setCursor(0, 49);
+            u8g2->setCursor(0, u8g2->getMaxCharHeight());
             u8g2->print("INA226 INIT FAIL");
             u8g2->sendBuffer();
         }
@@ -106,14 +105,16 @@ void setup() {
     }
 
     // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
+    // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
-
+    // Total time = 2.116ms conversion * 2 readings * 16 averages = 67.712ms
     ina3221.begin();
     ina3221.reset();
     ina3221.setShuntMeasDisable();  // INA3221 is only used for bus voltages, so shunt measurement is disabled to save time
-    ina3221.setBusConversionTime(INA3221_REG_CONF_CT_2116US);
+    ina3221.setBusConversionTime(INA3221_REG_CONF_CT_1100US);
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
+    // Total time = 1.1ms conversion * 3 readings * 16 averages = 52.8ms
 }
 
 void loop() {
@@ -127,20 +128,20 @@ void loop() {
     loop_time = micros() - cur_time;
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
-    // 3221 checked first, as its conversion time is greater
-    ina3221.readFlags();
-    if (!ina3221.getConversionReadyFlag()) {
-        while (!ina3221.getConversionReadyFlag()) {
-            ina3221.readFlags();
-        }
+    // INA226 checked first, as its conversion time is greater
+    if (ina226.isBusy()) {
+        ina226.waitUntilConversionCompleted();
     } else {
         // In-time reading missed, usually due to SD card buffer write taking place
         missed_count ++;
         // If alert pin on INA is connected to interrupt pin on ESP, could potentially count number of missed readings.
     }
 
-    if (ina226.isBusy()) {
-        ina226.waitUntilConversionCompleted();
+    ina3221.readFlags();
+    if (!ina3221.getConversionReadyFlag()) {
+        while (!ina3221.getConversionReadyFlag()) {
+            ina3221.readFlags();
+        }
     }
 
     // run battery model here, as this time would otherwise be spent waiting for measurements
@@ -152,6 +153,7 @@ void loop() {
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
     current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
 
+    // Averaging could be used alongside alert pin to write an average value after missing readings
     if (last_avg == 0) {
         last_avg = cur_time;
     } else if (iter_counter > 0 && (cur_time - last_avg) > (avg_ms * 1000)) {
@@ -213,7 +215,6 @@ void loop() {
         Serial.println(busVoltage_V - voltage[2]);
     } else if (use_display == 1) {
         u8g2->clearBuffer();
-        u8g2->setFont(u8g2_font_profont17_mr);
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print(voltage[0], 3);
         u8g2->print("V  ");
@@ -227,10 +228,6 @@ void loop() {
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA ");
-        // u8g2->print((busVoltage_V * current_A), 0);
-        // u8g2->print("W  ");
-        // u8g2->print(Wh_charged, 2);
-        // u8g2->print("Wh");
         u8g2->sendBuffer();
     }
 }
