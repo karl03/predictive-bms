@@ -78,20 +78,18 @@ low_pass_filter_array(results_copy, 4, 9, 1/300)
 results_copy = average_results(results_copy, 4, 1000)
 # results_copy = accumulate_value(results_copy, 9)
 # ms_to_hours(results_copy, -1)
-print(results_copy[0])
-print(results_copy[-1])
-print(len(results_copy))
+# print(results_copy[0])
+# print(results_copy[-1])
 
-gradients = results_copy[:]
-for index in range(len(gradients) - 1):
-    gradients[index + 1][4] = float(gradients[index + 1][4]) - float(gradients[index][4])
-print(gradients[20])
-print(gradients[0])
-print(gradients[-1])
-# plt.title("Discharge Test 1\n1500mAh 4s, Low Pass Filter with 1/300 constant, Averaging every 1000 values")
-# plt.xlabel("Capacity (mAh)")
-# plt.ylabel("Voltage (V)")
-# plt.grid(True)
+gradients = [0]
+
+for index in range(len(results_copy) - 1):
+    gradients.append(float(results_copy[index + 1][4]) - float(results_copy[index][4]))
+
+plt.title("Discharge Test 1\n1500mAh 4s, Low Pass Filter with 1/300 constant, Averaging every 1000 values")
+plt.xlabel("Capacity (mAh)")
+plt.ylabel("Voltage (V)")
+plt.grid(True)
 # plt.plot(results_copy[::, 7].astype(float), results_copy[::, 4].astype(float))
-# plt.plot(results_copy[::, 7].astype(float), gradients[::, 4].astype(float))
-# plt.show()
+plt.plot(results_copy[::, 7].astype(float), gradients)
+plt.show()
