@@ -25,12 +25,13 @@ class BattMonitor {
             flags flags_;
         };
 
-        BattMonitor(State* state) {state_ = state;};
+        BattMonitor(State* state, BattModel* batt_model) {state_ = state; batt_model_ = batt_model;};
         void update_consumption(float time_delta, float voltage, float current_mA, float cell_voltages[4]);
     
     private:
         float resistance_;
         State* state_;
+        BattModel* batt_model_;
 };
 
 #endif

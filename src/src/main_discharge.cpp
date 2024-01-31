@@ -30,7 +30,7 @@ int missed_count = 0;
 
 
 void setup() {
-    if (sd_logging == 1) {
+    if (SD_LOGGING == 1) {
         if (!SD.begin(15)) {
             while(1){};
         } else {
@@ -44,8 +44,8 @@ void setup() {
     // Required to run even when display is not enabled
     u8g2->begin();
 
-    if (serial_timeout > 0) {
-        if (use_display) {
+    if (SERIAL_TIMEOUT > 0) {
+        if (USE_DISPLAY) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, u8g2->getMaxCharHeight());
@@ -55,7 +55,7 @@ void setup() {
 
         Serial.begin(115200);
         long start_time = millis();
-        while ((millis() - start_time) < (serial_timeout * 1000)) {
+        while ((millis() - start_time) < (SERIAL_TIMEOUT * 1000)) {
             Serial.flush();
             if (Serial.available() <= 0) {
                 Serial.print("BMS");
@@ -67,7 +67,7 @@ void setup() {
         };
     }
 
-    if (serial_mode && use_display) {
+    if (serial_mode && USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print("Connected!");
@@ -81,7 +81,7 @@ void setup() {
         u8g2->print("Time: ");
         u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
         u8g2->print("Missed: ");
-    } else if (use_display) {
+    } else if (USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setFont(u8g2_font_inr46_mf);
         u8g2->setCursor(0, 49);
@@ -92,7 +92,7 @@ void setup() {
     }
 
     if(!ina226.init()) {
-        if (use_display) {
+        if (USE_DISPLAY) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, u8g2->getMaxCharHeight());
@@ -159,7 +159,7 @@ void loop() {
     mAh_charged += step_mAh_charged;
     mWh_charged += step_mAh_charged * busVoltage_V;
 
-    if (sd_logging == 1) {
+    if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
 
         if (log_file) {
@@ -194,7 +194,7 @@ void loop() {
     }
   
     if (serial_mode) {
-        if (use_display) {
+        if (USE_DISPLAY) {
             u8g2->setCursor(u8g2->getMaxCharWidth() * 6, u8g2->getMaxCharHeight() * 2);
             u8g2->print(loop_time);
             u8g2->setCursor(u8g2->getMaxCharWidth() * 8, u8g2->getMaxCharHeight() * 3);
@@ -223,7 +223,7 @@ void loop() {
         Serial.print(",");
         Serial.print(missed_count);
         Serial.println("");
-    } else if (use_display == 1) {
+    } else if (USE_DISPLAY == 1) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print(voltage[0], 3);

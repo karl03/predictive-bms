@@ -44,8 +44,7 @@ float SoCLookup(float voltage, const float* array) {
 }
 
 void setup() {
-    float test = SoCLookup((float)15, MAH_AT_VOLTAGE);
-    if (sd_logging == 1) {
+    if (SD_LOGGING == 1) {
         if (!SD.begin(15)) {
             while(1){};
         } else {
@@ -59,8 +58,8 @@ void setup() {
     // Required to run even when display is not enabled
     u8g2->begin();
 
-    if (serial_timeout > 0) {
-        if (use_display) {
+    if (SERIAL_TIMEOUT > 0) {
+        if (USE_DISPLAY) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, u8g2->getMaxCharHeight());
@@ -70,7 +69,7 @@ void setup() {
 
         Serial.begin(115200);
         long start_time = millis();
-        while ((millis() - start_time) < (serial_timeout * 1000)) {
+        while ((millis() - start_time) < (SERIAL_TIMEOUT * 1000)) {
             Serial.flush();
             if (Serial.available() <= 0) {
                 Serial.print("BMS");
@@ -82,7 +81,7 @@ void setup() {
         };
     }
 
-    if (serial_mode && use_display) {
+    if (serial_mode && USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print("Connected!");
@@ -90,7 +89,7 @@ void setup() {
         delay(1000);
         u8g2->clearBuffer();
         u8g2->sendBuffer();
-    } else if (use_display) {
+    } else if (USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setFont(u8g2_font_inr46_mf);
         u8g2->setCursor(0, 49);
@@ -101,7 +100,7 @@ void setup() {
     }
 
     if(!ina226.init()) {
-        if (use_display) {
+        if (USE_DISPLAY) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
             u8g2->setCursor(0, u8g2->getMaxCharHeight());
@@ -122,6 +121,25 @@ void setup() {
     ina3221.setBusConversionTime(INA3221_REG_CONF_CT_1100US);
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
     // Total time = 1.1ms conversion * 3 readings * 16 averages = 52.8ms
+
+    unsigned long zero_amp_start = millis();
+    unsigned long zero_amp_time = 0;
+    while (zero_amp_time < STABILISATION_TIME_MS) {
+        if (ina226.isBusy()) {
+            ina226.waitUntilConversionCompleted();
+        }
+        if ((shuntVoltageTomA(ina226.getShuntVoltage_mV()) > ZERO_AMP_CUTOFF) || (shuntVoltageTomA(ina226.getShuntVoltage_mV()) < (-ZERO_AMP_CUTOFF))) {
+            zero_amp_start = millis();
+            zero_amp_time = 0;
+        } else {
+            zero_amp_time = zero_amp_start - millis();
+        }
+    }
+
+    busVoltage_V = ina226.getBusVoltage_V();
+    mAh_charged = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
+    mWh_charged = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    // Initialise battery model/ state here! Move vars from global to local here, except state/ model required
 }
 
 void loop() {
@@ -149,7 +167,7 @@ void loop() {
     voltage[0] = ina3221.getVoltage(INA3221_CH1);
     voltage[1] = ina3221.getVoltage(INA3221_CH2);
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
-    current_mA = (shunt_voltage / CURRENT_SCALE) * 10000 + (CURRENT_OFFSET);
+    current_mA = shuntVoltageTomA(shunt_voltage);
 
     // Averaging could be used alongside alert pin to write an average value after missing readings
     if (last_avg == 0) {
@@ -168,7 +186,7 @@ void loop() {
         iter_counter ++;
     }
 
-    if (sd_logging == 1) {
+    if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
 
         if (log_file) {
@@ -211,7 +229,7 @@ void loop() {
         Serial.println(voltage[2] - voltage[1]);
         Serial.print("v4,");
         Serial.println(busVoltage_V - voltage[2]);
-    } else if (use_display == 1) {
+    } else if (USE_DISPLAY == 1) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print(voltage[0], 3);
