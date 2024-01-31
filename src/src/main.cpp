@@ -36,8 +36,8 @@ float SoC;
 // After initial SoC has been measured begin coloumb counting.
 
 float SoCLookup(float voltage) {
-    if ((voltage < MIN_VOLTAGE) || (voltage > MAX_VOLTAGE)) {
-
+    if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
+        return MAH_AT_VOLTAGE[(int)(voltage * 100) - (int)(MIN_VOLTAGE * 100)];
     }
 }
 
@@ -156,7 +156,7 @@ void loop() {
     voltage[0] = ina3221.getVoltage(INA3221_CH1);
     voltage[1] = ina3221.getVoltage(INA3221_CH2);
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
-    current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
+    current_mA = (shunt_voltage / CURRENT_SCALE) * 10000 + (CURRENT_OFFSET);
 
     // Averaging could be used alongside alert pin to write an average value after missing readings
     if (last_avg == 0) {

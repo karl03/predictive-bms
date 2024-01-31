@@ -113,6 +113,10 @@ def get_lookup_vals(array, values_array, max_voltage, min_voltage):
                 
             prev_val = value
 
+        else:
+            output[int(value * 100) - int(min_voltage * 100)] += values_array[index]
+            output[int(value * 100) - int(min_voltage * 100)] /= 2
+
     if not max_reached:
         find_empty_and_fill(output)
         
@@ -132,7 +136,7 @@ def array_to_c_array(array):
     return output + "}"
 
 
-with open(r"C:\Users\Karl\dev\predictive-bms\data\raw\test-20240123-212326.csv") as F:
+with open(r"..\data\raw\test-20240123-212326.csv") as F:
     lines = [line.strip().split(',') for line in F.readlines()]
 
 results = np.array(lines)

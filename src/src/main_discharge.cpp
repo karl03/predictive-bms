@@ -151,7 +151,7 @@ void loop() {
     voltage[0] = ina3221.getVoltage(INA3221_CH1);
     voltage[1] = ina3221.getVoltage(INA3221_CH2);
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
-    current_mA = (shunt_voltage / current_scale) * 10000 + (current_offset);
+    current_mA = (shunt_voltage / CURRENT_SCALE) * 10000 + (CURRENT_OFFSET);
 
     loop_time = micros() - last_update;
     last_update = micros();
