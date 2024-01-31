@@ -35,6 +35,11 @@ float SoC;
 // On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
 // After initial SoC has been measured begin coloumb counting.
 
+float SoCLookup(float voltage) {
+    if ((voltage < MIN_VOLTAGE) || (voltage > MAX_VOLTAGE)) {
+
+    }
+}
 
 
 void setup() {

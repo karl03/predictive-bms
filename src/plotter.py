@@ -121,6 +121,16 @@ def get_lookup_vals(array, values_array, max_voltage, min_voltage):
         
     return output
 
+def array_to_c_array(array):
+    output = "{"
+
+    for index, element in enumerate(array):
+        output += str(element)
+        if index < len(array) - 1:
+            output += ", "
+
+    return output + "}"
+
 
 with open(r"C:\Users\Karl\dev\predictive-bms\data\raw\test-20240123-212326.csv") as F:
     lines = [line.strip().split(',') for line in F.readlines()]
@@ -138,7 +148,7 @@ results_copy = average_results(results_copy, 4, 1000)
 # print(results_copy[-1])
 
 # print(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), 16.8, 13.3))
-print(get_lookup_vals(results[1::, 4].astype(float), results[1::, 7].astype(float), 16.8, 13.3))
+print(array_to_c_array(get_lookup_vals(results[1::, 4].astype(float), results[1::, 7].astype(float), 16.8, 13.3)))
 
 # gradients = [0]
 # for index in range(len(results_copy) - 1):
