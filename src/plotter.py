@@ -98,12 +98,12 @@ def get_lookup_vals(array, values_array, max_voltage, min_voltage):
     max_reached = False
 
     for index, value in enumerate(array):
-        if value > max_voltage:
+        if value > max_voltage or value < min_voltage:
+            continue
+        if value == max_voltage:
             max_reached = True
-            continue
-        if value < min_voltage:
+        if value == min_voltage:
             min_reached = True
-            continue
 
         if output[int(value * 100) - int(min_voltage * 100)] == 0:
             output[int(value * 100) - int(min_voltage * 100)] = values_array[index]
@@ -118,7 +118,7 @@ def get_lookup_vals(array, values_array, max_voltage, min_voltage):
         
     if not min_reached:
         find_empty_and_fill(output, False)
-
+        
     return output
 
 
@@ -137,7 +137,8 @@ results_copy = average_results(results_copy, 4, 1000)
 # print(results_copy[0])
 # print(results_copy[-1])
 
-print(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), 16.8, 13.3))
+# print(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), 16.8, 13.3))
+print(get_lookup_vals(results[1::, 4].astype(float), results[1::, 7].astype(float), 16.8, 13.3))
 
 # gradients = [0]
 # for index in range(len(results_copy) - 1):
