@@ -38,6 +38,10 @@ float SoC;
 float SoCLookup(float voltage) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
         return MAH_AT_VOLTAGE[(int)(voltage * 100) - (int)(MIN_VOLTAGE * 100)];
+    } else if (voltage > MAX_VOLTAGE) {
+        return 0;
+    } else {
+        return MAH_AT_VOLTAGE[0];
     }
 }
 
