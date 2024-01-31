@@ -1,3 +1,6 @@
+#ifndef BATT_MONITOR_H
+#define BATT_MONITOR_H
+
 #include <cmath>
 #include "batt_model.h"
 
@@ -23,3 +26,5 @@ class BattMonitor {
 
         State* state_;
 };
+
+#endif

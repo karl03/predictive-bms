@@ -1,3 +1,6 @@
+#ifndef DEFINES_H
+#define DEFINES_H
+
 #define serial_timeout 10
 #define avg_ms 1000
 #define end_voltage 3.5
@@ -14,3 +17,5 @@
 // From these results, build lookup table, mapping percentage of capacity to voltage.
 // Next create function to interpolate if between percentage values.
 const float mah_at_voltage[] = {0.0, 1550.0};
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef BATT_MODEL_H
+#define BATT_MODEL_H
+
 #include <cmath>
 #include "LPF.h"
 
@@ -54,3 +57,5 @@ class BattModel {
         void ResetFilter(unsigned long time, float current);
         float Simulate(float used_capacity, float current, unsigned long time);
 };
+
+#endif

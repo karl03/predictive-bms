@@ -1,3 +1,6 @@
+#ifndef LPF_H
+#define LPF_H
+
 #include <cmath>
 
 class LPF {
@@ -11,3 +14,5 @@ class LPF {
         void SetInitialParams(unsigned long time, float current) {current_time_ = time; filtered_current_ = current;}
         float Update(unsigned long time, float current);
 };
+
+#endif

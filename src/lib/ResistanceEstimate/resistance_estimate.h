@@ -1,3 +1,6 @@
+#ifndef REISTANCE_ESTIMATE_H
+#define REISTANCE_ESTIMATE_H
+
 #include <cmath>
 
 // Time constants for filters
@@ -23,3 +26,5 @@ class ResistanceEstimate {
         ResistanceEstimate() {};
         void update_resistance_estimate(float current_amps, float voltage, unsigned long now);
 };
+
+#endif
