@@ -22,4 +22,5 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build PlatformIO Project
+        working-directory: ./src
         run: pio run
