@@ -30,23 +30,21 @@ float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
 int missed_count = 0;
-
-float SoC;
-// On startup, look up estimated SoC based on current voltage, assuming current is (close to) zero.
 // After initial SoC has been measured begin coloumb counting.
 
-float SoCLookup(float voltage) {
+float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
-        return MAH_AT_VOLTAGE[(int)(voltage * 100) - (int)(MIN_VOLTAGE * 100)];
+        int index = (int)(voltage * 100) - (int)(MIN_VOLTAGE * 100);
+        return array[index];
     } else if (voltage > MAX_VOLTAGE) {
         return 0;
     } else {
-        return MAH_AT_VOLTAGE[0];
+        return array[0];
     }
 }
 
-
 void setup() {
+    float test = SoCLookup((float)15, MAH_AT_VOLTAGE);
     if (sd_logging == 1) {
         if (!SD.begin(15)) {
             while(1){};
@@ -127,13 +125,6 @@ void setup() {
 }
 
 void loop() {
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont17_mr);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print(loop_time);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
-    u8g2->print(missed_count);
-    u8g2->sendBuffer();
     loop_time = micros() - cur_time;
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
@@ -152,8 +143,6 @@ void loop() {
             ina3221.readFlags();
         }
     }
-
-    // run battery model here, as this time would otherwise be spent waiting for measurements
 
     busVoltage_V = ina226.getBusVoltage_V();
     shunt_voltage = ina226.getShuntVoltage_mV();

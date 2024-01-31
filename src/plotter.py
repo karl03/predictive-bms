@@ -152,7 +152,7 @@ results_copy = average_results(results_copy, 4, 1000)
 # print(results_copy[-1])
 
 # print(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), 16.8, 13.3))
-print(array_to_c_array(get_lookup_vals(results[1::, 4].astype(float), results[1::, 7].astype(float), 16.8, 13.3)))
+print(array_to_c_array(get_lookup_vals(results[1::, 4].astype(float), results[1::, 8].astype(float), 16.8, 13.3)))
 
 # gradients = [0]
 # for index in range(len(results_copy) - 1):

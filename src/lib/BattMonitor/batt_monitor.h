@@ -8,6 +8,12 @@
 
 class BattMonitor {
     public:
+        typedef enum {
+            EMPTY = 1,
+            OVERCHARGED = 2,
+            IMBALANCED = 4
+        } flags;
+
         struct State {
             float voltage;              // Voltage in V
             float current;              // Current in mA
@@ -16,6 +22,7 @@ class BattMonitor {
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
+            flags flags_;
         };
 
         BattMonitor(State* state) {state_ = state;};
@@ -23,7 +30,6 @@ class BattMonitor {
     
     private:
         float resistance_;
-
         State* state_;
 };
 
