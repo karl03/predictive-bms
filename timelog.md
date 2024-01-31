@@ -254,3 +254,9 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 30 Jan 2024
 
 * *3 hours* Rewrote gradient function, now working. Further work performed on data analysis functions, and added function to generate lookup table to be used for initial SoC estimation onboard BMS, based on discharge test data.
+
+### 31 Jan 2024
+
+* *1.5 hours* Updated lookup table creation function to ensure functionality in edge/ extreme cases, output copieble c-style array. Begun implementation for lookup.
+* *1 hour* Finished lookup function, updated define names/ rearranged defines file. Added and tested platform.io github CI pipeline. Added mWh lookup as addition to mAh lookup in order to achieve full SoC estimation. Created flags enum.
+* *1.5 hours* Created code to check/ initialise SoC based on lookup function, including wait to ensure stable voltage. Added average calculation to data interpretation file, updated simulation current parameter to match this. Added BattModel object to monitor class, which will run all monitoring functions as required, keeping main code compact.
