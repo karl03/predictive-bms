@@ -15,7 +15,6 @@ INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
 BattModel *simulator;
-BattMonitor::State *state = new BattMonitor::State;
 BattMonitor *monitor;
 
 bool serial_mode = false;
@@ -34,7 +33,6 @@ float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
 int missed_count = 0;
-// After initial SoC has been measured begin coloumb counting.
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -140,23 +138,20 @@ void setup() {
         }
     }
 
-    // Initialise battery model/ state here! Move vars from global to local here, except state/ model required
+    // Initialise battery model/ monitor
     simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
-    // TODO: decide where/ how to initialise state/ monitor
-    // monitor = new BattMonitor(state, simulator, REACTION_TIME);
-    // Maybe move these to loop(), since the state is initialised anyway, but on the other hand initialisation may be required for change detection
-    state->voltage = ina226.getBusVoltage_V();
-    state->current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    state->filtered_current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    state->cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
-    state->cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
-    state->cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
-    state->cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
-    // Z-Scores should be automatically calculated by batt_monitor
-    state->mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
-    state->mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
-    state->last_update = micros();
-    monitor = new BattMonitor(state, simulator, REACTION_TIME);
+
+    float voltage = ina226.getBusVoltage_V();
+    float current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    float cell_voltages[4];
+    cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
+    cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
+    cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
+    cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
+    float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
+    float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+
+    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, REACTION_TIME);
 }
 
 void loop() {
@@ -179,13 +174,14 @@ void loop() {
         }
     }
 
-    busVoltage_V = ina226.getBusVoltage_V();
-    shunt_voltage = ina226.getShuntVoltage_mV();
-    voltage[0] = ina3221.getVoltage(INA3221_CH1);
-    voltage[1] = ina3221.getVoltage(INA3221_CH2);
-    voltage[2] = ina3221.getVoltage(INA3221_CH3);
-    current_mA = shuntVoltageTomA(shunt_voltage);
+    float cell_voltages[4];
+    cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
+    cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
+    cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
+    cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
 
+    monitor->updateConsumption(micros(), ina226.getBusVoltage_V(), shuntVoltageTomA(ina226.getShuntVoltage_mV()), cell_voltages);
+    // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
 

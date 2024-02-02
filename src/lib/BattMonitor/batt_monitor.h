@@ -16,6 +16,12 @@ class BattMonitor {
             IMBALANCED = 4
         } flags;
 
+        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, int reaction_time);
+        void updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]);
+        void resetFilter(float current) {lpf_->SetInitialParams(current);}
+        float getResistance() {return resistance_estimate_->getResistance();}
+    
+    private:
         struct State {
             float voltage;              // Voltage in V
             float current;              // Current in mA
@@ -25,15 +31,9 @@ class BattMonitor {
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
-            flags batt_flags;
+            int batt_flags;
         };
 
-        BattMonitor(State* state, BattModel* batt_model, int reaction_time);
-        void updateConsumption(float time_delta, float voltage, float current_mA, float cell_voltages[4]);
-        void resetFilter(float current) {lpf_->SetInitialParams(current);}
-        float getResistance() {return resistance_estimate_->getResistance();}
-    
-    private:
         void updateCellDifferences();
         State *state_;
         BattModel *batt_model_;
