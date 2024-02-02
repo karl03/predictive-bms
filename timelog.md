@@ -226,6 +226,8 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *5 hours* Completed initial implementation of resistance estimation. Researched outlier metrics/ detection. Begun implementing battery monitoring as class, added cell Z score for deviation.
 
+## Week 15
+
 ### 22 Jan 2024
 
 * *2 hours* Figuring out Platformio environment capabilities, begin work on separate discharge test main file.
@@ -247,6 +249,8 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *2 hours* Worked on filtering/ cleaning discharge data for visualisation, by adding low-pass filter, averaging, and other helper functions. Produced several visualisations and added to data folder.
 * *1.5 hours* Begun added functionality to logger gui, attempted to update simulation based on discharge values, further refinement needed. Tried to get gradients between points to find changes in curve, but not yet working.
 
+## Week 16
+
 ### 29 Jan 2024
 
 * *1.5 hours* Cleaned up unused code, updated define for SoC lookup to be valid array, planned how to implement lookup effectively and efficiently, minimising memory usage.
@@ -260,3 +264,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *1.5 hours* Updated lookup table creation function to ensure functionality in edge/ extreme cases, output copieble c-style array. Begun implementation for lookup.
 * *1 hour* Finished lookup function, updated define names/ rearranged defines file. Added and tested platform.io github CI pipeline. Added mWh lookup as addition to mAh lookup in order to achieve full SoC estimation. Created flags enum.
 * *1.5 hours* Created code to check/ initialise SoC based on lookup function, including wait to ensure stable voltage. Added average calculation to data interpretation file, updated simulation current parameter to match this. Added BattModel object to monitor class, which will run all monitoring functions as required, keeping main code compact. Further updated defines, added simulation parameters to defines file in preparation for initialisation of this in main, and to allow easy user changing.
+
+### 02 Feb 2024
+
+* *1 hour* Updated class structure to separate battery model from surounding functionality. Begun initialising classes as required in main function, further code cleanup, removed unneeded setters/ getters.
