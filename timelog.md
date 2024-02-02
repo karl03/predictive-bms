@@ -268,3 +268,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 02 Feb 2024
 
 * *1 hour* Updated class structure to separate battery model from surounding functionality. Begun initialising classes as required in main function, further code cleanup, removed unneeded setters/ getters.
+* *2 hours* Rearranged classes further, changed state to private for monitor class, updated main to make use of this. Finished initial interface of main with battery monitoring class, must now decide how to handle data storage/ transfer of battery info, then integrate simulation/ estimation classes into monitor class.
