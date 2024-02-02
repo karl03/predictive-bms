@@ -10,7 +10,6 @@
 class ResistanceEstimate {
     private:
         unsigned long current_time_;
-        int reaction_time_;
         float current_max_amps_;
         float current_filt_amps_;
         float voltage_filt_;
@@ -25,6 +24,7 @@ class ResistanceEstimate {
         float constrain_float(float val, float min, float max);
         ResistanceEstimate() {};
         void update_resistance_estimate(float current_amps, float voltage, unsigned long now);
+        void set_initial_time(unsigned long current_time) {current_time_ = current_time;}
 };
 
 #endif

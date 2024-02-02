@@ -21,7 +21,8 @@ void BattMonitor::update_consumption(float time_micros, float voltage, float cur
     Check voltage against simulation given initial parameters, then check against simulation given calculated resistance.
     If check against original simulation lines up, performance is as expected.
     If it doesn't, but check against sim with calculated resistance lines up, then likely IR is higher, capacity is similar.
-    Otherwise, if worse than both, battery has worse IR and lower capacity.
+    Otherwise, if worse than both, battery has worse IR and lower capacity. In this case, if possible run sim with decreasing
+    capacity until the performance roughly matches the real performance, from this deduce capacity estimate.
     */
 
-};
+}
