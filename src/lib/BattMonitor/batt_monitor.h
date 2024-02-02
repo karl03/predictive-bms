@@ -24,10 +24,11 @@ class BattMonitor {
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
-            flags flags_;
+            flags flags;
         };
 
         BattMonitor(State* state, BattModel* batt_model, int reaction_time) {state_ = state; batt_model_ = batt_model; lpf_ = new LPF(reaction_time);};
+        void initialise_consumption(float time_delta, float voltage, float cell_voltages[4]);
         void update_consumption(float time_delta, float voltage, float current_mA, float cell_voltages[4]);
         void ResetFilter(unsigned long time, float current) {lpf_->SetInitialParams(time, current);};
     

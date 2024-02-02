@@ -7,12 +7,16 @@
 #include <INA3221.h>
 #include "batt_model.h"
 #include "resistance_estimate.h"
+#include "batt_monitor.h"
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
+BattModel *simulator;
+BattMonitor::State *state = new BattMonitor::State;
+BattMonitor *monitor;
 
 bool serial_mode = false;
 float busVoltage_V = 0.0;
@@ -137,9 +141,15 @@ void setup() {
     }
 
     busVoltage_V = ina226.getBusVoltage_V();
-    mAh_charged = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
-    mWh_charged = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
     // Initialise battery model/ state here! Move vars from global to local here, except state/ model required
+    simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
+    // TODO: decide where/ how to initialise state/ monitor
+    // monitor = new BattMonitor(state, simulator, REACTION_TIME);
+    // Maybe move these to loop(), since the state is initialised anyway, but on the other hand initialisation may be required for change detection
+    state->voltage = busVoltage_V;
+    state->current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    state->mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    state->mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
 }
 
 void loop() {
