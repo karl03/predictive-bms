@@ -16,15 +16,16 @@ class ResistanceEstimate {
         float resistance_voltage_ref_;
         float resistance_current_ref_;
         unsigned long resistance_timer_ms_;
+        float resistance_;
+        float voltage_resting_estimate_;
+        bool isPositive(float val);
+        float constrainFloat(float val, float min, float max);
 
     public:
-        float resistance;
-        float voltage_resting_estimate_;
-        bool is_positive(float val);
-        float constrain_float(float val, float min, float max);
+        float getResistance() {return resistance_;}
         ResistanceEstimate() {};
-        void update_resistance_estimate(float current_amps, float voltage, unsigned long now);
-        void set_initial_time(unsigned long current_time) {current_time_ = current_time;}
+        void updateResistanceEstimate(float current_amps, float voltage, unsigned long now);
+        void setInitialTime(unsigned long current_time) {current_time_ = current_time;}
 };
 
 #endif

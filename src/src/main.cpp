@@ -140,16 +140,23 @@ void setup() {
         }
     }
 
-    busVoltage_V = ina226.getBusVoltage_V();
     // Initialise battery model/ state here! Move vars from global to local here, except state/ model required
     simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
     // TODO: decide where/ how to initialise state/ monitor
     // monitor = new BattMonitor(state, simulator, REACTION_TIME);
     // Maybe move these to loop(), since the state is initialised anyway, but on the other hand initialisation may be required for change detection
-    state->voltage = busVoltage_V;
+    state->voltage = ina226.getBusVoltage_V();
     state->current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    state->mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    state->filtered_current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    state->cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
+    state->cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
+    state->cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
+    state->cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
+    // Z-Scores should be automatically calculated by batt_monitor
     state->mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
+    state->mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    state->last_update = micros();
+    monitor = new BattMonitor(state, simulator, REACTION_TIME);
 }
 
 void loop() {
@@ -178,23 +185,6 @@ void loop() {
     voltage[1] = ina3221.getVoltage(INA3221_CH2);
     voltage[2] = ina3221.getVoltage(INA3221_CH3);
     current_mA = shuntVoltageTomA(shunt_voltage);
-
-    // Averaging could be used alongside alert pin to write an average value after missing readings
-    if (last_avg == 0) {
-        last_avg = cur_time;
-    } else if (iter_counter > 0 && (cur_time - last_avg) > (avg_ms * 1000)) {
-        step_mAh_charged = ((mA_iter / iter_counter) * ((cur_time - last_avg) * 0.001) * A_ms_to_A_h);
-        mAh_charged += step_mAh_charged;
-        mWh_charged += step_mAh_charged * (v_iter / iter_counter);
-        last_avg = cur_time;
-        v_iter = 0;
-        mA_iter = 0;
-        iter_counter = 0;
-    } else {
-        v_iter += busVoltage_V;
-        mA_iter += current_mA;
-        iter_counter ++;
-    }
 
     if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
