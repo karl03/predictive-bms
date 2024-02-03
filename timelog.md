@@ -273,3 +273,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 03 Feb 2024
 
 * *1 hour* Continued work on monitor class, integrating other classes. Researched filters, linting in pipeline, planning to integrate.
+* *1 hour* Modified resistance estimator to take delta time rather than absolute, continued work on integrating classes in main.

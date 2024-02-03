@@ -42,6 +42,8 @@ class BattMonitor {
         ResistanceEstimate *resistance_estimate_;
         float max_voltage_variance_;
         float max_cell_variance_;
+        float voltage_diff_;
+        float fitted_voltage_diff_;
 };
 
 #endif

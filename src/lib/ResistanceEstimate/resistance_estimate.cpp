@@ -2,7 +2,7 @@
 
 #include "resistance_estimate.h"
 
-void ResistanceEstimate::updateResistanceEstimate(float current_amps, float voltage, unsigned long now) {
+void ResistanceEstimate::updateResistanceEstimate(float current_amps, float voltage, unsigned long time_delta_micros) {
     // return immediately if no current
     if (!isPositive(current_amps)) {
         return;
@@ -22,11 +22,10 @@ void ResistanceEstimate::updateResistanceEstimate(float current_amps, float volt
     }
 
     // calculate time since last update
-    float loop_interval = (now - resistance_timer_ms_) * 0.001f;
-    resistance_timer_ms_ = now;
+    float loop_interval_s = time_delta_micros * 0.000001f;
 
     // estimate short-term resistance
-    float filt_alpha = constrainFloat(loop_interval/(loop_interval + AP_BATT_MONITOR_RES_EST_TC_1), 0.0f, 0.5f);
+    float filt_alpha = constrainFloat(loop_interval_s/(loop_interval_s + AP_BATT_MONITOR_RES_EST_TC_1), 0.0f, 0.5f);
     float resistance_alpha = 1 < AP_BATT_MONITOR_RES_EST_TC_2*fabsf((current_amps-current_filt_amps_)/current_max_amps_) ? 1 : AP_BATT_MONITOR_RES_EST_TC_2*fabsf((current_amps-current_filt_amps_)/current_max_amps_);
     float resistance_estimate = -(voltage-voltage_filt_)/current_delta;
     if (isPositive(resistance_estimate)) {

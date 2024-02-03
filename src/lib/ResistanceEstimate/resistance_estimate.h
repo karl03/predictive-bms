@@ -15,7 +15,6 @@ class ResistanceEstimate {
         float voltage_filt_;
         float resistance_voltage_ref_;
         float resistance_current_ref_;
-        unsigned long resistance_timer_ms_;
         float resistance_;
         float voltage_resting_estimate_;
         bool isPositive(float val);
@@ -24,8 +23,7 @@ class ResistanceEstimate {
     public:
         float getResistance() {return resistance_;}
         ResistanceEstimate() {};
-        void updateResistanceEstimate(float current_amps, float voltage, unsigned long now);
-        void setInitialTime(unsigned long current_time) {current_time_ = current_time;}
+        void updateResistanceEstimate(float current_amps, float voltage, unsigned long time_delta_micros);
 };
 
 #endif

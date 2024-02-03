@@ -2,6 +2,7 @@
 #define BATT_MODEL_H
 
 #include <cmath>
+#define CAPACITY_STEP_SIZE 50
 
 class BattModel {
     private:

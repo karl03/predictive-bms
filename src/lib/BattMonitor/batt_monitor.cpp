@@ -16,15 +16,17 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     state_->batt_flags = 0;
 
     batt_model_ = batt_model;
+    float model_voltage;
+    model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
+    voltage_diff_ = state_->voltage - model_voltage;
+
     lpf_ = new LPF(reaction_time, state_->current);
-    lpf_->SetInitialParams(current);
     resistance_estimate_ = new ResistanceEstimate();
     updateCellDifferences();
 }
 
 void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]) {
     float model_voltage;
-    float voltage_diff;
 
     state_->voltage = voltage;
     state_->current = current_mA;
@@ -36,13 +38,16 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     state_->mAh_used += step_mAh_used;
     state_->mWh_used += (step_mAh_used * voltage);
     state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA);
+    resistance_estimate_->updateResistanceEstimate(state_->current, state_->voltage, (state_->last_update - time_micros));
 
     model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
-    voltage_diff = state_->voltage - model_voltage;
+    voltage_diff_ = state_->voltage - model_voltage;
 
-    if (voltage_diff > max_voltage_variance_) {
+    if (voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
     }
+
+    // batt_model_->SetInternalResistance()
     /*
     Check voltage against simulation given initial parameters, then check against simulation given calculated resistance.
     If check against original simulation lines up, performance is as expected.
