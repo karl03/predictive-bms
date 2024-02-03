@@ -10,13 +10,14 @@
 
 class BattMonitor {
     public:
-        typedef enum {
+        enum {
             EMPTY = 1,
             OVERCHARGED = 2,
-            IMBALANCED = 4
+            UNDERPERFORMING = 4,
+            IMBALANCED = 8
         } flags;
 
-        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, int reaction_time);
+        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, int reaction_time, float max_voltage_variance, float max_cell_variance);
         void updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]);
         void resetFilter(float current) {lpf_->SetInitialParams(current);}
         float getResistance() {return resistance_estimate_->getResistance();}
@@ -39,6 +40,8 @@ class BattMonitor {
         BattModel *batt_model_;
         LPF *lpf_;
         ResistanceEstimate *resistance_estimate_;
+        float max_voltage_variance_;
+        float max_cell_variance_;
 };
 
 #endif

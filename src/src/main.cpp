@@ -151,7 +151,7 @@ void setup() {
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
-    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, REACTION_TIME);
+    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
 }
 
 void loop() {
