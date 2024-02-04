@@ -1,6 +1,7 @@
 #ifndef BATT_MONITOR_H
 #define BATT_MONITOR_H
 
+#include <Arduino.h>
 #include <cmath>
 #include "batt_model.h"
 #include "LPF.h"
@@ -10,15 +11,17 @@
 
 class BattMonitor {
     public:
-        enum {
+        enum flags {
             EMPTY = 1,
             OVERCHARGED = 2,
             UNDERPERFORMING = 4,
-            IMBALANCED = 8
-        } flags;
+            IMBALANCED = 8,
+            HIGH_RESISTANCE = 16,
+            LOW_CAPACITY = 32,
+        };
 
-        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, int reaction_time, float max_voltage_variance, float max_cell_variance);
-        void updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]);
+        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance);
+        void updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]);
         void resetFilter(float current) {lpf_->SetInitialParams(current);}
         float getResistance() {return resistance_estimate_->getResistance();}
     
@@ -33,11 +36,13 @@ class BattMonitor {
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
             int batt_flags;
+            float estimated_capacity;
         };
 
         void updateCellDifferences();
         State *state_;
         BattModel *batt_model_;
+        BattModel *modified_batt_model_;
         LPF *lpf_;
         ResistanceEstimate *resistance_estimate_;
         float max_voltage_variance_;

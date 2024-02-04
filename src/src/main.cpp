@@ -15,6 +15,7 @@ INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
 BattModel *simulator;
+BattModel *modifiable_simulator;
 BattMonitor *monitor;
 
 bool serial_mode = false;
@@ -140,6 +141,7 @@ void setup() {
 
     // Initialise battery model/ monitor
     simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
+    modifiable_simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
 
     float voltage = ina226.getBusVoltage_V();
     float current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
@@ -151,7 +153,7 @@ void setup() {
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
-    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
+    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
 }
 
 void loop() {
@@ -180,7 +182,7 @@ void loop() {
     cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
     cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
 
-    monitor->updateConsumption(micros(), ina226.getBusVoltage_V(), shuntVoltageTomA(ina226.getShuntVoltage_mV()), cell_voltages);
+    monitor->updateConsumption(micros(), 60, ina226.getBusVoltage_V(), shuntVoltageTomA(ina226.getShuntVoltage_mV()), cell_voltages);
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);

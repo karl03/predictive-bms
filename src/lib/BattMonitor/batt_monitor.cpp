@@ -1,6 +1,6 @@
 #include "batt_monitor.h"
 
-BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, int reaction_time, float max_voltage_variance, float max_cell_variance) {
+BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance) {
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
 
@@ -16,6 +16,8 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     state_->batt_flags = 0;
 
     batt_model_ = batt_model;
+    modified_batt_model_ = batt_model_modifiable;
+    state_->estimated_capacity = batt_model_->GetCapacity();
     float model_voltage;
     model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
     voltage_diff_ = state_->voltage - model_voltage;
@@ -25,7 +27,8 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     updateCellDifferences();
 }
 
-void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]) {
+void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]) {
+    unsigned long start_time = millis();
     float model_voltage;
 
     state_->voltage = voltage;
@@ -41,13 +44,28 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     resistance_estimate_->updateResistanceEstimate(state_->current, state_->voltage, (state_->last_update - time_micros));
 
     model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
-    voltage_diff_ = state_->voltage - model_voltage;
+    voltage_diff_ = model_voltage - state_->voltage;
 
     if (voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
     }
 
-    // batt_model_->SetInternalResistance()
+    float estimated_resistance = resistance_estimate_->getResistance();
+    modified_batt_model_->SetInternalResistance(estimated_resistance);
+    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current) - state_->voltage;
+
+    if (fitted_voltage_diff_ > max_voltage_variance_) {
+        state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
+        while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {
+            state_->estimated_capacity -= CAPACITY_STEP_SIZE;
+            modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current) - state_->voltage;
+        }
+        
+    } else {
+        state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
+    }
+
     /*
     Check voltage against simulation given initial parameters, then check against simulation given calculated resistance.
     If check against original simulation lines up, performance is as expected.
