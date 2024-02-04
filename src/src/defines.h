@@ -29,6 +29,7 @@ const float MWH_AT_VOLTAGE[] = {23790.554841229838, 23790.554841229838, 23790.55
 // #define CURRENT_OFFSET -982.8158579
 // #define CURRENT_SCALE 3.7834625
 
+#define A_ms_to_A_h 0.00000027777777777778
 #define shuntVoltageTomA(mV) (((mV) / CURRENT_SCALE) * 10000 + CURRENT_OFFSET)
 #define ZERO_AMP_CUTOFF 0.01            // Maximum current (positive or negative) allowed for "zero current"
 #define STABILISATION_TIME_MS 5000      // Time to allow voltage to settle after initial powerup
