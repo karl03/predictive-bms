@@ -4,6 +4,8 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
 
+    // state_ = {voltage = voltage, current = current, filtered_current = current, mAh_used = mAh_used, mWh_used = mWh_used, last_update = time_micros, estimated_capacity = batt_model_->GetCapacity()};
+
     state_->voltage = voltage;
     state_->current = current;
     state_->filtered_current = current;
@@ -56,7 +58,7 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-        while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {
+        while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {  // Check how long this function takes to run, subtract that from remaining time to ensure it runs in time
             state_->estimated_capacity -= CAPACITY_STEP_SIZE;
             modified_batt_model_->SetCapacity(state_->estimated_capacity);
             fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current) - state_->voltage;

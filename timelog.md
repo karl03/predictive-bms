@@ -274,3 +274,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *1 hour* Continued work on monitor class, integrating other classes. Researched filters, linting in pipeline, planning to integrate.
 * *1 hour* Modified resistance estimator to take delta time rather than absolute, continued work on integrating classes in main.
+
+### 04 Feb 2024
+
+* *1 hour* Finished initial implementation of simulation fitting, added second simulator to reduce recalculation time, added max time checking to fitting function, ensuring that it does not block beyond the time it has.
