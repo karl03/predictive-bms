@@ -278,3 +278,11 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 04 Feb 2024
 
 * *1 hour* Finished initial implementation of simulation fitting, added second simulator to reduce recalculation time, added max time checking to fitting function, ensuring that it does not block beyond the time it has.
+
+## Week 17
+
+## Week 18
+
+### 13 Feb 2024
+
+* *2 hours* Reattached high-power shunt and INA to ESP, along with interrupt wire. Begun work on creating interrupt handling. Cleaned up main file and moved to using global vars for tracking voltage/ power.

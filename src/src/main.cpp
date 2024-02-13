@@ -20,7 +20,7 @@ BattMonitor *monitor;
 
 bool serial_mode = false;
 float busVoltage_V = 0.0;
-float voltage[3];
+float cell_voltages[4];
 float current_mA = 0.0;
 float shunt_voltage = 0.0;
 float step_mAh_charged = 0;
@@ -28,12 +28,11 @@ float mAh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long loop_time = 0;
-unsigned long last_avg = 0;
-float v_iter = 0;
-float mA_iter = 0;
 int iter_counter = 0;
 int log_counter = 0;
-int missed_count = 0;
+volatile int missed_count = 0;
+volatile float v_iter = 0;
+volatile float mA_iter = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -44,6 +43,18 @@ float SoCLookup(float voltage, const float* array) {
     } else {
         return array[0];
     }
+}
+
+ICACHE_RAM_ATTR void measureNow() {
+    u8g2->clearBuffer();
+    u8g2->setFont(u8g2_font_profont17_mr);
+    u8g2->setCursor(0, u8g2->getMaxCharHeight());
+    u8g2->print("INA226 INIT FAIL");
+    u8g2->sendBuffer();
+    // missed_count ++;
+    // v_iter += ina226.getBusVoltage_V();
+    // mA_iter += shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    // ina226.readAndClearFlags();
 }
 
 void setup() {
@@ -117,6 +128,8 @@ void setup() {
     // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
+    ina226.enableConvReadyAlert();
+    pinMode(INTERRUPT_PIN, INPUT_PULLUP);
     // Total time = 2.116ms conversion * 2 readings * 16 averages = 67.712ms
     ina3221.begin();
     ina3221.reset();
@@ -143,9 +156,8 @@ void setup() {
     simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
     modifiable_simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
 
-    float voltage = ina226.getBusVoltage_V();
-    float current = shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    float cell_voltages[4];
+    busVoltage_V = ina226.getBusVoltage_V();
+    current_mA = shuntVoltageTomA(ina226.getShuntVoltage_mV());
     cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
     cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
     cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
@@ -153,7 +165,7 @@ void setup() {
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
-    monitor = new BattMonitor(voltage, current, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
+    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
 }
 
 void loop() {
@@ -161,6 +173,7 @@ void loop() {
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
     // INA226 checked first, as its conversion time is greater
+    detachInterrupt(digitalPinToInterrupt(2));
     if (ina226.isBusy()) {
         ina226.waitUntilConversionCompleted();
     } else {
@@ -176,13 +189,14 @@ void loop() {
         }
     }
 
-    float cell_voltages[4];
     cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
     cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
     cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
     cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
+    busVoltage_V = ina226.getBusVoltage_V();
+    current_mA = shuntVoltageTomA(ina226.getShuntVoltage_mV());
 
-    monitor->updateConsumption(micros(), 60, ina226.getBusVoltage_V(), shuntVoltageTomA(ina226.getShuntVoltage_mV()), cell_voltages);
+    monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
@@ -192,16 +206,16 @@ void loop() {
             log_file.print(millis());
             log_file.print(",");
             // V1
-            log_file.print(voltage[0]);
+            log_file.print(cell_voltages[0]);
             log_file.print(",");
             // V2
-            log_file.print(voltage[1] - voltage[0]);
+            log_file.print(cell_voltages[1]);
             log_file.print(",");
             // V3
-            log_file.print(voltage[2] - voltage[1]);
+            log_file.print(cell_voltages[2]);
             log_file.print(",");
             // V4
-            log_file.print(busVoltage_V - voltage[2]);
+            log_file.print(cell_voltages[3]);
             log_file.print(",");
             // Current
             log_file.print(current_mA);
@@ -220,24 +234,24 @@ void loop() {
   
     if (serial_mode) {
         Serial.print("v1,");
-        Serial.println(voltage[0]);
+        Serial.println(cell_voltages[0]);
         Serial.print("v2,");
-        Serial.println(voltage[1] - voltage[0]);
+        Serial.println(cell_voltages[1]);
         Serial.print("v3,");
-        Serial.println(voltage[2] - voltage[1]);
+        Serial.println(cell_voltages[2]);
         Serial.print("v4,");
-        Serial.println(busVoltage_V - voltage[2]);
+        Serial.println(cell_voltages[3]);
     } else if (USE_DISPLAY == 1) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
-        u8g2->print(voltage[0], 3);
+        u8g2->print(cell_voltages[0], 3);
         u8g2->print("V  ");
-        u8g2->print(voltage[1] - voltage[0], 3);
+        u8g2->print(cell_voltages[1], 3);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(voltage[2] - voltage[1], 3);
+        u8g2->print(cell_voltages[2], 3);
         u8g2->print("V  ");
-        u8g2->print(busVoltage_V - voltage[2], 3);
+        u8g2->print(cell_voltages[3], 3);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
