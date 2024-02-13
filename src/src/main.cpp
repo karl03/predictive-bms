@@ -32,7 +32,7 @@ int iter_counter = 0;
 int log_counter = 0;
 volatile int missed_count = 0;
 volatile float v_iter = 0;
-volatile float mA_iter = 0;
+volatile float shunt_mV_iter = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -49,12 +49,12 @@ ICACHE_RAM_ATTR void measureNow() {
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print("INA226 INIT FAIL");
+    u8g2->print("Reading Caught!");
     u8g2->sendBuffer();
-    // missed_count ++;
-    // v_iter += ina226.getBusVoltage_V();
-    // mA_iter += shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    // ina226.readAndClearFlags();
+    missed_count ++;
+    v_iter += ina226.getBusVoltage_V();
+    shunt_mV_iter += shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    ina226.readAndClearFlags();
 }
 
 void setup() {
@@ -179,7 +179,6 @@ void loop() {
     } else {
         // In-time reading missed, usually due to SD card buffer write taking place
         missed_count ++;
-        // If alert pin on INA is connected to interrupt pin on ESP, could potentially count number of missed readings.
     }
 
     ina3221.readFlags();
@@ -189,14 +188,31 @@ void loop() {
         }
     }
 
-    cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
-    cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
-    busVoltage_V = ina226.getBusVoltage_V();
-    current_mA = shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    if (missed_count) {
+        busVoltage_V = (ina226.getBusVoltage_V() + v_iter) / (missed_count + 1);
+        // Consider also getting missed INA3221 values if possible
+        cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
+        cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
+        cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
+        cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
+        current_mA = shuntVoltageTomA((ina226.getShuntVoltage_mV() + shunt_mV_iter) / (missed_count + 1));
+        
+        missed_count = 0;
+    } else {
+        busVoltage_V = ina226.getBusVoltage_V();
+        cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
+        cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
+        cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
+        cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
+        current_mA = shuntVoltageTomA(ina226.getShuntVoltage_mV());
+    }
 
-    monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
+
+
+    attachInterrupt(digitalPinToInterrupt(2), measureNow, FALLING);
+
+    // monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
+
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING == 1) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);

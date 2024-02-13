@@ -3,7 +3,7 @@
 
 #define SERIAL_TIMEOUT 0           // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle
-#define SD_LOGGING 0                // SD Logging toggle
+#define SD_LOGGING 1                // SD Logging toggle
 #define IDLE_AMPS 0.5               // Minimum current for flying state, should be set to current when motors are idling
 #define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before warning
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
