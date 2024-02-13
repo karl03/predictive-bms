@@ -4,7 +4,7 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
 
-    // state_ = {voltage = voltage, current = current, filtered_current = current, mAh_used = mAh_used, mWh_used = mWh_used, last_update = time_micros, estimated_capacity = batt_model_->GetCapacity()};
+    state_ = new State();
 
     state_->voltage = voltage;
     state_->current = current;
