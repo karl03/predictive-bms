@@ -286,3 +286,8 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 13 Feb 2024
 
 * *2 hours* Reattached high-power shunt and INA to ESP, along with interrupt wire. Begun work on creating interrupt handling. Cleaned up main file and moved to using global vars for tracking voltage/ power.
+* *1 hour* Continued work on interrupt handling.
+
+### 14 Feb 2024
+
+* *2.5 hours* Physically tested interrupt, updated pin to ensure SPI is not interrupted, added error checking. Fixed bug with pin numbering, and allowed SD card to continue working.
