@@ -161,3 +161,12 @@ Changed values to: scale 1016.412702, offset -0.182189931
 
 90.3
 91.3
+
+-------------
+Retesting 200A shunt: scale 3.7834625, offset -982.8158579
+Key (mA):
+BMS current
+Multimeter current
+
+6000
+5840

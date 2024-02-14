@@ -1,13 +1,13 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define SERIAL_TIMEOUT 0           // Time to wait for serial connection (s)
+#define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle
 #define SD_LOGGING 1                // SD Logging toggle
 #define IDLE_AMPS 0.5               // Minimum current for flying state, should be set to current when motors are idling
 #define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before warning
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
-#define INTERRUPT_PIN 9             // GPIO pin on ESP which INA226 interrupt pin is connected to
+#define INTERRUPT_PIN 16            // GPIO pin on ESP which INA226 interrupt pin is connected to   (Pin 9 cannot be used, as it is needed for SPI)
 
 #define INTERNAL_RESISTANCE 0.002   // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
@@ -31,7 +31,7 @@ const float MWH_AT_VOLTAGE[] = {23790.554841229838, 23790.554841229838, 23790.55
 
 #define A_ms_to_A_h 0.00000027777777777778
 #define shuntVoltageTomA(mV) (((mV) / CURRENT_SCALE) * 10000 + CURRENT_OFFSET)
-#define ZERO_AMP_CUTOFF 0.01            // Maximum current (positive or negative) allowed for "zero current"
+#define ZERO_AMP_CUTOFF 10000            // Maximum current (positive or negative) allowed for "zero current" (mA)
 #define STABILISATION_TIME_MS 5000      // Time to allow voltage to settle after initial powerup
 
 #endif

@@ -45,7 +45,7 @@ float SoCLookup(float voltage, const float* array) {
     }
 }
 
-ICACHE_RAM_ATTR void measureNow() {
+IRAM_ATTR void measureNow() {
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_profont17_mr);
     u8g2->setCursor(0, u8g2->getMaxCharHeight());
@@ -66,6 +66,9 @@ void setup() {
                 log_counter++;
             }
             log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
+            if (!log_file) {
+                while(1){};
+            }
         }
     }
 
@@ -139,17 +142,27 @@ void setup() {
     // Total time = 1.1ms conversion * 3 readings * 16 averages = 52.8ms
 
     unsigned long zero_amp_start = millis();
-    unsigned long zero_amp_time = 0;
-    while (zero_amp_time < STABILISATION_TIME_MS) {
+    cur_time = millis();
+    while ((millis() - zero_amp_start) < STABILISATION_TIME_MS) {
+        delay(0);   // Required to allow for ESP background processes to run
+        if (USE_DISPLAY) {
+            u8g2->clearBuffer();
+            u8g2->setCursor(0, u8g2->getMaxCharHeight());
+            u8g2->print("Stabilising");
+            u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+            u8g2->printf("Time left:%lu", STABILISATION_TIME_MS - (millis() - zero_amp_start));
+            u8g2->setCursor(0, u8g2->getMaxCharHeight() * 3);
+            u8g2->printf("mA:%.0f", shuntVoltageTomA(ina226.getShuntVoltage_mV()));
+            u8g2->sendBuffer();
+        }
         if (ina226.isBusy()) {
             ina226.waitUntilConversionCompleted();
         }
         if ((shuntVoltageTomA(ina226.getShuntVoltage_mV()) > ZERO_AMP_CUTOFF) || (shuntVoltageTomA(ina226.getShuntVoltage_mV()) < (-ZERO_AMP_CUTOFF))) {
             zero_amp_start = millis();
-            zero_amp_time = 0;
-        } else {
-            zero_amp_time = zero_amp_start - millis();
         }
+        loop_time = millis() - cur_time;
+        cur_time = millis();
     }
 
     // Initialise battery model/ monitor
@@ -173,7 +186,7 @@ void loop() {
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
     // INA226 checked first, as its conversion time is greater
-    detachInterrupt(digitalPinToInterrupt(2));
+    detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));
     if (ina226.isBusy()) {
         ina226.waitUntilConversionCompleted();
     } else {
@@ -209,14 +222,14 @@ void loop() {
 
 
 
-    attachInterrupt(digitalPinToInterrupt(2), measureNow, FALLING);
+    attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), measureNow, FALLING);
+    delay(100); // to test interrupt
 
     // monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
 
     // Decide how to access data for logging in main. Keep local variables or use getters?
-    if (SD_LOGGING == 1) {
+    if (SD_LOGGING) {
         log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
-
         if (log_file) {
             // Time
             log_file.print(millis());
@@ -244,6 +257,14 @@ void loop() {
             log_file.println(",");
             log_file.close();
         } else {
+            if (serial_mode) {
+                Serial.print("File error!");
+            } else if (USE_DISPLAY) {
+                u8g2->clearBuffer();
+                u8g2->setCursor(0, u8g2->getMaxCharHeight());
+                u8g2->printf("File error!");
+                u8g2->sendBuffer();
+            }
             while(1){};
         }
     }
@@ -257,7 +278,7 @@ void loop() {
         Serial.println(cell_voltages[2]);
         Serial.print("v4,");
         Serial.println(cell_voltages[3]);
-    } else if (USE_DISPLAY == 1) {
+    } else if (USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
         u8g2->print(cell_voltages[0], 3);
