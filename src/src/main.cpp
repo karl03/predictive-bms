@@ -22,13 +22,10 @@ bool serial_mode = false;
 float busVoltage_V = 0.0;
 float cell_voltages[4];
 float current_mA = 0.0;
-float shunt_voltage = 0.0;
-float step_mAh_charged = 0;
 float mAh_charged = 0;
 float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long loop_time = 0;
-int iter_counter = 0;
 int log_counter = 0;
 volatile int missed_count = 0;
 volatile float v_iter = 0;
@@ -46,11 +43,6 @@ float SoCLookup(float voltage, const float* array) {
 }
 
 IRAM_ATTR void measureNow() {
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont17_mr);
-    u8g2->setCursor(0, u8g2->getMaxCharHeight());
-    u8g2->print("Reading Caught!");
-    u8g2->sendBuffer();
     missed_count ++;
     v_iter += ina226.getBusVoltage_V();
     shunt_mV_iter += shuntVoltageTomA(ina226.getShuntVoltage_mV());
@@ -211,6 +203,8 @@ void loop() {
         current_mA = shuntVoltageTomA((ina226.getShuntVoltage_mV() + shunt_mV_iter) / (missed_count + 1));
         
         missed_count = 0;
+        shunt_mV_iter = 0;
+        v_iter = 0;
     } else {
         busVoltage_V = ina226.getBusVoltage_V();
         cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
@@ -223,7 +217,7 @@ void loop() {
 
 
     attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), measureNow, FALLING);
-    delay(100); // to test interrupt
+    // delay(1000); // to test interrupt
 
     // monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
 
@@ -292,7 +286,8 @@ void loop() {
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
-        u8g2->print("mA ");
+        u8g2->print("mA  ");
+        u8g2->print(missed_count);
         u8g2->sendBuffer();
     }
 }

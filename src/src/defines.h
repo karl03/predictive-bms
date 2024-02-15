@@ -7,7 +7,7 @@
 #define IDLE_AMPS 0.5               // Minimum current for flying state, should be set to current when motors are idling
 #define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before warning
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
-#define INTERRUPT_PIN 16            // GPIO pin on ESP which INA226 interrupt pin is connected to   (Pin 9 cannot be used, as it is needed for SPI)
+#define INTERRUPT_PIN 2             // GPIO pin on ESP which INA226 interrupt pin is connected to
 
 #define INTERNAL_RESISTANCE 0.002   // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
