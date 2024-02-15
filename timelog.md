@@ -291,3 +291,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 14 Feb 2024
 
 * *2.5 hours* Physically tested interrupt, updated pin to ensure SPI is not interrupted, added error checking. Fixed bug with pin numbering, and allowed SD card to continue working.
+* *1 hour* Continued interrupt testing, found it was not working as pin was again not usable. Switched to new pin, but found interrupts to cause issues with I2C devices, as such likely not usable.
