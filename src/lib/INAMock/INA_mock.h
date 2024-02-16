@@ -29,14 +29,26 @@ typedef enum INA226_mock_CONV_TIME{ // Conversion time in microseconds
 class INA_mock
 {
 private:
+    File file_;
     String file_path_;
     int conversion_time_;
     int averages_;
+    unsigned long last_update_;
+    int bus_read_;
+    int shunt_read_;
+    float cur_bus_v_;
+    float cur_shunt_mv_;
+    float readFloat();
+    void moveToNextLine();
 public:
-    INA_mock(/* args */);
+    INA_mock(String file_path) {file_path_ = file_path; conversion_time_ = CONV_TIME_1100; averages_ = AVERAGE_1;}
     int init();
     void setConversionTime(mockConvTime conversion_time) {conversion_time_ = conversion_time;}
     void setAverage(mockAverageMode averages) {averages_ = averages;}
+    int isBusy();
+    void waitUntilConversionCompleted();
+    float getBusVoltage_V();
+    float getShuntVoltage_mV();
 };
 
 

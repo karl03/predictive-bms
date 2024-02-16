@@ -3,14 +3,21 @@
 #include <SPI.h>
 #include <SD.h>
 #include <U8g2lib.h>
-#include <INA226_WE.h>
 #include <INA3221.h>
 #include "batt_model.h"
 #include "resistance_estimate.h"
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
+#ifdef MOCKING
+#include "INA_mock.h"
+INA_mock ina226 = INA_mock(MOCKING);
+#else
+#include <INA226_WE.h>
 INA226_WE ina226 = INA226_WE(0x40);
+#endif
+
 INA3221 ina3221(INA3221_ADDR41_VCC);
 File log_file;
 
