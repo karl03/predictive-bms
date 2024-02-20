@@ -2,7 +2,7 @@
 #define INA_MOCK_H
 
 #include <Arduino.h>
-#include <SD.h>
+#include <SdFat.h>
 
 typedef enum INA_mock_AVERAGES{
     AVERAGE_1       = 1, 
@@ -29,9 +29,10 @@ typedef enum INA226_mock_CONV_TIME{ // Conversion time in microseconds
 class INA_mock
 {
 private:
-    File file_;
+    SdFs sd_;
+    FsFile file_;
     String file_path_;
-    int conversion_time_;
+    unsigned long conversion_time_;
     int averages_;
     unsigned long last_update_;
     int bus_read_;

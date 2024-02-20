@@ -1,8 +1,8 @@
 #include "INA_mock.h"
 
 int INA_mock::init() {
-    if (SD.exists(file_path_)) {
-        SD.open(file_path_, FILE_READ);
+    if (sd_.exists(file_path_)) {
+        file_.open(file_path_.c_str(), O_READ);
         last_update_ = micros();
         return 1;
     } else {

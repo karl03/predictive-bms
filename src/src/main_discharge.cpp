@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <SD.h>
+#include <SdFat.h>
 #include <U8g2lib.h>
 #include <INA226_WE.h>
 #include <INA3221.h>
@@ -12,7 +12,8 @@
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 INA226_WE ina226 = INA226_WE(0x40);
 INA3221 ina3221(INA3221_ADDR41_VCC);
-File log_file;
+SdFs sd;
+FsFile log_file;
 
 bool serial_mode = false;
 float busVoltage_V = 0.0;
@@ -31,13 +32,16 @@ int missed_count = 0;
 
 void setup() {
     if (SD_LOGGING == 1) {
-        if (!SD.begin(15)) {
+        if (!sd.begin(15, SD_SCK_MHZ(39))) {
             while(1){};
         } else {
-            while (SD.exists(String(log_counter) + ".csv")) {
+            while (sd.exists(String(log_counter) + ".csv")) {
                 log_counter++;
             }
-            log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
+            if (!log_file.open((String(log_counter) + ".csv").c_str(), O_CREAT | O_RDWR)) {
+                while(1){};
+            }
+            log_file.close();
         }
     }
 
@@ -160,7 +164,7 @@ void loop() {
     mWh_charged += step_mAh_charged * busVoltage_V;
 
     if (SD_LOGGING == 1) {
-        log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
+        log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
 
         if (log_file) {
             // Time
@@ -187,6 +191,7 @@ void loop() {
             // mWh Used
             log_file.print(mWh_charged);
             log_file.println(",");
+            log_file.flush();
             log_file.close();
         } else {
             while(1){};
