@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <SPI.h>
 #include <SdFat.h>
 #include <U8g2lib.h>
 #include <INA226_WE.h>
@@ -11,13 +10,13 @@
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-#ifdef MOCKING
-#include "INA_mock.h"
-INA_mock ina226 = INA_mock(MOCKING);
-#else
+// #ifdef MOCKING
+// #include "INA_mock.h"
+// INA_mock ina226 = INA_mock(MOCKING);
+// #else
 #include <INA226_WE.h>
 INA226_WE ina226 = INA226_WE(0x40);
-#endif
+// #endif
 INA3221 ina3221(INA3221_ADDR41_VCC);
 SdFs sd;
 FsFile log_file;
@@ -59,7 +58,7 @@ IRAM_ATTR void measureNow() {
 
 void setup() {
     if (SD_LOGGING == 1) {
-        if (!sd.begin(15, SD_SCK_MHZ(4))) {
+        if (!sd.begin(15, SD_SCK_MHZ(39))) {
             while(1){};
         } else {
             while (sd.exists(String(log_counter) + ".csv")) {
@@ -233,7 +232,7 @@ void loop() {
 
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING) {
-        log_file.open((String(log_counter) + ".csv").c_str(), O_WRONLY || O_APPEND);
+        log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
         if (log_file) {
             // Time
             log_file.print(millis());
@@ -264,7 +263,7 @@ void loop() {
             log_file.print(",");
             // Shunt Voltage Used
             log_file.print(shuntVoltage_mV);
-            log_file.print(",\n");
+            log_file.println(",");
             log_file.flush();
             log_file.close();
         } else {
