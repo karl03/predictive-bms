@@ -1,2 +1,3 @@
 test-20240123-175821.csv - Data gathered during charge cycle from storage voltage, "Good" battery (New CNHL 1500mah 4s black series)
 test-20240123-212326.csv - Full discharge test data, New CNHL 1500mah 4s black series
+204.csv - In flight discharge test, to gather data. In format Time (ms), bus voltage, cell 1-4 voltage, current (mA), unused, unused, shunt voltage (mV)
