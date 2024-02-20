@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <SD.h>
+#include <SdFat.h>
 #include <U8g2lib.h>
 #include <INA226_WE.h>
 #include <INA3221.h>
@@ -19,7 +19,8 @@ INA_mock ina226 = INA_mock(MOCKING);
 INA226_WE ina226 = INA226_WE(0x40);
 #endif
 INA3221 ina3221(INA3221_ADDR41_VCC);
-File log_file;
+SdFs sd;
+FsFile log_file;
 BattModel *simulator;
 BattModel *modifiable_simulator;
 BattMonitor *monitor;
@@ -58,16 +59,16 @@ IRAM_ATTR void measureNow() {
 
 void setup() {
     if (SD_LOGGING == 1) {
-        if (!SD.begin(15)) {
+        if (!sd.begin(15, SD_SCK_MHZ(4))) {
             while(1){};
         } else {
-            while (SD.exists(String(log_counter) + ".csv")) {
+            while (sd.exists(String(log_counter) + ".csv")) {
                 log_counter++;
             }
-            log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
-            if (!log_file) {
+            if (!log_file.open((String(log_counter) + ".csv").c_str(), O_CREAT | O_RDWR)) {
                 while(1){};
             }
+            log_file.close();
         }
     }
 
@@ -130,7 +131,7 @@ void setup() {
     // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
-    ina226.enableConvReadyAlert();
+    // ina226.enableConvReadyAlert();
     // pinMode(INTERRUPT_PIN, INPUT_PULLUP);
     // Total time = 2.116ms conversion * 2 readings * 16 averages = 67.712ms
     ina3221.begin();
@@ -232,7 +233,7 @@ void loop() {
 
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING) {
-        log_file = SD.open((String(log_counter) + ".csv"), FILE_WRITE);
+        log_file.open((String(log_counter) + ".csv").c_str(), O_WRONLY || O_APPEND);
         if (log_file) {
             // Time
             log_file.print(millis());
@@ -263,7 +264,8 @@ void loop() {
             log_file.print(",");
             // Shunt Voltage Used
             log_file.print(shuntVoltage_mV);
-            log_file.println(",");
+            log_file.print(",\n");
+            log_file.flush();
             log_file.close();
         } else {
             if (serial_mode) {
@@ -290,18 +292,14 @@ void loop() {
     } else if (USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
-        u8g2->print(cell_voltages[0], 3);
-        u8g2->print("V  ");
-        u8g2->print(cell_voltages[1], 3);
+        u8g2->print(busVoltage_V, 3);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(cell_voltages[2], 3);
-        u8g2->print("V  ");
-        u8g2->print(cell_voltages[3], 3);
-        u8g2->print("V");
+        u8g2->print(loop_time);
+        u8g2->print("us");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
-        u8g2->print("mA  ");
+        u8g2->print("mA");
         u8g2->print(missed_count);
         u8g2->sendBuffer();
     }
