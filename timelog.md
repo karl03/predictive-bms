@@ -313,3 +313,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 20 Feb 2024
 
 * *2.5 hours* Learning how to use SdFat library, implemented, found no performance increase, and csv writing is not working properly.
+* *2 hours* Debugging SD, figured out how to increase speed, now much fewer missed readings!
