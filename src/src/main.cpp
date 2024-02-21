@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include <SdFat.h>
 #include <U8g2lib.h>
-#include <INA226_WE.h>
 #include <INA3221.h>
 #include "batt_model.h"
 #include "resistance_estimate.h"
@@ -10,16 +9,16 @@
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+SdFs sd;
+FsFile log_file;
 #ifdef MOCKING
 #include "INA_mock.h"
-INA_mock ina226 = INA_mock(MOCKING);
+INA_mock ina226 = INA_mock(&sd, MOCKING);
 #else
 #include <INA226_WE.h>
 INA226_WE ina226 = INA226_WE(0x40);
 #endif
 INA3221 ina3221(INA3221_ADDR41_VCC);
-SdFs sd;
-FsFile log_file;
 BattModel *simulator;
 BattModel *modifiable_simulator;
 BattMonitor *monitor;
@@ -57,22 +56,37 @@ IRAM_ATTR void measureNow() {
 }
 
 void setup() {
+    // Required to run even when display is not enabled
+    u8g2->begin();
+
     if (SD_LOGGING == 1) {
-        if (!sd.begin(15, SD_SCK_MHZ(39))) {
-            while(1){};
+        if (!sd.begin(15, SD_SCK_MHZ(39.9))) {
+            if (DISPLAY) {
+                u8g2->clearBuffer();
+                u8g2->setFont(u8g2_font_profont17_mr);
+                u8g2->setCursor(0, u8g2->getMaxCharHeight());
+                u8g2->print("SD Fail");
+                u8g2->sendBuffer();
+            }
+            while(1){yield();}
         } else {
             while (sd.exists(String(log_counter) + ".csv")) {
                 log_counter++;
             }
-            if (!log_file.open((String(log_counter) + ".csv").c_str(), O_CREAT | O_RDWR)) {
-                while(1){};
+            log_file.open((String(log_counter) + ".csv").c_str(), O_CREAT | O_RDWR);
+            if (!log_file.isOpen()) {
+                if (DISPLAY) {
+                    u8g2->clearBuffer();
+                    u8g2->setFont(u8g2_font_profont17_mr);
+                    u8g2->setCursor(0, u8g2->getMaxCharHeight());
+                    u8g2->print("File Fail");
+                    u8g2->sendBuffer();
+                }
+                while(1){yield();}
             }
             log_file.close();
         }
     }
-
-    // Required to run even when display is not enabled
-    u8g2->begin();
 
     if (SERIAL_TIMEOUT > 0) {
         if (USE_DISPLAY) {
@@ -115,7 +129,7 @@ void setup() {
         delay(500);
     }
 
-    if(!ina226.init()) {
+    if (!ina226.init()) {
         if (USE_DISPLAY) {
             u8g2->clearBuffer();
             u8g2->setFont(u8g2_font_profont17_mr);
@@ -123,7 +137,7 @@ void setup() {
             u8g2->print("INA226 INIT FAIL");
             u8g2->sendBuffer();
         }
-        while(1){};
+        while(1){yield();}
     }
 
     // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
@@ -233,7 +247,7 @@ void loop() {
     // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING) {
         log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
-        if (log_file) {
+        if (log_file.isOpen()) {
             // Time
             log_file.print(millis());
             log_file.print(",");
@@ -275,7 +289,7 @@ void loop() {
                 u8g2->printf("File error!");
                 u8g2->sendBuffer();
             }
-            while(1){};
+            while(1){yield();}
         }
     }
   

@@ -320,3 +320,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 21 Feb 2024
 
 * *2.5 hours* Troubleshooting LiveTex compilation, writing first draft of abstract. Creating block diagram.
+* *2 hours* Bug fixes for mocking class and tested. Now working.

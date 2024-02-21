@@ -1,8 +1,8 @@
 #include "INA_mock.h"
 
 int INA_mock::init() {
-    if (sd_.exists(file_path_)) {
-        file_.open(file_path_.c_str(), O_READ);
+    if (sd_->exists(file_path_)) {
+        file_.open(file_path_, O_READ);
         last_update_ = micros();
         return 1;
     } else {
@@ -66,6 +66,7 @@ float INA_mock::readFloat() {
             chars[index] = cur_char;
             chars[index + 1] = '\0';
             cur_char = file_.read();
+            index ++;
         }
 
         if (strlen(chars) > 0) {

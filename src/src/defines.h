@@ -1,7 +1,7 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-// #define MOCKING "mocking.csv"    // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
+#define MOCKING "mocking.csv"    // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
 #define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle
 #define SD_LOGGING 1                // SD Logging toggle
