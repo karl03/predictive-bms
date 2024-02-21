@@ -20,12 +20,14 @@
 %==============================================================================
 %% ABSTRACT
 \begin{abstract}
-    Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
-    \vskip 0.5em
-    ``XYZ is bad. This project investigated ABC to determine if it was better. 
-    ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
-    never been used together. It was found that  
-    ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
+    Drones are ever increasing in popularity, but still rely on volatile lithium-ion batteries.
+    While most commercial companies make use of complex battery monitoring systems to minimise risk, these are largely proprietary,
+    and absent from hobby-level hardware and software. This project aims to create an affordable, minimal solution to
+    give users early warning in cases where battery performance is worse than expected, while monitoring cell differences
+    to warn of more specific issues. This project made use of a model-based approach, running an onboard battery simulation
+    while monitoring the real parameters, and comparing these values to estimate the performance. This approach is able to
+    quickly build an estimation of battery performance, compared to continuous learning-based approaches, meaning it can be
+    integrated into the drone, rather than being required for each battery.\textit{Why is this interesting/ novel?}\textit{Results:}
 \end{abstract}
 
 %==============================================================================
@@ -39,8 +41,8 @@
 % Please note that you are under no obligation to sign 
 % this declaration, but doing so would help future students.
 %
-%\def\consentname {My Name} % your full name
-%\def\consentdate {20 March 2018} % the date you agree
+\def\consentname {Karl Hartmann} % your full name
+\def\consentdate {21 Feb 2024} % the date you agree
 %
 \educationalconsent
 

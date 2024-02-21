@@ -84,7 +84,6 @@ void BattMonitor::updateCellDifferences() {
     float mean_cell_voltage = state_->voltage * 0.25;
     float standard_deviation;
     for (int cell = 0; cell < 4; cell++) {
-        state_->cell_voltages[cell];
         standard_deviation += pow((state_->cell_voltages[cell] - mean_cell_voltage), 2);
     }
     standard_deviation = pow((standard_deviation * 0.25), 0.5);

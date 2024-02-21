@@ -306,6 +306,8 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *3 hours* Modified code to store data needed for mocking, completed several test flights to gather data.
 
+## Week 19
+
 ### 19 Feb 2024
 
 * *0.5 hours* Uploading meeting minutes from previous week.
@@ -314,3 +316,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *2.5 hours* Learning how to use SdFat library, implemented, found no performance increase, and csv writing is not working properly.
 * *2 hours* Debugging SD, figured out how to increase speed, now much fewer missed readings!
+
+### 21 Feb 2024
+
+* *2.5 hours* Troubleshooting LiveTex compilation, writing first draft of abstract. Creating block diagram.
