@@ -45,7 +45,8 @@
 
 \usepackage{microtype} % improve typography
 \usepackage{anyfontsize} % allow any size of font
-\usepackage{amsmath,amsfonts,amsbsy,amssymb}
+\usepackage{amsmath,amsfonts,amsbsy}
+% \usepackage{amsmath,amsfonts,amsbsy,amssymb}  This was the line, but amssymb caused errors with pdflatex so I removed it
 \usepackage[style]{abstract} % abstract styling
 
 % set bibliography styling
