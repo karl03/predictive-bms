@@ -33,12 +33,16 @@ private:
     FsFile file_;
     char *file_path_;
     unsigned long conversion_time_;
+    unsigned long cur_time_;
+    unsigned long next_time_;
     int averages_;
     unsigned long last_update_;
+    int time_read_;
     int bus_read_;
     int shunt_read_;
     float cur_bus_v_;
     float cur_shunt_mv_;
+    unsigned long readUnsignedLong();
     float readFloat();
     void moveToNextLine();
 public:
@@ -47,7 +51,7 @@ public:
     void setConversionTime(mockConvTime conversion_time) {conversion_time_ = conversion_time;}
     void setAverage(mockAverageMode averages) {averages_ = averages;}
     int isBusy();
-    void readAndClearFlags() {bus_read_ = 0; shunt_read_ = 0; last_update_ = micros();}
+    void readAndClearFlags() {time_read_ = 0; bus_read_ = 0; shunt_read_ = 0; last_update_ = micros();}
     void waitUntilConversionCompleted();
     float getBusVoltage_V();
     float getShuntVoltage_mV();
