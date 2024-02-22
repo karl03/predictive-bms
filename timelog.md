@@ -321,3 +321,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *2.5 hours* Troubleshooting LiveTex compilation, writing first draft of abstract. Creating block diagram.
 * *2 hours* Bug fixes for mocking class and tested. Now working.
+
+### 22 Feb 2024
+
+* *2.5 hours* Reimplemented mocking class to use stored time values as delays, tested simulation. Fixed several bugs with simulation, found issue with filtering. Planning to switch to moving average instead.
