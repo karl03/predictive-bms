@@ -21,7 +21,7 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     modified_batt_model_ = batt_model_modifiable;
     state_->estimated_capacity = batt_model_->GetCapacity();
     float model_voltage;
-    model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
+    model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001);
     voltage_diff_ = state_->voltage - model_voltage;
 
     lpf_ = new LPF(reaction_time, state_->current);
@@ -39,13 +39,13 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
         state_->cell_voltages[i] = cell_voltages[i];
     }
     updateCellDifferences();
-    float step_mAh_used = (current_mA * ((state_->last_update - time_micros) * 0.001) * A_ms_to_A_h);
+    float step_mAh_used = (current_mA * ((time_micros - state_->last_update) * 0.001) * A_ms_to_A_h);
     state_->mAh_used += step_mAh_used;
     state_->mWh_used += (step_mAh_used * voltage);
-    state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA);
+    state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA); // BUG: Filtered current is not updating!
     resistance_estimate_->updateResistanceEstimate(state_->current, state_->voltage, (state_->last_update - time_micros));
 
-    model_voltage = batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current);
+    model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001);
     voltage_diff_ = model_voltage - state_->voltage;
 
     if (voltage_diff_ > max_voltage_variance_) {
@@ -54,14 +54,14 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
 
     float estimated_resistance = resistance_estimate_->getResistance();
     modified_batt_model_->SetInternalResistance(estimated_resistance);
-    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current) - state_->voltage;
+    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001) - state_->voltage;
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
         while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {  // Check how long this function takes to run, subtract that from remaining time to ensure it runs in time
             state_->estimated_capacity -= CAPACITY_STEP_SIZE;
             modified_batt_model_->SetCapacity(state_->estimated_capacity);
-            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used, state_->current, state_->filtered_current) - state_->voltage;
+            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
         }
         
     } else {

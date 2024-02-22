@@ -24,6 +24,12 @@ class BattMonitor {
         void updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]);
         void resetFilter(float current) {lpf_->SetInitialParams(current);}
         float getResistance() {return resistance_estimate_->getResistance();}
+        float getEstimatedCapacity() {return state_->estimated_capacity;}
+        float getSimVoltage() {return voltage_diff_ + state_->voltage;}
+        float getSimVoltageDiff() {return voltage_diff_;}
+        float getmWhUsed() {return state_->mWh_used;}
+        float getmAhUsed() {return state_->mAh_used;}
+        float getFilteredCurrent() {return state_->filtered_current;}
     
     private:
         struct State {

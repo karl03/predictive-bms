@@ -48,7 +48,7 @@ void setup() {
     // Required to run even when display is not enabled
     u8g2->begin();
 
-    if (SD_LOGGING == 1) {
+    if (SD_LOGGING || MOCKING) {
         if (!sd.begin(15, SD_SCK_MHZ(39.9))) {
             if (DISPLAY) {
                 u8g2->clearBuffer();
@@ -58,7 +58,7 @@ void setup() {
                 u8g2->sendBuffer();
             }
             while(1){yield();}
-        } else {
+        } else if (SD_LOGGING) {
             while (sd.exists(String(log_counter) + ".csv")) {
                 log_counter++;
             }
@@ -187,7 +187,6 @@ void loop() {
     cur_time = micros();
     // Ensures new reading on every loop, block until available if not yet available.
     // INA226 checked first, as its conversion time is greater
-    // detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));
     if (ina226.isBusy()) {
         ina226.waitUntilConversionCompleted();
     } else {
@@ -210,7 +209,7 @@ void loop() {
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
     current_mA = shuntVoltageTomA(shuntVoltage_mV);
 
-    // monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
+    monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
 
     if (SD_LOGGING) {
         log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
@@ -269,8 +268,8 @@ void loop() {
         u8g2->print(busVoltage_V, 3);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(loop_time);
-        u8g2->print("us");
+        u8g2->print(monitor->getSimVoltageDiff());
+        u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");
