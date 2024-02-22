@@ -28,14 +28,10 @@ float busVoltage_V = 0.0;
 float shuntVoltage_mV = 0.0;
 float cell_voltages[4];
 float current_mA = 0.0;
-float mAh_charged = 0;
-float mWh_charged = 0;
 unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 int log_counter = 0;
-volatile int missed_count = 0;
-volatile float v_iter = 0;
-volatile float shunt_mV_iter = 0;
+int missed_count = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -46,13 +42,6 @@ float SoCLookup(float voltage, const float* array) {
     } else {
         return array[0];
     }
-}
-
-IRAM_ATTR void measureNow() {
-    missed_count ++;
-    v_iter += ina226.getBusVoltage_V();
-    shunt_mV_iter += shuntVoltageTomA(ina226.getShuntVoltage_mV());
-    ina226.readAndClearFlags();
 }
 
 void setup() {
@@ -144,8 +133,6 @@ void setup() {
     // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
-    // ina226.enableConvReadyAlert();
-    // pinMode(INTERRUPT_PIN, INPUT_PULLUP);
     // Total time = 2.116ms conversion * 2 readings * 16 averages = 67.712ms
     ina3221.begin();
     ina3221.reset();
@@ -214,20 +201,7 @@ void loop() {
             ina3221.readFlags();
         }
     }
-
-    // if (missed_count) {
-    //     busVoltage_V = (ina226.getBusVoltage_V() + v_iter) / (missed_count + 1);
-    //     // Consider also getting missed INA3221 values if possible
-    //     cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
-    //     cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
-    //     cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
-    //     cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
-    //     current_mA = shuntVoltageTomA((ina226.getShuntVoltage_mV() + shunt_mV_iter) / (missed_count + 1));
         
-    //     missed_count = 0;
-    //     shunt_mV_iter = 0;
-    //     v_iter = 0;
-    // } else {
     busVoltage_V = ina226.getBusVoltage_V();
     cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
     cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
@@ -235,16 +209,9 @@ void loop() {
     cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
     current_mA = shuntVoltageTomA(shuntVoltage_mV);
-    // }
-
-
-
-    // attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), measureNow, FALLING);
-    // delay(1000); // to test interrupt
 
     // monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
 
-    // Decide how to access data for logging in main. Keep local variables or use getters?
     if (SD_LOGGING) {
         log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
         if (log_file.isOpen()) {
@@ -268,12 +235,6 @@ void loop() {
             log_file.print(",");
             // Current
             log_file.print(current_mA);
-            log_file.print(",");
-            // mAh Used
-            log_file.print(mAh_charged);
-            log_file.print(",");
-            // mWh Used
-            log_file.print(mWh_charged);
             log_file.print(",");
             // Shunt Voltage Used
             log_file.print(shuntVoltage_mV);
