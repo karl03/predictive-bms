@@ -1,6 +1,5 @@
 Todo
-Activate simulation and check results using mocked values for resistance
-^ for changing sim
+Activate simulation and check results for changing sim
 
 Doing
 Activate simulation and check results using mocked values
@@ -8,3 +7,4 @@ LPF updates less when big values, time units likely wrong also
 
 Done
 Fix mocking timer
+Fixed resistance estimation

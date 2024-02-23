@@ -43,7 +43,7 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
     state_->mAh_used += step_mAh_used;
     state_->mWh_used += (step_mAh_used * voltage);
     state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA); // BUG: Filtered current is not updating!
-    resistance_estimate_->updateResistanceEstimate(state_->current, state_->voltage, (state_->last_update - time_micros));
+    resistance_estimate_->updateResistanceEstimate((state_->current * 0.001), state_->voltage, (time_micros - state_->last_update));
 
     model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001);
     voltage_diff_ = model_voltage - state_->voltage;
@@ -52,7 +52,7 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
     }
 
-    float estimated_resistance = resistance_estimate_->getResistance();
+    float estimated_resistance = resistance_estimate_->getResistanceOhms();
     modified_batt_model_->SetInternalResistance(estimated_resistance);
     fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001) - state_->voltage;
 

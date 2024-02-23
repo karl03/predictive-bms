@@ -21,7 +21,7 @@ class ResistanceEstimate {
         float constrainFloat(float val, float min, float max);
 
     public:
-        float getResistance() {return resistance_;}
+        float getResistanceOhms() {return resistance_;}
         ResistanceEstimate() {};
         void updateResistanceEstimate(float current_amps, float voltage, unsigned long time_delta_micros);
 };

@@ -28,7 +28,7 @@ class BattModel {
         float GetB() const { return B_; }
         float GetE0() const { return E0_; }
         float GetK() const { return K_; }
-        float GetResistance() const { return internal_resistance_; }
+        float GetResistanceOhms() const { return internal_resistance_; }
         float GetCapacity() const { return capacity_; }
 
         // Setters

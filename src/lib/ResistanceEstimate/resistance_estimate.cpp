@@ -22,7 +22,7 @@ void ResistanceEstimate::updateResistanceEstimate(float current_amps, float volt
     }
 
     // calculate time since last update
-    float loop_interval_s = time_delta_micros * 0.000001f;
+    float loop_interval_s = time_delta_micros * 0.000001f;  // Microseconds to seconds
 
     // estimate short-term resistance
     float filt_alpha = constrainFloat(loop_interval_s/(loop_interval_s + AP_BATT_MONITOR_RES_EST_TC_1), 0.0f, 0.5f);

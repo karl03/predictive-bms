@@ -325,3 +325,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 22 Feb 2024
 
 * *2.5 hours* Reimplemented mocking class to use stored time values as delays, tested simulation. Fixed several bugs with simulation, found issue with filtering. Planning to switch to moving average instead.
+
+### 23 Feb 2024
+
+* *1 hours* Bug fixes for resistance estimation.

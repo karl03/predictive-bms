@@ -23,7 +23,7 @@ class BattMonitor {
         BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance);
         void updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]);
         void resetFilter(float current) {lpf_->SetInitialParams(current);}
-        float getResistance() {return resistance_estimate_->getResistance();}
+        float getResistanceOhms() {return resistance_estimate_->getResistanceOhms();}
         float getEstimatedCapacity() {return state_->estimated_capacity;}
         float getSimVoltage() {return voltage_diff_ + state_->voltage;}
         float getSimVoltageDiff() {return voltage_diff_;}
