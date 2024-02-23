@@ -179,7 +179,7 @@ void setup() {
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
-    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE);
+    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
 }
 
 void loop() {
@@ -268,8 +268,8 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(monitor->getResistanceOhms(), 6);
-        u8g2->print("Ohm");
+        u8g2->print(monitor->getEstimatedCapacity(), 4);
+        u8g2->print("Ah");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

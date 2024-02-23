@@ -2,7 +2,6 @@
 #define BATT_MODEL_H
 
 #include <cmath>
-#define CAPACITY_STEP_SIZE 50
 
 class BattModel {
     private:
@@ -15,6 +14,7 @@ class BattModel {
         float exponential_capacity_;
         float curve_current_;
         float min_voltage_;
+        float capacity_step_percentage_;
         
         float A_;
         float B_;

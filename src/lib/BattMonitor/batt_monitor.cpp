@@ -1,8 +1,9 @@
 #include "batt_monitor.h"
 
-BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance) {
+BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage) {
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
+    capacity_step_percentage_ = capacity_step_percentage;
 
     state_ = new State();
 
@@ -58,8 +59,9 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-        while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {  // Check how long this function takes to run, subtract that from remaining time to ensure it runs in time
-            state_->estimated_capacity -= CAPACITY_STEP_SIZE;
+        // while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {  // Check how long this function takes to run, subtract that from remaining time to ensure it runs in time
+        if (fitted_voltage_diff_ > max_voltage_variance_) {
+            state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
             modified_batt_model_->SetCapacity(state_->estimated_capacity);
             fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
         }
