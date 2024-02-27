@@ -32,7 +32,7 @@ class BattModel {
         float GetCapacity() const { return capacity_; }
 
         // Setters
-        void SetCapacity(float capacity) { capacity_ = capacity; CalculateParameters();}
+        void SetCapacity(float new_capacity);
         void SetInternalResistance(float internalResistance) { internal_resistance_ = internalResistance; CalculateParameters();}
         
         BattModel(float v_full, float cap, float v_nom, float cap_nom, float r_int, float v_exp, float cap_exp, float cur_curve, float v_min);

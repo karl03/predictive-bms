@@ -7,7 +7,7 @@
 #define SD_LOGGING 0                // SD Logging toggle
 #define IDLE_AMPS 0.5               // Minimum current for flying state, should be set to current when motors are idling
 #define CAPACITY_STEP_PERCENTAGE 1  // Percentage of capacity to decrease when iterating simulation capacity
-#define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before warning
+#define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before adjusting simulation
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
 #define INTERRUPT_PIN 2             // GPIO pin on ESP which INA226 interrupt pin is connected to
 
