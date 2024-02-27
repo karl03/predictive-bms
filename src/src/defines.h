@@ -1,15 +1,18 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define MOCKING "mocking.csv"    // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
+#define MOCKING "mocking.csv"       // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
+#define CURRENT_FILE "curr.txt"     // File to read/ store average current over several flights
 #define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle
 #define SD_LOGGING 0                // SD Logging toggle
-#define IDLE_AMPS 0.5               // Minimum current for flying state, should be set to current when motors are idling
+#define MAX_RESTING_AMPS 1          // Maximum current for initial battery stabilisation
+#define MIN_FLYING_AMPS 1           // Minimum current for flying state, should be set to current when motors are idling
 #define CAPACITY_STEP_PERCENTAGE 1  // Percentage of capacity to decrease when iterating simulation capacity
 #define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before adjusting simulation
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
-#define INTERRUPT_PIN 2             // GPIO pin on ESP which INA226 interrupt pin is connected to
+#define SHORT_DECAY_SECONDS 30      // Decay time for per-flight exponential moving average
+#define LONG_DECAY_SECONDS 1800     // Decay time for long-term exponential moving average
 
 #define INTERNAL_RESISTANCE 0.002   // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
@@ -33,7 +36,7 @@ const float MWH_AT_VOLTAGE[] = {23790.554841229838, 23790.554841229838, 23790.55
 
 #define A_ms_to_A_h 0.00000027777777777778
 #define shuntVoltageTomA(mV) (((mV) / CURRENT_SCALE) * 10000 + CURRENT_OFFSET)
-#define ZERO_AMP_CUTOFF 10000            // Maximum current (positive or negative) allowed for "zero current" (mA)
 #define STABILISATION_TIME_MS 5000      // Time to allow voltage to settle after initial powerup
+#define MAX_ZERO_CURRENT_TIME_MS 1000   // Max zero current time before changing from flying state to not flying
 
 #endif

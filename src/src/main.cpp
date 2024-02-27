@@ -6,6 +6,7 @@
 #include "batt_model.h"
 #include "resistance_estimate.h"
 #include "batt_monitor.h"
+#include "curr_estimator.h"
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -22,8 +23,12 @@ INA3221 ina3221(INA3221_ADDR41_VCC);
 BattModel *simulator;
 BattModel *modifiable_simulator;
 BattMonitor *monitor;
+CurrEstimator *curr_estimator;
 
 bool serial_mode = false;
+bool flying = false;
+bool flying_low_threshold_reached = false;
+unsigned long low_threshold_start = 0;
 float busVoltage_V = 0.0;
 float shuntVoltage_mV = 0.0;
 float cell_voltages[4];
@@ -141,8 +146,8 @@ void setup() {
     ina3221.setAveragingMode(INA3221_REG_CONF_AVG_16);
     // Total time = 1.1ms conversion * 3 readings * 16 averages = 52.8ms
 
-    unsigned long zero_amp_start = millis();
-    cur_time = millis();
+    // unsigned long zero_amp_start = millis();
+    // cur_time = millis();
     // while ((millis() - zero_amp_start) < STABILISATION_TIME_MS) {
     //     delay(0);   // Required to allow for ESP background processes to run
     //     if (USE_DISPLAY) {
@@ -158,7 +163,7 @@ void setup() {
     //     if (ina226.isBusy()) {
     //         ina226.waitUntilConversionCompleted();
     //     }
-    //     if ((shuntVoltageTomA(ina226.getShuntVoltage_mV()) > ZERO_AMP_CUTOFF) || (shuntVoltageTomA(ina226.getShuntVoltage_mV()) < (-ZERO_AMP_CUTOFF))) {
+    //     if ((shuntVoltageTomA(ina226.getShuntVoltage_mV()) > MAX_RESTING_AMPS * 1000) || (shuntVoltageTomA(ina226.getShuntVoltage_mV()) < (-MAX_RESTING_AMPS) * 1000)) {
     //         zero_amp_start = millis();
     //     }
     //     loop_time = millis() - cur_time;
@@ -180,6 +185,7 @@ void setup() {
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
     monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
+    curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
 }
 
 void loop() {
@@ -208,6 +214,24 @@ void loop() {
     cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
     current_mA = shuntVoltageTomA(shuntVoltage_mV);
+
+    if (!flying && current_mA >= MIN_FLYING_AMPS * 1000) {
+        flying = true;
+        flying_low_threshold_reached = false;
+    } else if (flying && current_mA < MIN_FLYING_AMPS * 1000) {
+        if (flying_low_threshold_reached) {
+            if (millis() - low_threshold_start > MAX_ZERO_CURRENT_TIME_MS) {
+                flying = false;
+                curr_estimator->writeLongTermAvg();
+            }
+        } else {
+            flying_low_threshold_reached = true;
+            low_threshold_start = millis();
+        }
+    } else if (flying) {
+        flying_low_threshold_reached = false;
+        curr_estimator->updateAvg(current_mA, loop_time);
+    }
 
     monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
 

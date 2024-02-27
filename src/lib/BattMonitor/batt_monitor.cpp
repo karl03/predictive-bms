@@ -31,7 +31,6 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
 }
 
 void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]) {
-    unsigned long start_time = millis();
     float model_voltage;
 
     state_->voltage = voltage;
@@ -53,13 +52,11 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
     }
 
-    float estimated_resistance = resistance_estimate_->getResistanceOhms();
-    modified_batt_model_->SetInternalResistance(estimated_resistance);
+    modified_batt_model_->SetInternalResistance(resistance_estimate_->getResistanceOhms());
     fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001) - state_->voltage;
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-        // while ((millis() - start_time < max_time) && (fitted_voltage_diff_ > max_voltage_variance_)) {  // Check how long this function takes to run, subtract that from remaining time to ensure it runs in time
         if (fitted_voltage_diff_ > max_voltage_variance_) {
             state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
             modified_batt_model_->SetCapacity(state_->estimated_capacity);

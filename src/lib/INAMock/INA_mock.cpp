@@ -79,9 +79,10 @@ float INA_mock::readFloat() {
     if (file_.available()) {
         char cur_char = file_.read();
         char chars[64];
+        chars[0] = '\0';
         int index = 0;
 
-        while (cur_char != ',' && cur_char != '\n') {
+        while (cur_char != -1 && cur_char != ',' && cur_char != '\n') {
             chars[index] = cur_char;
             chars[index + 1] = '\0';
             cur_char = file_.read();
@@ -100,9 +101,10 @@ unsigned long INA_mock::readUnsignedLong() {
     if (file_.available()) {
         char cur_char = file_.read();
         char chars[64];
+        chars[0] = '\0';
         int index = 0;
 
-        while (cur_char != ',' && cur_char != '\n') {
+        while (cur_char != -1 && cur_char != ',' && cur_char != '\n') {
             chars[index] = cur_char;
             chars[index + 1] = '\0';
             cur_char = file_.read();

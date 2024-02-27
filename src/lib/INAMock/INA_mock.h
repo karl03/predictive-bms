@@ -28,33 +28,33 @@ typedef enum INA226_mock_CONV_TIME{ // Conversion time in microseconds
 
 class INA_mock
 {
-private:
-    SdFs *sd_;
-    FsFile file_;
-    char *file_path_;
-    unsigned long conversion_time_;
-    unsigned long cur_time_;
-    unsigned long next_time_;
-    int averages_;
-    unsigned long last_update_;
-    int time_read_;
-    int bus_read_;
-    int shunt_read_;
-    float cur_bus_v_;
-    float cur_shunt_mv_;
-    unsigned long readUnsignedLong();
-    float readFloat();
-    void moveToNextLine();
-public:
-    INA_mock(SdFs *sd, char *file_path) {sd_ = sd; file_path_ = file_path; conversion_time_ = CONV_TIME_1100; averages_ = AVERAGE_1;}
-    int init();
-    void setConversionTime(mockConvTime conversion_time) {conversion_time_ = conversion_time;}
-    void setAverage(mockAverageMode averages) {averages_ = averages;}
-    int isBusy();
-    void readAndClearFlags() {time_read_ = 0; bus_read_ = 0; shunt_read_ = 0; last_update_ = micros();}
-    void waitUntilConversionCompleted();
-    float getBusVoltage_V();
-    float getShuntVoltage_mV();
+    private:
+        SdFs *sd_;
+        FsFile file_;
+        char *file_path_;
+        unsigned long conversion_time_;
+        unsigned long cur_time_;
+        unsigned long next_time_;
+        int averages_;
+        unsigned long last_update_;
+        int time_read_;
+        int bus_read_;
+        int shunt_read_;
+        float cur_bus_v_;
+        float cur_shunt_mv_;
+        unsigned long readUnsignedLong();
+        float readFloat();
+        void moveToNextLine();
+    public:
+        INA_mock(SdFs *sd, char *file_path) {sd_ = sd; file_path_ = file_path; conversion_time_ = CONV_TIME_1100; averages_ = AVERAGE_1;}
+        int init();
+        void setConversionTime(mockConvTime conversion_time) {conversion_time_ = conversion_time;}
+        void setAverage(mockAverageMode averages) {averages_ = averages;}
+        int isBusy();
+        void readAndClearFlags() {time_read_ = 0; bus_read_ = 0; shunt_read_ = 0; last_update_ = micros();}
+        void waitUntilConversionCompleted();
+        float getBusVoltage_V();
+        float getShuntVoltage_mV();
 };
 
 
