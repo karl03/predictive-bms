@@ -19,6 +19,7 @@ class CurrEstimator {
         float short_term_avg_;
         unsigned int long_decay_s_;
         unsigned int short_decay_s_;
+        bool first_run_;
 };
 
 #endif

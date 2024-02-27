@@ -5,7 +5,7 @@ CurrEstimator::CurrEstimator(SdFs *sd, char *file_path, unsigned int long_decay_
     file_path_ = file_path;
     long_decay_s_ = long_decay_s;
     short_decay_s_ = short_decay_s;
-
+    first_run_ = 1;
     if (sd_->exists(file_path_)) {
         file_.open(file_path_, O_READ);
         char cur_char = file_.read();
@@ -13,7 +13,7 @@ CurrEstimator::CurrEstimator(SdFs *sd, char *file_path, unsigned int long_decay_
         chars[0] = '\0';
         int index = 0;
 
-        while (cur_char != -1 && cur_char != '\n') {
+        while (cur_char != 255 && cur_char != -1 && cur_char != '\n' && cur_char != '\n') {
             chars[index] = cur_char;
             chars[index + 1] = '\0';
             cur_char = file_.read();
@@ -22,10 +22,18 @@ CurrEstimator::CurrEstimator(SdFs *sd, char *file_path, unsigned int long_decay_
 
         if (strlen(chars) > 0) {
             long_term_avg_ = atof(chars);
+            first_run_ = 0;
+        } else {
+            long_term_avg_ = .0f;
+            file_.print(.0f);
+            file_.flush();
         }
+        file_.close();
     } else {
-        file_.open(file_path_, O_CREAT | O_WRITE);
+        file_.open(file_path_, FILE_WRITE);
         file_.print(.0f);
+        file_.flush();
+        file_.close();
         long_term_avg_ = .0f;
     }
 
@@ -56,12 +64,21 @@ float CurrEstimator::updateAvg(float current_mA, unsigned long time_delta_micros
 }
 
 int CurrEstimator::writeLongTermAvg() {
+    if (!file_.open(file_path_, FILE_WRITE)) {
+        return 0;
+    }
     if (!file_.remove()) {
         return 0;
     }
-    if (!file_.open(file_path_, O_CREAT | O_WRITE)) {
+    if (!file_.open(file_path_, FILE_WRITE)) {
         return 0;
     }
-    file_.print(long_term_avg_);
+    if (first_run_) {
+        file_.print(short_term_avg_);    
+    } else {
+        file_.print(long_term_avg_);
+    }
+    file_.flush();
+    file_.close();
     return 1;
 }
