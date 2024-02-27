@@ -1,12 +1,14 @@
 Todo
 Store results in good format, plot and save
-LPF updates less when big values, time units likely wrong also
+Add conditions for cell imbalances
+Use average current for flight time estimation (maybe change for watts?)
 
 Doing
-Create current estimation based on filtering
 
 Done
 Fix mocking timer
 Fixed resistance estimation
 Activate simulation and check results using mocked values
 Activate simulation and check results for changing sim
+Create current estimation based on filtering
+LPF updates less when big values, time units likely wrong also

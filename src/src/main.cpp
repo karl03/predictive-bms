@@ -184,8 +184,9 @@ void setup() {
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
-    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
+    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
     curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+    monitor->resetFilter(curr_estimator->getLongAvg());
 }
 
 void loop() {
@@ -233,7 +234,11 @@ void loop() {
         curr_estimator->updateAvg(current_mA, loop_time);
     }
 
-    monitor->updateConsumption(micros(), 60, busVoltage_V, current_mA, cell_voltages);
+    if (flying) {
+        curr_estimator->updateAvg(current_mA, loop_time);
+        monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
+    }
+
 
     if (SD_LOGGING) {
         log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
@@ -292,7 +297,7 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(curr_estimator->getShortAvg());
+        u8g2->print(monitor->getSimVoltageDiff());
         u8g2->print("mA");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);

@@ -2,7 +2,7 @@
 #define LPF_H
 
 #include <cmath>
-// Basic low-pass filter, this implementation also known as "leaky integrator"
+// Exponential Moving Average filter
 class LPF {
     private:
         float filtered_current_;

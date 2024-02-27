@@ -1,9 +1,12 @@
 #include "LPF.h"
 
 float LPF::Update(unsigned long time_delta, float current) {
-    // BUG: This weights the new value LESS when time is bigger
-    float filter_val = exp(- ((double) time_delta) / (double) reaction_time_);
+    float filter_alpha = (float) time_delta / (float) reaction_time_;
+    if (filter_alpha >= 1) {
+        filtered_current_ = current;
+    } else {
+        filtered_current_ = filtered_current_ * (1 - filter_alpha) + current * filter_alpha;
+    }
 
-    filtered_current_ = filtered_current_ * (1 - filter_val) + current * filter_val;
     return filtered_current_;
 };

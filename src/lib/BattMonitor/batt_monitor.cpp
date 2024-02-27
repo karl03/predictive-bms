@@ -1,6 +1,6 @@
 #include "batt_monitor.h"
 
-BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage) {
+BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time_micros, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage) {
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
     capacity_step_percentage_ = capacity_step_percentage;
@@ -25,12 +25,12 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001);
     voltage_diff_ = state_->voltage - model_voltage;
 
-    lpf_ = new LPF(reaction_time, state_->current);
+    lpf_ = new LPF(reaction_time_micros, state_->current);
     resistance_estimate_ = new ResistanceEstimate();
     updateCellDifferences();
 }
 
-void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]) {
+void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]) {
     float model_voltage;
 
     state_->voltage = voltage;
@@ -42,10 +42,10 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
     float step_mAh_used = (current_mA * ((time_micros - state_->last_update) * 0.001) * A_ms_to_A_h);
     state_->mAh_used += step_mAh_used;
     state_->mWh_used += (step_mAh_used * voltage);
-    state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA); // BUG: Filtered current is not updating!
+    state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA);
     resistance_estimate_->updateResistanceEstimate((state_->current * 0.001), state_->voltage, (time_micros - state_->last_update));
 
-    model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001);
+    model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001);
     voltage_diff_ = model_voltage - state_->voltage;
 
     if (voltage_diff_ > max_voltage_variance_) {
@@ -53,7 +53,7 @@ void BattMonitor::updateConsumption(unsigned long time_micros, unsigned long max
     }
 
     modified_batt_model_->SetInternalResistance(resistance_estimate_->getResistanceOhms());
-    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->current * 0.001) - state_->voltage;
+    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;

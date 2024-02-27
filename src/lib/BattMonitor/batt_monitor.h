@@ -20,8 +20,8 @@ class BattMonitor {
             LOW_CAPACITY = 32,
         };
 
-        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage);
-        void updateConsumption(unsigned long time_micros, unsigned long max_time, float voltage, float current_mA, float cell_voltages[4]);
+        BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time_micros, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage);
+        void updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]);
         void resetFilter(float current) {lpf_->SetInitialParams(current);}
         float getResistanceOhms() {return resistance_estimate_->getResistanceOhms();}
         float getEstimatedCapacity() {return state_->estimated_capacity;}
