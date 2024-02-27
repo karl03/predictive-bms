@@ -31,7 +31,7 @@ class INA_mock
     private:
         SdFs *sd_;
         FsFile file_;
-        char *file_path_;
+        const char *file_path_;
         unsigned long conversion_time_;
         unsigned long cur_time_;
         unsigned long next_time_;
@@ -46,7 +46,7 @@ class INA_mock
         float readFloat();
         void moveToNextLine();
     public:
-        INA_mock(SdFs *sd, char *file_path) {sd_ = sd; file_path_ = file_path; conversion_time_ = CONV_TIME_1100; averages_ = AVERAGE_1;}
+        INA_mock(SdFs *sd, const char *file_path) {sd_ = sd; file_path_ = file_path; conversion_time_ = CONV_TIME_1100; averages_ = AVERAGE_1;}
         int init();
         void setConversionTime(mockConvTime conversion_time) {conversion_time_ = conversion_time;}
         void setAverage(mockAverageMode averages) {averages_ = averages;}

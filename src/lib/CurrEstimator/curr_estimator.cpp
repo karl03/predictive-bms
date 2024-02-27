@@ -1,6 +1,6 @@
 #include "curr_estimator.h"
 
-CurrEstimator::CurrEstimator(SdFs *sd, char *file_path, unsigned int long_decay_s, unsigned int short_decay_s) {
+CurrEstimator::CurrEstimator(SdFs *sd, const char *file_path, unsigned int long_decay_s, unsigned int short_decay_s) {
     sd_ = sd;
     file_path_ = file_path;
     long_decay_s_ = long_decay_s;
