@@ -252,8 +252,8 @@ void loop() {
         monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
     }
 
-    flight_time_remaining_s = (((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
-    total_flight_time_s = ((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) / watt_estimator->getLongAvg()) * 3600;
+    flight_time_remaining_s = ((((monitor->getEstimatedCapacity() * MAX_DISCHARGE_DECIMAL) * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
+    total_flight_time_s = (((monitor->getEstimatedCapacity() * MAX_DISCHARGE_DECIMAL) * monitor->getNominalVoltage()) / watt_estimator->getLongAvg()) * 3600;
 
 
     if (SD_LOGGING) {
