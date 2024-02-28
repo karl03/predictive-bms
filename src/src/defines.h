@@ -2,6 +2,7 @@
 #define DEFINES_H
 
 #define MOCKING "mocking.csv"       // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
+#define MOCKING_3221 "mock_3221.csv"// Path for INA3221 mocking file
 #define CURRENT_FILE "curr.txt"     // File path to read/ store average current over several flights
 #define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle

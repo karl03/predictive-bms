@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include <SdFat.h>
 #include <U8g2lib.h>
-#include <INA3221.h>
 #include "batt_model.h"
 #include "resistance_estimate.h"
 #include "batt_monitor.h"
@@ -14,12 +13,15 @@ SdFs sd;
 FsFile log_file;
 #ifdef MOCKING
 #include "INA_mock.h"
+#include "INA3221_mock.h"
 INA_mock ina226 = INA_mock(&sd, MOCKING);
+INA3221_mock ina3221(&sd, MOCKING_3221);
 #else
 #include <INA226_WE.h>
+#include <INA3221.h>
 INA226_WE ina226 = INA226_WE(0x40);
-#endif
 INA3221 ina3221(INA3221_ADDR41_VCC);
+#endif
 BattModel *simulator;
 BattModel *modifiable_simulator;
 BattMonitor *monitor;
@@ -177,10 +179,13 @@ void setup() {
     busVoltage_V = ina226.getBusVoltage_V();
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
     current_mA = shuntVoltageTomA(shuntVoltage_mV);
-    cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
-    cell_voltages[3] = ina226.getBusVoltage_V() - ina3221.getVoltage(INA3221_CH3);
+    float ina3221_voltages[] = {ina3221.getVoltage(INA3221_CH1),
+                                ina3221.getVoltage(INA3221_CH2),
+                                ina3221.getVoltage(INA3221_CH3)};
+    cell_voltages[0] = ina3221_voltages[0];
+    cell_voltages[1] = ina3221_voltages[1] -  ina3221_voltages[0];
+    cell_voltages[2] = ina3221_voltages[2] - ina3221_voltages[1];
+    cell_voltages[3] = busVoltage_V - ina3221_voltages[2];
     float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
     float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
 
@@ -209,10 +214,13 @@ void loop() {
     }
         
     busVoltage_V = ina226.getBusVoltage_V();
-    cell_voltages[0] = ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[1] = ina3221.getVoltage(INA3221_CH2) -  ina3221.getVoltage(INA3221_CH1);
-    cell_voltages[2] = ina3221.getVoltage(INA3221_CH3) - ina3221.getVoltage(INA3221_CH2);
-    cell_voltages[3] = busVoltage_V - ina3221.getVoltage(INA3221_CH3);
+    float ina3221_voltages[] = {ina3221.getVoltage(INA3221_CH1),
+                                ina3221.getVoltage(INA3221_CH2),
+                                ina3221.getVoltage(INA3221_CH3)};
+    cell_voltages[0] = ina3221_voltages[0];
+    cell_voltages[1] = ina3221_voltages[1] -  ina3221_voltages[0];
+    cell_voltages[2] = ina3221_voltages[2] - ina3221_voltages[1];
+    cell_voltages[3] = busVoltage_V - ina3221_voltages[2];
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
     current_mA = shuntVoltageTomA(shuntVoltage_mV);
 
