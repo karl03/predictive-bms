@@ -57,11 +57,10 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
 
     if (fitted_voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-        if (fitted_voltage_diff_ > max_voltage_variance_) {
-            state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
-            modified_batt_model_->SetCapacity(state_->estimated_capacity);
-            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
-        }
+        // state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+        state_->estimated_capacity -= 0.05;
+        modified_batt_model_->SetCapacity(state_->estimated_capacity);
+        fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
         
     } else {
         state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
@@ -85,15 +84,15 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
 }
 
 // Run after updating voltages, to update cell difference checks
+// Difference checking based partially on "Lithium-Ion Battery Cell-Balancing Algorithm for Battery Management System Based on Real-Time Outlier Detection", Changhao Piao et. co., 2015
 void BattMonitor::updateCellDifferences() {
     float mean_cell_voltage = state_->voltage * 0.25;
-    float standard_deviation;
+    float standard_deviation = 0;
     float cell_distances[4];
-    int min_outlier_cell = 0;
     float min_outlier = MAXFLOAT;
-    int max_outlier_cell = 0;
     float max_outlier = 0;
     float outlier_sum = 0;
+    float cell_z_scores[4];
 
     for (int cell = 0; cell < 4; cell++) {
         standard_deviation += pow((state_->cell_voltages[cell] - mean_cell_voltage), 2);
@@ -101,33 +100,36 @@ void BattMonitor::updateCellDifferences() {
     standard_deviation = pow((standard_deviation * 0.25), 0.5);
 
     for (int cell = 0; cell < 4; cell++) {
-        state_->cell_z_scores[cell] = (state_->cell_voltages[cell] - mean_cell_voltage) / standard_deviation;
+        cell_z_scores[cell] = (state_->cell_voltages[cell] - mean_cell_voltage) / standard_deviation;
     }
 
     for (int cell_from = 0; cell_from < 4; cell_from++) {
         cell_distances[cell_from] = 0;
         for (int cell_to = 0; cell_to < 4; cell_to++) {
-            cell_distances[cell_from] += pow(pow((state_->cell_z_scores[cell_from] - state_->cell_z_scores[cell_to]), 2), 0.5);
+            cell_distances[cell_from] += pow(pow((cell_z_scores[cell_from] - cell_z_scores[cell_to]), 2), 0.5);
         }
 
         outlier_sum += cell_distances[cell_from];
 
         if (cell_distances[cell_from] > max_outlier) {
-            max_outlier_cell = cell_from;
             max_outlier = cell_distances[cell_from];
         }
 
         if (cell_distances[cell_from] < min_outlier) {
-            min_outlier_cell = cell_from;
             min_outlier = cell_distances[cell_from];
         }
     }
 
     if (max_outlier - min_outlier > outlier_sum / 4) {
-        if (state_->cell_voltages[max_outlier_cell] > mean_cell_voltage) {
-            // warn that the cell is too high
-        } else {
-            // warn that the cell is too low
+        
+        for (int cur_cell = 0; cur_cell < 4; cur_cell++) {
+            if (abs(cell_distances[cur_cell] - max_outlier) < abs(cell_distances[cur_cell] - min_outlier)) {
+                if (state_->cell_voltages[cur_cell] > mean_cell_voltage) {
+                    state_->cell_status[cur_cell]++;
+                } else {
+                    state_->cell_status[cur_cell]++;
+                }
+            }
         }
     }
 

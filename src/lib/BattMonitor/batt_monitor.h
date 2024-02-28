@@ -31,6 +31,7 @@ class BattMonitor {
         float getmAhUsed() {return state_->mAh_used;}
         float getFilteredCurrent() {return state_->filtered_current;}
         float getNominalVoltage() {return batt_model_->GetNominalVoltage();}
+        int* getCellsStatus() {return state_->cell_status;}
     
     private:
         struct State {
@@ -38,11 +39,11 @@ class BattMonitor {
             float current;              // Current in mA
             float filtered_current;     // Low-pass filtered current in mA
             float cell_voltages[4];     // Per-cell voltage in V
-            float cell_z_scores[4];
+            int cell_status[4];         // Per-cell status
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
-            int batt_flags;
+            int batt_flags;             // Overall battery flags
             float estimated_capacity;
         };
 
