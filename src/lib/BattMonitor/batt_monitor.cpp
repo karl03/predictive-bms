@@ -74,6 +74,12 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     Otherwise, if worse than both, battery has worse IR and lower capacity. In this case, if possible run sim with decreasing
     capacity until the performance roughly matches the real performance, from this deduce capacity estimate.
     */
+   /*
+   For balanced: Find highest/ lowest cell and average all cells, then check if the distance between max/ min cell is higher than threshold.
+   If yes, find if higher or lower cell is further from average.
+   If higher, report all other cells as low.
+   If lower, report only this cell as low.
+   */
 
     state_->last_update = time_micros;
 }
@@ -82,6 +88,13 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
 void BattMonitor::updateCellDifferences() {
     float mean_cell_voltage = state_->voltage * 0.25;
     float standard_deviation;
+    float cell_distances[4];
+    int min_outlier_cell = 0;
+    float min_outlier = MAXFLOAT;
+    int max_outlier_cell = 0;
+    float max_outlier = 0;
+    float outlier_sum = 0;
+
     for (int cell = 0; cell < 4; cell++) {
         standard_deviation += pow((state_->cell_voltages[cell] - mean_cell_voltage), 2);
     }
@@ -90,4 +103,32 @@ void BattMonitor::updateCellDifferences() {
     for (int cell = 0; cell < 4; cell++) {
         state_->cell_z_scores[cell] = (state_->cell_voltages[cell] - mean_cell_voltage) / standard_deviation;
     }
+
+    for (int cell_from = 0; cell_from < 4; cell_from++) {
+        cell_distances[cell_from] = 0;
+        for (int cell_to = 0; cell_to < 4; cell_to++) {
+            cell_distances[cell_from] += pow(pow((state_->cell_z_scores[cell_from] - state_->cell_z_scores[cell_to]), 2), 0.5);
+        }
+
+        outlier_sum += cell_distances[cell_from];
+
+        if (cell_distances[cell_from] > max_outlier) {
+            max_outlier_cell = cell_from;
+            max_outlier = cell_distances[cell_from];
+        }
+
+        if (cell_distances[cell_from] < min_outlier) {
+            min_outlier_cell = cell_from;
+            min_outlier = cell_distances[cell_from];
+        }
+    }
+
+    if (max_outlier - min_outlier > outlier_sum / 4) {
+        if (state_->cell_voltages[max_outlier_cell] > mean_cell_voltage) {
+            // warn that the cell is too high
+        } else {
+            // warn that the cell is too low
+        }
+    }
+
 }
