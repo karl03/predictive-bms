@@ -337,3 +337,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *4.5 hours* Bug fixes for simulation adjustement, fixed LPF, implemented longer term current averaging for per-flight and long term testing, as well as writing to file to keep a longer average. Tested current averaging and fixed bugs.
 
 * *1.5 hours* Writing dissertation.
+
+### 28 Feb 2024
+
+* *3.5 hours* Created INA3221 mocking class, tested, bug fixed, added short/ long-term power estimation, added flight time estimation.
