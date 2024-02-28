@@ -9,13 +9,22 @@ void INA3221_mock::begin() {
 
 float INA3221_mock::getVoltage(ina3221_mock_ch_t channel) {
     if (num_read_on_line_ >= channel + 1) {
-        return voltages_[channel];
+        float total = 0;
+        for (int counter = 0; counter <= channel; counter++) {
+            total += voltages_[channel];
+        }
+        return total;
     } else {
-        for (int counter=num_read_on_line_; counter < channel + 1; counter++) {
-            voltages_[counter - 1] = readFloat();
+        for (int counter=num_read_on_line_; counter <= channel; counter++) {
+            voltages_[counter] = readFloat();
             num_read_on_line_++;
         }
-        return voltages_[channel];
+        float total = 0;
+        for (int counter = 0; counter <= channel; counter++) {
+            total += voltages_[counter];
+        }
+
+        return total;
     }
 }
 
@@ -42,7 +51,7 @@ float INA3221_mock::readFloat() {
 }
 
 void INA3221_mock::moveToNextLine() {
-    for (int counter=0; counter < 3 - num_read_on_line_; counter++) {
+    for (int counter=0; counter < 4 - num_read_on_line_; counter++) {
         readFloat();
     }
     num_read_on_line_ = 0;

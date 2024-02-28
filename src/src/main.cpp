@@ -305,8 +305,8 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(monitor->getSimVoltageDiff());
-        u8g2->print("mA");
+        u8g2->print(cell_voltages[2]);
+        u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

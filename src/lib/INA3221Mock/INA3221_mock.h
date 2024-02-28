@@ -68,7 +68,7 @@ class INA3221_mock
         int conversion_time_;
         int averages_;
         int num_read_on_line_;
-        float voltages_[3];
+        float voltages_[4];
         float readFloat();
         void moveToNextLine();
     public:
