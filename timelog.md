@@ -335,3 +335,5 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 27 Feb 2024
 
 * *4.5 hours* Bug fixes for simulation adjustement, fixed LPF, implemented longer term current averaging for per-flight and long term testing, as well as writing to file to keep a longer average. Tested current averaging and fixed bugs.
+
+* *1.5 hours* Writing dissertation.

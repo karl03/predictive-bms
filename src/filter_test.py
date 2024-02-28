@@ -16,9 +16,8 @@ class LowPassFilter:
         return self.filtered_current
 
 step_time = 1
-response_time = 30
+response_time = 10
 closeness = 0.98
-epic_time = - response_time / (math.log(1 - closeness))
 
 current = 0
 currents = []
@@ -26,17 +25,19 @@ filtered_current = 0.0
 filtered_currents = []
 class_filtered_currents = []
 
-filt_test = LowPassFilter(epic_time)
+filt_test = LowPassFilter(response_time)
 
 for x in range(60):
-    filter_val = math.exp(-step_time / epic_time)
-    # current = random.randint(1, 200)
-    current = 30
+    filter_val = step_time / response_time
+    current = random.randint(1, 200)
+    # current = 30
     currents.append(current)
 
     class_filtered_currents.append(filt_test.update(current, x))
-    filtered_current = current * (1 - filter_val) + filtered_current * filter_val
+    filtered_current = current * filter_val + filtered_current * (1 - filter_val)
     filtered_currents.append(filtered_current)
+    print(current)
+    print(filtered_current)
 
     if x == 30:
         print(filtered_current / current)
