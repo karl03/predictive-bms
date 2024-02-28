@@ -26,6 +26,7 @@ BattModel *simulator;
 BattModel *modifiable_simulator;
 BattMonitor *monitor;
 CurrEstimator *curr_estimator;
+CurrEstimator *watt_estimator;
 
 bool serial_mode = false;
 bool flying = false;
@@ -39,6 +40,7 @@ unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 int log_counter = 0;
 int missed_count = 0;
+float flight_time_s = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -191,6 +193,7 @@ void setup() {
 
     monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
     curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+    watt_estimator = new CurrEstimator(&sd, WATT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
     monitor->resetFilter(curr_estimator->getLongAvg());
 }
 
@@ -232,6 +235,7 @@ void loop() {
             if (millis() - low_threshold_start > MAX_ZERO_CURRENT_TIME_MS) {
                 flying = false;
                 curr_estimator->writeLongTermAvg();
+                watt_estimator->writeLongTermAvg();
             }
         } else {
             flying_low_threshold_reached = true;
@@ -239,13 +243,15 @@ void loop() {
         }
     } else if (flying) {
         flying_low_threshold_reached = false;
-        curr_estimator->updateAvg(current_mA, loop_time);
     }
 
     if (flying) {
         curr_estimator->updateAvg(current_mA, loop_time);
+        watt_estimator->updateAvg((current_mA * 0.001) * busVoltage_V, loop_time);
         monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
     }
+
+    flight_time_s = (((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
 
 
     if (SD_LOGGING) {
@@ -305,8 +311,8 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(cell_voltages[2]);
-        u8g2->print("V");
+        u8g2->print(flight_time_s);
+        u8g2->print("s");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

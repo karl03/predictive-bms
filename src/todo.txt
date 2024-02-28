@@ -1,9 +1,9 @@
 Todo
 Store results in good format, plot and save
 Add conditions for cell imbalances
-Use average current for flight time estimation (maybe change for watts?)
 
 Doing
+Use average current for flight time estimation (maybe change for watts?)
 
 Done
 Fix mocking timer
@@ -12,3 +12,4 @@ Activate simulation and check results using mocked values
 Activate simulation and check results for changing sim
 Create current estimation based on filtering
 LPF updates less when big values, time units likely wrong also
+Created per-cell mocking for ina3221

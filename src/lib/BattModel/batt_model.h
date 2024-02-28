@@ -30,6 +30,7 @@ class BattModel {
         float GetK() const { return K_; }
         float GetResistanceOhms() const { return internal_resistance_; }
         float GetCapacity() const { return capacity_; }
+        float GetNominalVoltage() const { return nominal_voltage_; }
 
         // Setters
         void SetCapacity(float new_capacity);

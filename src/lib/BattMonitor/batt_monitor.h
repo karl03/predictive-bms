@@ -30,6 +30,7 @@ class BattMonitor {
         float getmWhUsed() {return state_->mWh_used;}
         float getmAhUsed() {return state_->mAh_used;}
         float getFilteredCurrent() {return state_->filtered_current;}
+        float getNominalVoltage() {return batt_model_->GetNominalVoltage();}
     
     private:
         struct State {
