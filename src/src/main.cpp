@@ -40,7 +40,8 @@ unsigned long cur_time = 0;
 unsigned long loop_time = 0;
 int log_counter = 0;
 int missed_count = 0;
-float flight_time_s = 0;
+float total_flight_time_s = 0;
+float flight_time_remaining_s = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -251,7 +252,8 @@ void loop() {
         monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
     }
 
-    flight_time_s = (((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
+    flight_time_remaining_s = (((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
+    total_flight_time_s = ((monitor->getEstimatedCapacity() * monitor->getNominalVoltage()) / watt_estimator->getLongAvg()) * 3600;
 
 
     if (SD_LOGGING) {
@@ -311,7 +313,7 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(flight_time_s);
+        u8g2->print(flight_time_remaining_s);
         u8g2->print("s");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
