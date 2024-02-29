@@ -48,22 +48,22 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     model_voltage = batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001);
     voltage_diff_ = model_voltage - state_->voltage;
 
-    if (voltage_diff_ > max_voltage_variance_) {
-        state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
-    }
 
     modified_batt_model_->SetInternalResistance(resistance_estimate_->getResistanceOhms());
     fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
 
-    if (fitted_voltage_diff_ > max_voltage_variance_) {
-        state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-        // state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
-        state_->estimated_capacity -= 0.05;
-        modified_batt_model_->SetCapacity(state_->estimated_capacity);
-        fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
-        
-    } else {
-        state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
+    if (voltage_diff_ > max_voltage_variance_) {
+        state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
+
+        if (fitted_voltage_diff_ > max_voltage_variance_) {
+            state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
+            state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+            modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
+            
+        } else {
+            state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
+        }
     }
 
     /*
@@ -73,12 +73,6 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     Otherwise, if worse than both, battery has worse IR and lower capacity. In this case, if possible run sim with decreasing
     capacity until the performance roughly matches the real performance, from this deduce capacity estimate.
     */
-   /*
-   For balanced: Find highest/ lowest cell and average all cells, then check if the distance between max/ min cell is higher than threshold.
-   If yes, find if higher or lower cell is further from average.
-   If higher, report all other cells as low.
-   If lower, report only this cell as low.
-   */
 
     state_->last_update = time_micros;
 }

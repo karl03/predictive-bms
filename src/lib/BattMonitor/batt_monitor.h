@@ -27,6 +27,8 @@ class BattMonitor {
         float getEstimatedCapacity() {return state_->estimated_capacity;}
         float getSimVoltage() {return voltage_diff_ + state_->voltage;}
         float getSimVoltageDiff() {return voltage_diff_;}
+        float getFittedSimVoltage() {return fitted_voltage_diff_ + state_->voltage;}
+        float getFittedSimVoltageDiff() {return fitted_voltage_diff_;}
         float getmWhUsed() {return state_->mWh_used;}
         float getmAhUsed() {return state_->mAh_used;}
         float getFilteredCurrent() {return state_->filtered_current;}

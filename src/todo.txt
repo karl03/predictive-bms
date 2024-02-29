@@ -2,7 +2,6 @@ Todo
 Store results in good format, plot and save
 
 Doing
-Add conditions for cell imbalances
 
 Done
 Fix mocking timer
@@ -14,3 +13,4 @@ LPF updates less when big values, time units likely wrong also
 Created per-cell mocking for ina3221
 Use average current for flight time estimation
 Added watts estimation/ averaging
+Add conditions for cell imbalances
