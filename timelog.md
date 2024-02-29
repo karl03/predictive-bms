@@ -117,7 +117,7 @@
 ### 01 Nov 2023
 
 * *1 hour* Adding current measurement and refresh rate.
-* *0.5 hour* Advisor meeting.
+* *0.5 hour* Supervisor meeting.
 * *0.5 hour* Voltage accuracy checking, updated display to show cell voltages.
 
 ## Week 7
@@ -241,7 +241,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 24 Jan 2024
 
 * *0.5 hours* Checking discharge test, ensuring results so far are as expected, restarting discharge cycle when charger timed out.
-* *0.5 hours* Advisor meeting.
+* *0.5 hours* Supervisor meeting.
 * *0.5 hours* Editing/ uploading meeting minutes.
 
 ### 25 Jan 2024
@@ -291,7 +291,7 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 14 Feb 2024
 
 * *2.5 hours* Physically tested interrupt, updated pin to ensure SPI is not interrupted, added error checking. Fixed bug with pin numbering, and allowed SD card to continue working.
-* *0.5 hours* Advisor meeting
+* *0.5 hours* Supervisor meeting
 
 ### 15 Feb 2024
 
@@ -341,3 +341,6 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 28 Feb 2024
 
 * *3.5 hours* Created INA3221 mocking class, tested, bug fixed, added short/ long-term power estimation, added flight time estimation.
+* *0.5 hours* Supervisor meeting.
+* *2 hours* Began writing code for cell difference checking.
+* *3 hours* Completed cell difference checking, thought I found a bug, it was not actually a bug after all.
