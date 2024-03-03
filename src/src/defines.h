@@ -15,7 +15,7 @@
 #define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
 #define SHORT_DECAY_SECONDS 180     // Decay time for per-flight exponential moving average
 #define LONG_DECAY_SECONDS 1800     // Decay time for long-term exponential moving average
-#define MAX_DISCHARGE_DECIMAL 0.8   // Minimum charge percentage in decimal
+#define MIN_FLYING_VOLTAGE 13.5     // Minimum charge percentage in decimal
 
 #define INTERNAL_RESISTANCE 0.002   // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
