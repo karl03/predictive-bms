@@ -53,7 +53,7 @@ class INA_mock
 {
     private:
         SdFs *sd_;
-        FsFile file_;
+        FsFile file_;   // CSV file in format: time (ms), bus voltage (V), shunt voltage (mV)
         const char *file_path_;
         unsigned long conversion_time_;
         unsigned long cur_time_;

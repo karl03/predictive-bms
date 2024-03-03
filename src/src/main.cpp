@@ -269,19 +269,20 @@ void loop() {
     if (SD_LOGGING) {
         log_file.open((String(log_counter) + ".csv").c_str(), O_WRITE | O_APPEND);
         if (log_file.isOpen()) {
-            // Time
-            log_file.print(millis());
-            log_file.print(",");
-            // Voltage
-            log_file.print(busVoltage_V);
-            log_file.print(",");
             if (MOCKING && flying) {
+                // Time
+                log_file.print(millis());
+                log_file.print(",");
+                // Voltage
+                log_file.print(busVoltage_V);
+                log_file.print(",");
                 // Total estimated flight time
                 log_file.print(total_flight_time_s);
                 log_file.print(",");
-                // Cell performance values
+                // Estimated capacity
                 log_file.print(monitor->getEstimatedCapacity());
                 log_file.print(",");
+                // Cell performance values
                 log_file.print(monitor->getCellsStatus()[0]);
                 log_file.print(",");
                 log_file.print(monitor->getCellsStatus()[1]);
@@ -292,8 +293,16 @@ void loop() {
                 log_file.print(",");
                 // Resistance estimate
                 log_file.print(monitor->getResistanceOhms());
+                log_file.println(",");
+                log_file.flush();
+                log_file.close();
+            } else if (!MOCKING) {
+                // Time
+                log_file.print(millis());
                 log_file.print(",");
-            } else {
+                // Voltage
+                log_file.print(busVoltage_V);
+                log_file.print(",");
                 // V1
                 log_file.print(cell_voltages[0]);
                 log_file.print(",");
@@ -311,10 +320,10 @@ void loop() {
                 log_file.print(",");
                 // Shunt Voltage Used
                 log_file.print(shuntVoltage_mV);
+                log_file.println(",");
+                log_file.flush();
+                log_file.close();
             }
-            log_file.println(",");
-            log_file.flush();
-            log_file.close();
         } else {
             if (serial_mode) {
                 Serial.print("File error!");
@@ -343,8 +352,7 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(monitor->getFittedSimVoltage());
-        u8g2->print("V");
+        u8g2->print(flying);
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

@@ -1,13 +1,13 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define MOCKING "mocking.csv"       // Uncomment to enable mocking mode, reading data from SD card rather than from sensors
-#define MOCKING_3221 "mock_3221.csv"// Path for INA3221 mocking file
+#define MOCKING "mocking.csv"       // Uncomment to enable mocking mode, reading data from SD card rather than from sensors (format: time (ms), bus voltage (V), shunt voltage (mV))
+#define MOCKING_3221 "mock_3221.csv"// Path for INA3221 mocking file (format: voltage across cell 1, 2, 3, 4 (all in V))
 #define CURRENT_FILE "curr.txt"     // File path to read/ store average current over several flights
-#define WATT_FILE "watt.txt"     // File path to read/ store average wattage over several flights
+#define WATT_FILE "watt.txt"        // File path to read/ store average wattage over several flights
 #define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)
 #define USE_DISPLAY 1               // Display toggle
-#define SD_LOGGING 0                // SD Logging toggle
+#define SD_LOGGING 1                // SD Logging toggle
 #define MAX_RESTING_AMPS 1          // Maximum current for initial battery stabilisation
 #define MIN_FLYING_AMPS 1           // Minimum current for flying state, should be set to current when motors are idling
 #define CAPACITY_STEP_PERCENTAGE 1  // Percentage of capacity to decrease when iterating simulation capacity

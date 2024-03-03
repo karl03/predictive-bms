@@ -63,7 +63,7 @@ class INA3221_mock
 {
     private:
         SdFs *sd_;
-        FsFile file_;
+        FsFile file_;  // CSV file in format: voltage across cell 1, 2, 3, 4 (all in V)
         const char *file_path_;
         int conversion_time_;
         int averages_;
