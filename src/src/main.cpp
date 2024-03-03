@@ -275,23 +275,43 @@ void loop() {
             // Voltage
             log_file.print(busVoltage_V);
             log_file.print(",");
-            // V1
-            log_file.print(cell_voltages[0]);
-            log_file.print(",");
-            // V2
-            log_file.print(cell_voltages[1]);
-            log_file.print(",");
-            // V3
-            log_file.print(cell_voltages[2]);
-            log_file.print(",");
-            // V4
-            log_file.print(cell_voltages[3]);
-            log_file.print(",");
-            // Current
-            log_file.print(current_mA);
-            log_file.print(",");
-            // Shunt Voltage Used
-            log_file.print(shuntVoltage_mV);
+            if (MOCKING && flying) {
+                // Total estimated flight time
+                log_file.print(total_flight_time_s);
+                log_file.print(",");
+                // Cell performance values
+                log_file.print(monitor->getEstimatedCapacity());
+                log_file.print(",");
+                log_file.print(monitor->getCellsStatus()[0]);
+                log_file.print(",");
+                log_file.print(monitor->getCellsStatus()[1]);
+                log_file.print(",");
+                log_file.print(monitor->getCellsStatus()[2]);
+                log_file.print(",");
+                log_file.print(monitor->getCellsStatus()[3]);
+                log_file.print(",");
+                // Resistance estimate
+                log_file.print(monitor->getResistanceOhms());
+                log_file.print(",");
+            } else {
+                // V1
+                log_file.print(cell_voltages[0]);
+                log_file.print(",");
+                // V2
+                log_file.print(cell_voltages[1]);
+                log_file.print(",");
+                // V3
+                log_file.print(cell_voltages[2]);
+                log_file.print(",");
+                // V4
+                log_file.print(cell_voltages[3]);
+                log_file.print(",");
+                // Current
+                log_file.print(current_mA);
+                log_file.print(",");
+                // Shunt Voltage Used
+                log_file.print(shuntVoltage_mV);
+            }
             log_file.println(",");
             log_file.flush();
             log_file.close();

@@ -17,7 +17,7 @@
 #define LONG_DECAY_SECONDS 1800     // Decay time for long-term exponential moving average
 #define MIN_FLYING_VOLTAGE 13.5     // Minimum charge percentage in decimal
 
-#define INTERNAL_RESISTANCE 0.002   // Internal resistance of battery (Ohms)
+#define INTERNAL_RESISTANCE 0.0208  // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
 #define NOMINAL_VOLTAGE 14.75       // Voltage at end of "nominal zone", just before final exponential voltage drop
 #define NOMINAL_CAPACITY 1.42       // Capacity used at end of "nominal zone" (Amp hours)
