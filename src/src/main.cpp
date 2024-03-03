@@ -191,8 +191,10 @@ void setup() {
     cell_voltages[1] = ina3221_voltages[1] -  ina3221_voltages[0];
     cell_voltages[2] = ina3221_voltages[2] - ina3221_voltages[1];
     cell_voltages[3] = busVoltage_V - ina3221_voltages[2];
-    float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);
-    float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    // float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);    // Lookup found to be too inaccurate
+    // float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
+    float mAh_used = 0;
+    float mWh_used = 0;
 
     monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
     curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
@@ -255,9 +257,9 @@ void loop() {
     }
 
     if (monitor->getFittedSimulation(capacity_till_empty, (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE)) > MIN_FLYING_VOLTAGE) {
-        capacity_till_empty -= 0.001;
+        capacity_till_empty -= capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
     } else {
-        capacity_till_empty += 0.001;
+        capacity_till_empty += capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
     }
     flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
     total_flight_time_s = ((capacity_till_empty * monitor->getNominalVoltage())/ watt_estimator->getShortAvg()) * 3600;
@@ -280,7 +282,7 @@ void loop() {
                 log_file.print(total_flight_time_s);
                 log_file.print(",");
                 // Estimated capacity
-                log_file.print(monitor->getEstimatedCapacity());
+                log_file.print(monitor->getEstimatedCapacity(), 3);
                 log_file.print(",");
                 // Cell performance values
                 log_file.print(monitor->getCellsStatus()[0]);
@@ -292,7 +294,7 @@ void loop() {
                 log_file.print(monitor->getCellsStatus()[3]);
                 log_file.print(",");
                 // Resistance estimate
-                log_file.print(monitor->getResistanceOhms());
+                log_file.print(monitor->getResistanceOhms(), 5);
                 log_file.println(",");
                 log_file.flush();
                 log_file.close();
@@ -352,7 +354,7 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(flying);
+        u8g2->print(capacity_till_empty);
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");
