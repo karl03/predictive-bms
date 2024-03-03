@@ -17,6 +17,7 @@ FsFile log_file;
 INA_mock ina226 = INA_mock(&sd, MOCKING);
 INA3221_mock ina3221(&sd, MOCKING_3221);
 #else
+#define MOCKING 0
 #include <INA226_WE.h>
 #include <INA3221.h>
 INA226_WE ina226 = INA226_WE(0x40);
