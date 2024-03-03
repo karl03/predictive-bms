@@ -121,7 +121,7 @@ void BattMonitor::updateCellDifferences() {
                 if (state_->cell_voltages[cur_cell] > mean_cell_voltage) {
                     state_->cell_status[cur_cell]++;
                 } else {
-                    state_->cell_status[cur_cell]++;
+                    state_->cell_status[cur_cell]--;
                 }
             }
         }
