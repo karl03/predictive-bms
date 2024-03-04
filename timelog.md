@@ -344,3 +344,25 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *0.5 hours* Supervisor meeting.
 * *2 hours* Began writing code for cell difference checking.
 * *3 hours* Completed cell difference checking, thought I found a bug, it was not actually a bug after all.
+
+### 29 Feb 2024
+
+* *1 hour* Dissertation work (intro)
+
+### 1 Mar 2024
+
+* *1 hour* Disseration work
+
+### 2 Mar 2024
+
+* *2 hours* Dissertation work
+
+### 3 Mar 2024
+
+* *5 hours* Drone flights, gathering real data to run tests on.
+* *3 hours* Updated flight time estimation, worked on testing data and getting outputs.
+* *2 hours* Writing dissertation (background).
+
+
+
+### 
