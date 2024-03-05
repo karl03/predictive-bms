@@ -2,7 +2,7 @@
 #define DEFINES_H
 
 #define MOCKING "mocking.csv"       // Uncomment to enable mocking mode, reading data from SD card rather than from sensors (format: time (ms), bus voltage (V), shunt voltage (mV))
-#define MOCKING_3221 "mock_3221.csv"// Path for INA3221 mocking file (format: voltage across cell 1, 2, 3, 4 (all in V))
+#define MOCKING_3221 "mocking_3221.csv" // Path for INA3221 mocking file (format: voltage across cell 1, 2, 3, 4 (all in V))
 #define CURRENT_FILE "curr.txt"     // File path to read/ store average current over several flights
 #define WATT_FILE "watt.txt"        // File path to read/ store average wattage over several flights
 #define SERIAL_TIMEOUT 0            // Time to wait for serial connection (s)

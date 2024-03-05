@@ -14,3 +14,4 @@ Created per-cell mocking for ina3221
 Use average current for flight time estimation
 Added watts estimation/ averaging
 Add conditions for cell imbalances
+Fixed flight time remaining bugs

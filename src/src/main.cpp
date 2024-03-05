@@ -288,9 +288,6 @@ void loop() {
     }
     flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getEstmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
     total_flight_time_s = ((capacity_till_empty * monitor->getNominalVoltage())/ watt_estimator->getShortAvg()) * 3600;
-    // Old method:
-    // flight_time_remaining_s = ((((monitor->getEstimatedCapacity() * MAX_DISCHARGE_DECIMAL) * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
-    // total_flight_time_s = (((monitor->getEstimatedCapacity() * MAX_DISCHARGE_DECIMAL) * monitor->getNominalVoltage()) / watt_estimator->getLongAvg()) * 3600;
 
 
     if (SD_LOGGING) {
@@ -307,7 +304,7 @@ void loop() {
                 log_file.print(total_flight_time_s);
                 log_file.print(",");
                 // Estimated capacity
-                log_file.print(monitor->getEstimatedCapacity(), 3);
+                log_file.print(capacity_till_empty, 3);
                 log_file.print(",");
                 // Cell performance values
                 log_file.print(monitor->getCellsStatus()[0]);

@@ -83,7 +83,7 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
 }
 
 // Run after updating voltages, to update cell difference checks
-// Difference checking based partially on "Lithium-Ion Battery Cell-Balancing Algorithm for Battery Management System Based on Real-Time Outlier Detection", Changhao Piao et. co., 2015
+// Difference checking based on "Lithium-Ion Battery Cell-Balancing Algorithm for Battery Management System Based on Real-Time Outlier Detection", Changhao Piao et. co., 2015
 void BattMonitor::updateCellDifferences() {
     float mean_cell_voltage = state_->voltage * 0.25;
     float standard_deviation = 0;
