@@ -4,6 +4,8 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     max_voltage_variance_ = max_voltage_variance;
     max_cell_variance_ = max_cell_variance;
     capacity_step_percentage_ = capacity_step_percentage;
+    est_mAh_used_ = est_initial_mAh_ = mAh_used;
+    est_mWh_used_ = est_initial_mWh_ = mWh_used;
 
     state_ = new State();
 
@@ -41,7 +43,9 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     updateCellDifferences();
     float step_mAh_used = (current_mA * ((time_micros - state_->last_update) * 0.001) * A_ms_to_A_h);
     state_->mAh_used += step_mAh_used;
+    est_mAh_used_ += step_mAh_used;
     state_->mWh_used += (step_mAh_used * voltage);
+    est_mWh_used_ += (step_mAh_used * voltage);
     state_->filtered_current = lpf_->Update(time_micros - state_->last_update, current_mA);
     resistance_estimate_->updateResistanceEstimate((state_->current * 0.001), state_->voltage, (time_micros - state_->last_update));
 
@@ -50,16 +54,17 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
 
 
     modified_batt_model_->SetInternalResistance(resistance_estimate_->getResistanceOhms());
-    fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
+    fitted_voltage_diff_ = modified_batt_model_->Simulate(est_mAh_used_ * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
 
     if (voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
 
         if (fitted_voltage_diff_ > max_voltage_variance_) {
             state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
+            est_mAh_used_ -= est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
+            est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
             state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
             modified_batt_model_->SetCapacity(state_->estimated_capacity);
-            fitted_voltage_diff_ = modified_batt_model_->Simulate(state_->mAh_used * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
             
         } else {
             state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;

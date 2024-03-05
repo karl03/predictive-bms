@@ -363,6 +363,10 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *3 hours* Updated flight time estimation, worked on testing data and getting outputs.
 * *2 hours* Writing dissertation (background).
 
+### 4 Mar 2024
 
+* *2 hours* Dissertation work
 
-### 
+### 5 Mar 2024
+
+* **

@@ -44,6 +44,8 @@ int missed_count = 0;
 float capacity_till_empty = CAPACITY;
 float total_flight_time_s = 0;
 float flight_time_remaining_s = 0;
+float initial_mAh_used = 0;
+float initial_mWh_used = 0;
 
 float SoCLookup(float voltage, const float* array) {
     if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
@@ -191,12 +193,35 @@ void setup() {
     cell_voltages[1] = ina3221_voltages[1] -  ina3221_voltages[0];
     cell_voltages[2] = ina3221_voltages[2] - ina3221_voltages[1];
     cell_voltages[3] = busVoltage_V - ina3221_voltages[2];
-    // float mAh_used = SoCLookup(busVoltage_V, MAH_AT_VOLTAGE);    // Lookup found to be too inaccurate
-    // float mWh_used = SoCLookup(busVoltage_V, MWH_AT_VOLTAGE);
-    float mAh_used = 0;
-    float mWh_used = 0;
 
-    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, mAh_used, mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
+    while (simulator->Simulate(initial_mAh_used * 0.001, current_mA * 0.001, current_mA * 0.001) > busVoltage_V) {
+        initial_mAh_used += 1;
+        yield();
+    }
+
+    if (initial_mAh_used > 0) {
+        unsigned int index = (sizeof(MAH_AT_VOLTAGE) / sizeof(MAH_AT_VOLTAGE[0]));
+        while (index > 0) {
+            index--;
+            if (MAH_AT_VOLTAGE[index] > initial_mAh_used) {
+                initial_mWh_used = MWH_AT_VOLTAGE[index];
+                index = 0;
+            }
+            yield();
+        }
+    }
+
+    if (DISPLAY) {
+        u8g2->clearBuffer();
+        u8g2->setCursor(0, u8g2->getMaxCharHeight());
+        u8g2->printf("Mah:%f", initial_mAh_used);
+        u8g2->setCursor(0, u8g2->getMaxCharHeight() * 2);
+        u8g2->printf("Mwh:%f", initial_mWh_used);
+        u8g2->sendBuffer();
+        delay(1000);
+    }
+
+    monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, initial_mAh_used, initial_mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
     curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
     watt_estimator = new CurrEstimator(&sd, WATT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
     monitor->resetFilter(curr_estimator->getLongAvg());
@@ -256,12 +281,12 @@ void loop() {
         monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
     }
 
-    if (monitor->getFittedSimulation(capacity_till_empty, (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE)) > MIN_FLYING_VOLTAGE) {
-        capacity_till_empty -= capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
-    } else {
+    if (modifiable_simulator->Simulate(capacity_till_empty, (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE), (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE)) > MIN_FLYING_VOLTAGE) {
         capacity_till_empty += capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
+    } else {
+        capacity_till_empty -= capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
     }
-    flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
+    flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getEstmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
     total_flight_time_s = ((capacity_till_empty * monitor->getNominalVoltage())/ watt_estimator->getShortAvg()) * 3600;
     // Old method:
     // flight_time_remaining_s = ((((monitor->getEstimatedCapacity() * MAX_DISCHARGE_DECIMAL) * monitor->getNominalVoltage()) - (monitor->getmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
@@ -354,7 +379,7 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(capacity_till_empty);
+        u8g2->print(total_flight_time_s);
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

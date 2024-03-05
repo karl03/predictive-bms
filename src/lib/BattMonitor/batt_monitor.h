@@ -31,9 +31,9 @@ class BattMonitor {
         float getFittedSimVoltageDiff() {return fitted_voltage_diff_;}
         float getmWhUsed() {return state_->mWh_used;}
         float getmAhUsed() {return state_->mAh_used;}
+        float getEstmWhUsed() {return est_mWh_used_;}
         float getFilteredCurrent() {return state_->filtered_current;}
         float getNominalVoltage() {return batt_model_->GetNominalVoltage();}
-        float getFittedSimulation(float used_capacity, float current) {return modified_batt_model_->Simulate(used_capacity, current, current);}
         int* getCellsStatus() {return state_->cell_status;}
     
     private:
@@ -61,6 +61,10 @@ class BattMonitor {
         float voltage_diff_;
         float fitted_voltage_diff_;
         float capacity_step_percentage_;
+        float est_initial_mAh_;
+        float est_initial_mWh_;
+        float est_mAh_used_;
+        float est_mWh_used_;
 };
 
 #endif
