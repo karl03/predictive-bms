@@ -370,3 +370,4 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 5 Mar 2024
 
 * *2 hours* Fixed bugs with flight time estimation, found issue with cell distances, now working
+* *5 hours* Testing, rerunning tests several times to try and fix issues, fixed several bugs, found underlying issue is in the battery model itself, which is taken from existing paper.
