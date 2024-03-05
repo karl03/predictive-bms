@@ -65,6 +65,7 @@ class BattMonitor {
         float est_initial_mWh_;
         float est_mAh_used_;
         float est_mWh_used_;
+        int voltage_hit_;
 };
 
 #endif

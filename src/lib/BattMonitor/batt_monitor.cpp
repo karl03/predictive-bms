@@ -6,6 +6,7 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     capacity_step_percentage_ = capacity_step_percentage;
     est_mAh_used_ = est_initial_mAh_ = mAh_used;
     est_mWh_used_ = est_initial_mWh_ = mWh_used;
+    voltage_hit_ = 0;
 
     state_ = new State();
 
@@ -60,12 +61,24 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
 
         if (fitted_voltage_diff_ > max_voltage_variance_) {
-            state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-            est_mAh_used_ -= est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
-            est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
-            state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
-            modified_batt_model_->SetCapacity(state_->estimated_capacity);
-            
+            if (voltage_hit_ <= -5) {
+                state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
+                est_mAh_used_ -= est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
+                est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
+                state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+                modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            } else {
+                voltage_hit_ -= 1;
+            }
+        } else if (fitted_voltage_diff_ < -max_voltage_variance_) {
+            if (voltage_hit_ >= 5) {
+                est_mAh_used_ += est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
+                est_mWh_used_ += est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
+                state_->estimated_capacity += (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+                modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            } else {
+                voltage_hit_ += 1;
+            }
         } else {
             state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
         }

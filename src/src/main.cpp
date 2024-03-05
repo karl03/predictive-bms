@@ -224,7 +224,7 @@ void setup() {
     monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, initial_mAh_used, initial_mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
     curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
     watt_estimator = new CurrEstimator(&sd, WATT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
-    monitor->resetFilter(curr_estimator->getLongAvg());
+    monitor->resetFilter(current_mA);
 }
 
 void loop() {
@@ -279,13 +279,14 @@ void loop() {
         curr_estimator->updateAvg(current_mA, loop_time);
         watt_estimator->updateAvg((current_mA * 0.001) * busVoltage_V, loop_time);
         monitor->updateConsumption(micros(), busVoltage_V, current_mA, cell_voltages);
+
+        if (modifiable_simulator->Simulate(capacity_till_empty, (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE), (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE)) > MIN_FLYING_VOLTAGE) {
+            capacity_till_empty += capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
+        } else {
+            capacity_till_empty -= capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
+        }
     }
 
-    if (modifiable_simulator->Simulate(capacity_till_empty, (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE), (watt_estimator->getShortAvg() / MIN_FLYING_VOLTAGE)) > MIN_FLYING_VOLTAGE) {
-        capacity_till_empty += capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
-    } else {
-        capacity_till_empty -= capacity_till_empty * (CAPACITY_STEP_PERCENTAGE * 0.01);
-    }
     flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getEstmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
     total_flight_time_s = ((capacity_till_empty * monitor->getNominalVoltage())/ watt_estimator->getShortAvg()) * 3600;
 
@@ -300,10 +301,22 @@ void loop() {
                 // Voltage
                 log_file.print(busVoltage_V);
                 log_file.print(",");
+                // Sim voltage
+                log_file.print(monitor->getSimVoltage());
+                log_file.print(",");
+                // Adjusted sim voltage
+                log_file.print(monitor->getFittedSimVoltage());
+                log_file.print(",");
                 // Total estimated flight time
                 log_file.print(total_flight_time_s);
                 log_file.print(",");
+                // Remaining estimated flight time
+                log_file.print(flight_time_remaining_s);
+                log_file.print(",");
                 // Estimated capacity
+                log_file.print(monitor->getEstimatedCapacity(), 3);
+                log_file.print(",");
+                // Estimated usable capacity
                 log_file.print(capacity_till_empty, 3);
                 log_file.print(",");
                 // Cell performance values
@@ -377,6 +390,8 @@ void loop() {
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
         u8g2->print(total_flight_time_s);
+        u8g2->print("  ");
+        u8g2->print(flying);
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
         u8g2->print(current_mA, 1);
         u8g2->print("mA");

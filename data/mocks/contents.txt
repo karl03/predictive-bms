@@ -1,0 +1,8 @@
+Files to run mocking on esp, rename to "mocking.csv" and "mocking_3221.csv" or change "defines.h" and flash.
+28 - batt 4 - cnhl 1500 4s, not the one discharge tested
+29 - batt 0 - 1600 dinogy
+30 - batt 6 - 1500 chnl, original test piece
+31 - batt 2 - 1600 dinogy
+32 - batt 4 - cnhl 1500
+33 - batt 5 - 1500 cnhl, crashed early
+34 - batt 2 - 1600 dinogy, pack sad :(
