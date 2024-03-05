@@ -47,30 +47,30 @@ class LiionDischarger:
         return self.E0 - (self.K * (self.capacity/(self.capacity - used_capacity)) * used_capacity) - (self.internal_resistance * instant_current) + (self.A * math.exp(-self.B * used_capacity)) - (self.K * (self.capacity/(self.capacity - used_capacity)) * filtered_current)
 
 # Vals from paper
-full_voltage = 1.39
-capacity = 7
-nominal_voltage = 1.18
-nominal_capacity = 6.25
-internal_resistance = 0.002
-exponential_voltage = 1.28
-exponential_capacity = 1.3
-curve_current = 1.3
-min_voltage = 0.8
-reaction_time = 30
+# full_voltage = 1.39
+# capacity = 7
+# nominal_voltage = 1.18
+# nominal_capacity = 6.25
+# internal_resistance = 0.002
+# exponential_voltage = 1.28
+# exponential_capacity = 1.3
+# curve_current = 1.3
+# min_voltage = 0.8
+# reaction_time = 30
 
 # Discharge test 1 values
 # Start ['4.20' '4.19' '4.19' '4.22' '16.809999999999874' '1.48' '13.14' '-0.00' '0.00' '67571' '0']
 # End ['3.36' '3.34' '3.25' '3.28' '13.354517558166222' '0.82' '6.59' '1541.91' '23790.48' '67584' '0']
-# full_voltage = 16.8
-# capacity = 1.55
-# nominal_voltage = 14.75
-# nominal_capacity = 1.42
-# internal_resistance = 0.002
-# exponential_voltage = 15.26
-# exponential_capacity = 0.8
-# curve_current = 0.06340690796660907
-# min_voltage = 13.3
-# reaction_time = 30
+full_voltage = 16.8
+capacity = 1.55
+nominal_voltage = 14.75
+nominal_capacity = 1.42
+internal_resistance = 0.0208
+exponential_voltage = 15.26
+exponential_capacity = 0.8
+curve_current = 0.06340690796660907
+min_voltage = 13.3
+reaction_time = 30
 
 
 A = full_voltage - exponential_voltage
@@ -100,7 +100,7 @@ high_cap_results = []
 low_cap_results = []
 
 test_class_model = LiionDischarger(full_voltage, capacity, nominal_voltage, nominal_capacity, internal_resistance, exponential_voltage, exponential_capacity, curve_current, min_voltage, reaction_time)
-high_cap_class_model = LiionDischarger(full_voltage, capacity*1.1, nominal_voltage, nominal_capacity*1.1, internal_resistance, exponential_voltage, exponential_capacity*1.1, curve_current, min_voltage, reaction_time)
+high_cap_class_model = LiionDischarger(full_voltage, capacity*1.3, nominal_voltage, nominal_capacity*1.3, internal_resistance, exponential_voltage, exponential_capacity*1.3, curve_current, min_voltage, reaction_time)
 low_cap_class_model = LiionDischarger(full_voltage, capacity*0.6, nominal_voltage, nominal_capacity*0.6, internal_resistance, exponential_voltage, exponential_capacity*0.6, curve_current, min_voltage, reaction_time)
 # test_class_model.setInitial()
 
@@ -114,7 +114,7 @@ for x in range(int(capacity * 1000)):
     if test_class_model.discharge(x/1000, 32.5, ((x/1000) / 32.5 * 3600)) >= min_voltage:
         r3.append(test_class_model.discharge(x/1000, 32.5, ((x/1000) / 32.5 * 3600)))
     # if x/1000 < capacity*0.5:
-    low_cap_results.append(high_cap_class_model.discharge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
+    low_cap_results.append(high_cap_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)))
         # low_cap_results.append(low_cap_class_model.discharge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
 
 plt.plot(results, label="6.5A")
