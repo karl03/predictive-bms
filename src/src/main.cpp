@@ -320,10 +320,10 @@ void loop() {
                 log_file.print(capacity_till_empty, 3);
                 log_file.print(",");
                 // Used capacity
-                log_file.print(monitor->getmAhUsed(), 3);
+                log_file.print(monitor->getmAhUsed(), 0);
                 log_file.print(",");
                 // Estimated used capacity
-                log_file.print(monitor->getEstmAhUsed(), 3);
+                log_file.print(monitor->getEstmAhUsed(), 0);
                 log_file.print(",");
                 // Used Energy
                 log_file.print(monitor->getmWhUsed(), 0);
@@ -401,11 +401,11 @@ void loop() {
         u8g2->print(busVoltage_V, 2);
         u8g2->print("V");
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 2));
-        u8g2->print(total_flight_time_s);
+        u8g2->print(monitor->getFittedSimVoltageDiff());
         u8g2->print("  ");
         u8g2->print(flying);
         u8g2->setCursor(0, (u8g2->getMaxCharHeight() * 3));
-        u8g2->print(current_mA, 1);
+        u8g2->print(monitor->getEstimatedCapacity());
         u8g2->print("mA");
         u8g2->print(missed_count);
         u8g2->sendBuffer();

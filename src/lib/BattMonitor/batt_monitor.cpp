@@ -57,9 +57,9 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     modified_batt_model_->SetInternalResistance(resistance_estimate_->getResistanceOhms());
     fitted_voltage_diff_ = modified_batt_model_->Simulate(est_mAh_used_ * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
 
+
     if (voltage_diff_ > max_voltage_variance_) {
         state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
-
         if (fitted_voltage_diff_ > max_voltage_variance_) {
             if (voltage_hit_ <= -5) {
                 state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
@@ -67,20 +67,22 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
                 est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
                 state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
                 modified_batt_model_->SetCapacity(state_->estimated_capacity);
+                voltage_hit_ = 0;
             } else {
                 voltage_hit_ -= 1;
             }
-        } else if (fitted_voltage_diff_ < -max_voltage_variance_) {
+        }
+    } else if (voltage_diff_ < -max_voltage_variance_) {
+        if (fitted_voltage_diff_ < -max_voltage_variance_) {
             if (voltage_hit_ >= 5) {
                 est_mAh_used_ += est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
                 est_mWh_used_ += est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
                 state_->estimated_capacity += (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
                 modified_batt_model_->SetCapacity(state_->estimated_capacity);
+                voltage_hit_ = 0;
             } else {
                 voltage_hit_ += 1;
             }
-        } else {
-            state_->batt_flags = state_->batt_flags | HIGH_RESISTANCE;
         }
     }
 
