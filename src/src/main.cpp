@@ -319,6 +319,18 @@ void loop() {
                 // Estimated usable capacity
                 log_file.print(capacity_till_empty, 3);
                 log_file.print(",");
+                // Used capacity
+                log_file.print(monitor->getmAhUsed(), 3);
+                log_file.print(",");
+                // Estimated used capacity
+                log_file.print(monitor->getEstmAhUsed(), 3);
+                log_file.print(",");
+                // Used Energy
+                log_file.print(monitor->getmWhUsed(), 0);
+                log_file.print(",");
+                // Estimated used Energy
+                log_file.print(monitor->getEstmWhUsed(), 0);
+                log_file.print(",");
                 // Cell performance values
                 log_file.print(monitor->getCellsStatus()[0]);
                 log_file.print(",");

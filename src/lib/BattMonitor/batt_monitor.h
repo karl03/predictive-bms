@@ -32,6 +32,7 @@ class BattMonitor {
         float getmWhUsed() {return state_->mWh_used;}
         float getmAhUsed() {return state_->mAh_used;}
         float getEstmWhUsed() {return est_mWh_used_;}
+        float getEstmAhUsed() {return est_mAh_used_;}
         float getFilteredCurrent() {return state_->filtered_current;}
         float getNominalVoltage() {return batt_model_->GetNominalVoltage();}
         int* getCellsStatus() {return state_->cell_status;}
