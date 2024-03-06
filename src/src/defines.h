@@ -24,6 +24,7 @@
 #define EXPONENTIAL_VOLTAGE 15.26   // Voltage at end of initial exponential zone
 #define EXPONENTIAL_CAPACITY 0.8    // Capacity at end of initial exponential zone
 #define CURVE_CURRENT 0.06340690796660907   // Discharge current during test used to extract parameters
+// #define CURVE_CURRENT 1.75
 #define MAX_VOLTAGE 16.8            // Max and min voltages used for SoC estimation and comparison, ensure that the
 #define MIN_VOLTAGE 13.3            // number of millivolts between these is equal to the length of the lookup array.
 #define REACTION_TIME 30            // Battery reaction time

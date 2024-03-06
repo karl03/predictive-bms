@@ -68,7 +68,8 @@ nominal_capacity = 1.42
 internal_resistance = 0.0208
 exponential_voltage = 15.26
 exponential_capacity = 0.8
-curve_current = 0.06340690796660907
+# curve_current = 0.06340690796660907
+curve_current = 1.75
 min_voltage = 13.3
 reaction_time = 30
 
@@ -91,7 +92,7 @@ def liionDischarge(used_capacity, instant_current, time_since_last_measurement):
     # From Tremblay paper 2009:
     return E0 - (K * (capacity/(capacity - used_capacity)) * used_capacity) - (internal_resistance * instant_current) + (A * math.exp(-B * used_capacity)) - (K * (capacity/(capacity - used_capacity)) * filtered_current)
 
-print(f"Test = {liionDischarge(3.5, 15, 30)}")
+# print(f"Test = {liionDischarge(3.5, 15, 30)}")
 
 results = []
 r2 = []
@@ -109,19 +110,19 @@ for x in range(int(capacity * 1000)):
         results.append(liionDischarge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
         # high_cap_results.append(high_cap_class_model.discharge(x/1000, curve_current, ((x/1000) / 32.5 * 3600)))
         # r2.append(test_class_model.discharge(x/1000, curve_current, ((x/1000) / 32.5 * 3600)))
-    if test_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)) >= min_voltage:
-        r2.append(test_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)))
-    if test_class_model.discharge(x/1000, 32.5, ((x/1000) / 32.5 * 3600)) >= min_voltage:
-        r3.append(test_class_model.discharge(x/1000, 32.5, ((x/1000) / 32.5 * 3600)))
+    if test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)) >= min_voltage:
+        r2.append(test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)))
+    if test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)) >= min_voltage:
+        r3.append(test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)))
     # if x/1000 < capacity*0.5:
-    low_cap_results.append(high_cap_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)))
+    # low_cap_results.append(high_cap_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)))
         # low_cap_results.append(low_cap_class_model.discharge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
 
 plt.plot(results, label="6.5A")
 # plt.plot(high_cap_results, label="Capacity * 1.2")
-plt.plot(low_cap_results, label="Capacity * 0.8")
-plt.plot(r2, label=f"{curve_current}A")
-plt.plot(r3, label="32.5A")
+# plt.plot(low_cap_results, label="Capacity * 1.3")
+plt.plot(r2, label=f"17.8A")
+plt.plot(r3, label="40A")
 plt.legend()
 plt.xlabel("Capacity Used (mAh)")
 plt.ylabel("Voltage (V)")

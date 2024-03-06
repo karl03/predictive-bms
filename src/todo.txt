@@ -1,7 +1,8 @@
 Todo
-Store results in good format, plot and save
+
 
 Doing
+Plotting results
 
 Done
 Fix mocking timer
@@ -15,3 +16,4 @@ Use average current for flight time estimation
 Added watts estimation/ averaging
 Add conditions for cell imbalances
 Fixed flight time remaining bugs
+Store results in good format and saved
