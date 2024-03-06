@@ -64,12 +64,12 @@ class LiionDischarger:
 full_voltage = 16.8
 capacity = 1.55
 nominal_voltage = 14.75
-nominal_capacity = 1.42
-internal_resistance = 0.0208
+nominal_capacity = 1.5
+internal_resistance = 0.008
 exponential_voltage = 15.26
-exponential_capacity = 0.8
+exponential_capacity = 0.3
 # curve_current = 0.06340690796660907
-curve_current = 1.75
+curve_current = 6
 min_voltage = 13.3
 reaction_time = 30
 
