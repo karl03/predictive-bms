@@ -371,3 +371,9 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *2 hours* Fixed bugs with flight time estimation, found issue with cell distances, now working
 * *5 hours* Testing, rerunning tests several times to try and fix issues, fixed several bugs, found underlying issue is in the battery model itself, which is taken from existing paper.
+
+### 6 Mar 2024
+
+* *3.5 hours* Attempted to fit simulation changing curve current variable. Setting up results plotting, and creating initial results.
+* *0.5 hours* Supervisor meeting.
+* *0.5 hours* Editing/ uploading meeting minutes.
