@@ -407,3 +407,8 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 * *0.5 hours* Supervisor Meeting
 * *0.5 hours* Editing/ uploading meeting minutes
 * *5 hours* Dissertation work
+
+### 14 Mar 2024
+
+* *1 hour* Dissertation work
+* *3 hours* Dissertation work
