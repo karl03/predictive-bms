@@ -1,8 +1,10 @@
 Todo
-
+Set limit for changing sim to a 5% difference in voltage, as this is the margin described in paper
+Modify cell-difference calculation to give an average rather than absolute value
+Re-plot results
 
 Doing
-Plotting results
+Write dissertation
 
 Done
 Fix mocking timer
