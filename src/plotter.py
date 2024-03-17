@@ -2,14 +2,21 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+file_path = r"..\data\raw\test-20240123-212326.csv"  # Path where data file is stored
+maximum_voltage = 16.8              # Fully charged voltage
+minimum_voltage = 13.3              # Voltage at end of discharge test
+
+reaction_time = 200                 # Low pass filter reaction time in seconds
+values_to_average = 1000            # Number of values to use for each average
+
 
 class LowPassFilter:
-    def __init__(self, filter_const, initial_value):
+    def __init__(self, reaction_time, initial_value):
         self.filtered_value = initial_value
-        self.filter_const = filter_const
+        self.reaction_time = reaction_time
 
     def update(self, new_value, time_delta):
-        filter_factor = min(time_delta * self.filter_const, 1.0)
+        filter_factor = min(time_delta / self.reaction_time, 1.0)
         
         self.filtered_value = float(self.filtered_value) * (1 - filter_factor) + float(new_value) * filter_factor
         return self.filtered_value
@@ -24,19 +31,6 @@ def find_plugged_in(array, sub_index, min_voltage):
     for index, val in enumerate(array):
         if float(val[sub_index]) > min_voltage:
             return index
-
-def accumulate_value(array, value_index):
-    accumulated_array = add_column(array)
-    time = 0
-    for index in range(len(array)):
-        time += int(array[index][value_index])
-        accumulated_array[index][-1] = time
-    
-    return accumulated_array
-
-def ms_to_hours(array, time_index):
-    for index in range(len(array)):
-        array[index][time_index] = int(array[index][time_index]) / 3600000
 
 def average_results(array, value_index, avg_num):
     if avg_num <= 1 or avg_num > len(array):
@@ -136,40 +130,36 @@ def array_to_c_array(array):
     return output + "}"
 
 
-with open(r"..\data\raw\test-20240123-212326.csv") as F:
+with open(file_path) as F:
     lines = [line.strip().split(',') for line in F.readlines()]
 
 results = np.array(lines)
 
 results_copy = results[1::]
-readings_start = find_plugged_in(results_copy, 4, 10)
+readings_start = find_plugged_in(results_copy, 4, minimum_voltage)
 results_copy = results_copy[readings_start::]
-low_pass_filter_array(results_copy, 4, 9, 1/300)
-results_copy = average_results(results_copy, 4, 1000)
-# results_copy = accumulate_value(results_copy, 9)
-# ms_to_hours(results_copy, -1)
-# print(results_copy[0])
-# print(results_copy[-1])
+low_pass_filter_array(results_copy, 4, 9, reaction_time)
+results_copy = average_results(results_copy, 4, values_to_average)
 
-# print(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), 16.8, 13.3))
-# print(array_to_c_array(get_lookup_vals(results[1::, 4].astype(float), results[1::, 8].astype(float), 16.8, 13.3)))
-print(f"Average current: {np.average(results[1::, 6].astype(float))}")
+print("Capacity lookup:", array_to_c_array(get_lookup_vals(results_copy[::, 4].astype(float), results_copy[::, 7].astype(float), maximum_voltage, minimum_voltage)))
+print("Energy lookup:", array_to_c_array(get_lookup_vals(results[1::, 4].astype(float), results[1::, 8].astype(float), maximum_voltage, minimum_voltage)))
+print(f"Average current: {np.average(results[1::, 6].astype(float))}mA")
 
-# gradients = [0]
-# for index in range(len(results_copy) - 1):
-#     gradients.append(float(results_copy[index + 1][4]) - float(results_copy[index][4]))
+gradients = [0]
+for index in range(len(results_copy) - 1):
+    gradients.append(float(results_copy[index + 1][4]) - float(results_copy[index][4]))
 
-# fig, ax1 = plt.subplots()
-# ax1.set_xlabel("Capacity (mAh)")
-# ax1.set_ylabel("Voltage (V)", color='tab:red')
-# ax1.plot(results_copy[::, 7].astype(float), results_copy[::, 4].astype(float), color='tab:red')
-# ax1.tick_params(axis='y', labelcolor='tab:red')
+fig, ax1 = plt.subplots()
+ax1.set_xlabel("Capacity (mAh)")
+ax1.set_ylabel("Voltage (V)", color='tab:red')
+ax1.plot(results_copy[::, 7].astype(float), results_copy[::, 4].astype(float), color='tab:red')
+ax1.tick_params(axis='y', labelcolor='tab:red')
 
-# ax2 = ax1.twinx()
-# ax2.set_ylabel("V Difference (V)", color='tab:blue')
-# ax2.plot(results_copy[::, 7].astype(float), gradients, color='tab:blue')
-# ax2.tick_params(axis='y', labelcolor='tab:blue')
+ax2 = ax1.twinx()
+ax2.set_ylabel("Voltage Gradient", color='tab:blue')
+ax2.plot(results_copy[::, 7].astype(float), gradients, color='tab:blue')
+ax2.tick_params(axis='y', labelcolor='tab:blue')
 
-# plt.title("Discharge Test 1\n1500mAh 4s, Low Pass Filter with 1/300 constant, Averaging every 1000 values")
-# plt.grid(True)
-# plt.show()
+plt.title("Discharge Test")
+plt.grid(True)
+plt.show()
