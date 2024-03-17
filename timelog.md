@@ -416,3 +416,11 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 ### 15 Mar 2024
 
 * *1 hour* Dissertation work
+
+### 16 Mar 2024
+
+* *10 hours* Dissertation work
+
+### 17 Mar 2024
+
+* *10 hours* Dissertation work
