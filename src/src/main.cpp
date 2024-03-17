@@ -47,17 +47,6 @@ float flight_time_remaining_s = 0;
 float initial_mAh_used = 0;
 float initial_mWh_used = 0;
 
-float SoCLookup(float voltage, const float* array) {
-    if ((voltage >= MIN_VOLTAGE) && (voltage <= MAX_VOLTAGE)) {
-        int index = (int)(voltage * 100) - (int)(MIN_VOLTAGE * 100);
-        return array[index];
-    } else if (voltage > MAX_VOLTAGE) {
-        return 0;
-    } else {
-        return array[0];
-    }
-}
-
 void setup() {
     // Required to run even when display is not enabled
     u8g2->begin();
