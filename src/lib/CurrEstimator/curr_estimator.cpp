@@ -1,6 +1,11 @@
 #include "curr_estimator.h"
 
 CurrEstimator::CurrEstimator(SdFs *sd, const char *file_path, unsigned int long_decay_s, unsigned int short_decay_s) {
+    if (strlen(file_path) == 0) {
+        use_file_ = false;
+    } else {
+        use_file_ = true;
+    }
     sd_ = sd;
     file_path_ = file_path;
     long_decay_s_ = long_decay_s;
@@ -30,11 +35,14 @@ CurrEstimator::CurrEstimator(SdFs *sd, const char *file_path, unsigned int long_
         }
         file_.close();
     } else {
-        file_.open(file_path_, FILE_WRITE);
-        file_.print(.0f);
-        file_.flush();
-        file_.close();
-        long_term_avg_ = .0f;
+        if (file_.open(file_path_, FILE_WRITE)) {
+            file_.print(.0f);
+            file_.flush();
+            file_.close();
+            long_term_avg_ = .0f;
+        } else {
+            use_file_ = false;
+        }
     }
 
     short_term_avg_ = long_term_avg_;
@@ -64,6 +72,9 @@ float CurrEstimator::updateAvg(float current_mA, unsigned long time_delta_micros
 }
 
 int CurrEstimator::writeLongTermAvg() {
+    if (!use_file_) {
+        return 0;
+    }
     if (!file_.open(file_path_, FILE_WRITE)) {
         return 0;
     }

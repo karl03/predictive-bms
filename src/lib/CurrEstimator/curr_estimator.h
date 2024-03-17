@@ -20,6 +20,7 @@ class CurrEstimator {
         unsigned int long_decay_s_;
         unsigned int short_decay_s_;
         bool first_run_;
+        bool use_file_;
 };
 
 #endif

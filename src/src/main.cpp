@@ -51,7 +51,7 @@ void setup() {
     // Required to run even when display is not enabled
     u8g2->begin();
 
-    if (SD_LOGGING || MOCKING) {
+    if (SD_LOGGING || MOCKING || (CURRENT_FILE && WATT_FILE)) {
         if (!sd.begin(15, SD_SCK_MHZ(39.9))) {
             if (DISPLAY) {
                 u8g2->clearBuffer();
@@ -211,8 +211,14 @@ void setup() {
     }
 
     monitor = new BattMonitor(busVoltage_V, current_mA, cell_voltages, initial_mAh_used, initial_mWh_used, micros(), simulator, modifiable_simulator, REACTION_TIME * 1000000, MAX_VOLTAGE_VARIANCE, MAX_CELL_VARIANCE, CAPACITY_STEP_PERCENTAGE);
-    curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
-    watt_estimator = new CurrEstimator(&sd, WATT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+    if (CURRENT_FILE && WATT_FILE) {
+        curr_estimator = new CurrEstimator(&sd, CURRENT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+        watt_estimator = new CurrEstimator(&sd, WATT_FILE, LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+    } else {
+        curr_estimator = new CurrEstimator(&sd, "\0", LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+        watt_estimator = new CurrEstimator(&sd, "\0", LONG_DECAY_SECONDS, SHORT_DECAY_SECONDS);
+    }
+    
     monitor->resetFilter(current_mA);
 }
 
