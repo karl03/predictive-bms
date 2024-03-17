@@ -5,8 +5,6 @@
 #include <U8g2lib.h>
 #include <INA226_WE.h>
 #include <INA3221.h>
-#include "batt_model.h"
-#include "resistance_estimate.h"
 #include "defines.h"
 
 U8G2 *u8g2 = new U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -32,7 +30,7 @@ int missed_count = 0;
 
 void setup() {
     if (SD_LOGGING == 1) {
-        if (!sd.begin(15, SD_SCK_MHZ(39))) {
+        if (!sd.begin(15, SD_SCK_MHZ(39.9))) {
             while(1){};
         } else {
             while (sd.exists(String(log_counter) + ".csv")) {
@@ -106,7 +104,7 @@ void setup() {
         while(1){};
     }
 
-    // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
+    // Increase averaging onboard INAs to remove need to average locally, allows time to run other processes
     // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);

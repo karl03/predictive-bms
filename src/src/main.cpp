@@ -143,7 +143,7 @@ void setup() {
         while(1){yield();}
     }
 
-    // Increase averaging onboard INAs to be remove need to average locally, allows time to run other processes
+    // Increase averaging onboard INAs to remove need to average locally, allows time to run other processes
     // INA226 is primary for functionality, so its conversion time is set to higher than the 3221, allowing loop to be based around its readings
     ina226.setConversionTime(CONV_TIME_2116);
     ina226.setAverage(AVERAGE_16);
@@ -387,14 +387,42 @@ void loop() {
     }
   
     if (serial_mode) {
-        Serial.print("v1,");
-        Serial.println(cell_voltages[0]);
-        Serial.print("v2,");
-        Serial.println(cell_voltages[1]);
-        Serial.print("v3,");
-        Serial.println(cell_voltages[2]);
-        Serial.print("v4,");
-        Serial.println(cell_voltages[3]);
+        Serial.print(cell_voltages[0]);
+        Serial.print(cell_voltages[1]);
+        Serial.print(cell_voltages[2]);
+        Serial.print(cell_voltages[3]);
+        Serial.print(",");
+        Serial.print(busVoltage_V);
+        Serial.print(",");
+        Serial.print(monitor->getSimVoltage());
+        Serial.print(",");
+        Serial.print(monitor->getFittedSimVoltage());
+        Serial.print(",");
+        Serial.print(total_flight_time_s);
+        Serial.print(",");
+        Serial.print(flight_time_remaining_s);
+        Serial.print(",");
+        Serial.print(monitor->getEstimatedCapacity());
+        Serial.print(",");
+        Serial.print(capacity_till_empty);
+        Serial.print(",");
+        Serial.print(monitor->getmAhUsed());
+        Serial.print(",");
+        Serial.print(monitor->getEstmAhUsed());
+        Serial.print(",");
+        Serial.print(monitor->getmWhUsed());
+        Serial.print(",");
+        Serial.print(monitor->getEstmWhUsed());
+        Serial.print(",");
+        Serial.print(monitor->getCellsStatus()[0]);
+        Serial.print(",");
+        Serial.print(monitor->getCellsStatus()[1]);
+        Serial.print(",");
+        Serial.print(monitor->getCellsStatus()[2]);
+        Serial.print(",");
+        Serial.print(monitor->getCellsStatus()[3]);
+        Serial.print(",");
+        Serial.println(monitor->getResistanceOhms());
     } else if (USE_DISPLAY) {
         u8g2->clearBuffer();
         u8g2->setCursor(0, u8g2->getMaxCharHeight());
