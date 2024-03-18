@@ -12,7 +12,6 @@
 #define MIN_FLYING_AMPS 1           // Minimum current for flying state, should be set to current when motors are idling
 #define CAPACITY_STEP_PERCENTAGE 1  // Percentage of capacity to decrease when iterating simulation capacity
 #define MAX_VOLTAGE_VARIANCE 0.2    // Maximum difference in voltage between simulation and real performance before adjusting simulation
-#define MAX_CELL_VARIANCE 0.1       // Maximum difference between cells before warning
 #define SHORT_DECAY_SECONDS 180     // Decay time for per-flight exponential moving average
 #define LONG_DECAY_SECONDS 1800     // Decay time for long-term exponential moving average
 #define MIN_FLYING_VOLTAGE 13.3     // Minimum voltage for flight time estimation
@@ -25,7 +24,7 @@
 #define EXPONENTIAL_VOLTAGE 15.26   // Voltage at end of initial exponential zone
 #define EXPONENTIAL_CAPACITY 0.8    // Capacity at end of initial exponential zone
 #define CURVE_CURRENT 0.06340690796660907   // Discharge current during test used to extract parameters
-// #define CURVE_CURRENT 1.75
+
 #define MAX_VOLTAGE 16.8            // Max and min voltages used for SoC estimation and comparison, ensure that the
 #define MIN_VOLTAGE 13.3            // number of millivolts between these is equal to the length of the lookup array.
 #define REACTION_TIME 30            // Battery reaction time

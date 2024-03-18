@@ -1,8 +1,7 @@
 #include "batt_monitor.h"
 
-BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time_micros, float max_voltage_variance, float max_cell_variance, float capacity_step_percentage) {
+BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time_micros, float max_voltage_variance, float capacity_step_percentage) {
     max_voltage_variance_ = max_voltage_variance;
-    max_cell_variance_ = max_cell_variance;
     capacity_step_percentage_ = capacity_step_percentage;
     est_mAh_used_ = est_initial_mAh_ = mAh_used;
     est_mWh_used_ = est_initial_mWh_ = mWh_used;
