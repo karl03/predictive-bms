@@ -169,8 +169,8 @@ void setup() {
     // }
 
     // Initialise battery model/ monitor
-    simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
-    modifiable_simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
+    simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_ZONE_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
+    modifiable_simulator = new BattModel(MAX_VOLTAGE, CAPACITY, NOMINAL_ZONE_VOLTAGE, NOMINAL_CAPACITY, INTERNAL_RESISTANCE, EXPONENTIAL_VOLTAGE, EXPONENTIAL_CAPACITY, CURVE_CURRENT, MIN_VOLTAGE);
 
     busVoltage_V = ina226.getBusVoltage_V();
     shuntVoltage_mV = ina226.getShuntVoltage_mV();
@@ -282,8 +282,8 @@ void loop() {
         }
     }
 
-    flight_time_remaining_s = (((capacity_till_empty * monitor->getNominalVoltage()) - (monitor->getEstmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
-    total_flight_time_s = ((capacity_till_empty * monitor->getNominalVoltage())/ watt_estimator->getShortAvg()) * 3600;
+    flight_time_remaining_s = (((capacity_till_empty * NOMINAL_VOLTAGE) - (monitor->getEstmWhUsed() * 0.001)) / watt_estimator->getShortAvg()) * 3600;
+    total_flight_time_s = ((capacity_till_empty * NOMINAL_VOLTAGE)/ watt_estimator->getShortAvg()) * 3600;
 
 
     if (SD_LOGGING) {

@@ -19,7 +19,8 @@
 
 #define INTERNAL_RESISTANCE 0.0208  // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
-#define NOMINAL_VOLTAGE 14.75       // Voltage at end of "nominal zone", just before final exponential voltage drop
+#define NOMINAL_VOLTAGE 14.8        // Average of battery voltage throughout full discharge
+#define NOMINAL_ZONE_VOLTAGE 14.75  // Voltage at end of "nominal zone", just before final exponential voltage drop
 #define NOMINAL_CAPACITY 1.42       // Capacity used at end of "nominal zone" (Amp hours)
 #define EXPONENTIAL_VOLTAGE 15.26   // Voltage at end of initial exponential zone
 #define EXPONENTIAL_CAPACITY 0.8    // Capacity at end of initial exponential zone
