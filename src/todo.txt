@@ -1,9 +1,7 @@
 Todo
-Set limit for changing sim to a 5% difference in voltage, as this is the margin described in paper
-Modify cell-difference calculation to give an average rather than absolute value
-Re-plot results
 
 Doing
+Re-plot results
 Write dissertation
 
 Done
@@ -19,3 +17,4 @@ Added watts estimation/ averaging
 Add conditions for cell imbalances
 Fixed flight time remaining bugs
 Store results in good format and saved
+Modify cell-difference calculation to give an average rather than absolute value

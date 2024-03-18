@@ -35,7 +35,7 @@ class BattMonitor {
         float getEstmAhUsed() {return est_mAh_used_;}
         float getFilteredCurrent() {return state_->filtered_current;}
         float getNominalVoltage() {return batt_model_->GetNominalVoltage();}
-        int* getCellsStatus() {return state_->cell_status;}
+        float* getCellsStatus() {return state_->calcd_outliers;}
     
     private:
         struct State {
@@ -43,7 +43,9 @@ class BattMonitor {
             float current;              // Current in mA
             float filtered_current;     // Low-pass filtered current in mA
             float cell_voltages[4];     // Per-cell voltage in V
-            int cell_status[4];         // Per-cell status
+            float cell_outlier_total[4];// Sum of all outlier values for each cell when it was an outlier
+            float total_outlier_value;  // Sum of outlier readings, used for averaging
+            float calcd_outliers[4];    // Calculated outlier values, representing cell performance in comparison to mean
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds

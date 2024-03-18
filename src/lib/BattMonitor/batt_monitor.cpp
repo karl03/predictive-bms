@@ -137,12 +137,18 @@ void BattMonitor::updateCellDifferences() {
         
         for (int cur_cell = 0; cur_cell < 4; cur_cell++) {
             if (abs(cell_distances[cur_cell] - max_outlier) < abs(cell_distances[cur_cell] - min_outlier)) {
+                state_->total_outlier_value += cell_distances[cur_cell];
+
                 if (state_->cell_voltages[cur_cell] > mean_cell_voltage) {
-                    state_->cell_status[cur_cell]++;
+                    state_->cell_outlier_total[cur_cell] += cell_distances[cur_cell];
                 } else {
-                    state_->cell_status[cur_cell]--;
+                    state_->cell_outlier_total[cur_cell] -= cell_distances[cur_cell];
                 }
             }
+        }
+
+        for (int cell = 0; cell < 4; cell++) {
+            state_->calcd_outliers[cell] = state_->cell_outlier_total[cell] / state_->total_outlier_value;
         }
     }
 
