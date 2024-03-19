@@ -1,5 +1,14 @@
+Batteries:
 0 - 1600 dinogy				Mapped 1
 2 - 1600 dinogy				Mapped 2
 4 - 1500 cnhl (not the one tested)	Mapped 3
 5 - 1500 cnhl (not the one tested)	Mapped 4
 6 - 1500 cnhl (original test piece)	Mapped 5
+
+Flights:
+29 Mapped 1
+30 Mapped 2
+31 Mapped 3
+32 Mapped 4
+33 Mapped 5
+34 Mapped 6

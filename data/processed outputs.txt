@@ -1,0 +1,30 @@
+run 29 mean absolute error: 1.0168824065633546
+run 29 mean error: 0.8278577939835917
+run 29 new mean absolute error: 0.3153463992707384
+run 29 new mean error: -0.3139881494986326
+
+run 30 mean absolute error:1.3930426884650318
+run 30 mean error: 1.355531335149864
+run 30 new mean absolute error: 0.08164396003633068
+run 30 new mean error: -0.02390554041780193
+
+run 31 mean absolute error: 0.742794049279405
+run 31 mean error: 0.5296373779637378
+run 31 new mean absolute error: 6.509804741980474
+run 31 new mean error: -2.6397536029753605
+
+run 32 mean absolute error: 1.4515255858440939
+run 32 mean error: 1.4188713534194166
+run 32 new mean absolute error: 0.1514155906264945
+run 32 new mean error: 0.11943089430894309
+
+run 33 mean absolute error: 1.209922420480993
+run 33 mean error: 1.1602560124127232
+run 33 new mean absolute error: 0.20233333333333334
+run 33 new mean error: 0.1579767441860465
+
+run 34 mean absolute error: 1.254392609699769
+run 34 mean error: 0.7439815242494227
+run 34 new mean absolute error: 0.7114542936288089
+run 34 new mean error: -0.7053139427516159
+
