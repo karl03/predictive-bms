@@ -1,5 +1,6 @@
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 class LowPassFilter:
     def __init__(self, reaction_time, initial_time=0, initial_current=0):
@@ -12,10 +13,14 @@ class LowPassFilter:
         self.filtered_current = current
 
     def update(self, current, time):
-        filter_val = math.exp(- (time - self.current_time) / self.reaction_time)
+        filter_val = (time - self.current_time) / self.reaction_time
         self.current_time = time
+
+        if filter_val >= 1:
+            self.filtered_current = current
+        else:
+            self.filtered_current = self.filtered_current * (1 - filter_val) + current * filter_val
         
-        self.filtered_current = self.filtered_current * (1 - filter_val) + current * filter_val
         return self.filtered_current
 
 class LiionDischarger:
@@ -65,11 +70,12 @@ full_voltage = 16.8
 capacity = 1.55
 nominal_voltage = 14.75
 nominal_capacity = 1.5
-internal_resistance = 0.008
+# internal_resistance = 0.0005
+internal_resistance = 0.02
 exponential_voltage = 15.26
 exponential_capacity = 0.3
 # curve_current = 0.06340690796660907
-curve_current = 6
+curve_current = 7
 min_voltage = 13.3
 reaction_time = 30
 
@@ -105,26 +111,50 @@ high_cap_class_model = LiionDischarger(full_voltage, capacity*1.3, nominal_volta
 low_cap_class_model = LiionDischarger(full_voltage, capacity*0.6, nominal_voltage, nominal_capacity*0.6, internal_resistance, exponential_voltage, exponential_capacity*0.6, curve_current, min_voltage, reaction_time)
 # test_class_model.setInitial()
 
-for x in range(int(capacity * 1000)):
-    if liionDischarge(x/1000, curve_current, ((1/100) / 32.5 * 3600)) >= min_voltage:
-        results.append(liionDischarge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
+def import_csv_and_convert(file_path):
+    with open(file_path, "r") as F:
+        lines = [[float(elt) for elt in line.strip().split(',') if elt.strip()] for line in F.readlines()]
+        
+    return np.array(lines)
+
+def run_sim(output_data, input_data):
+    sim_out = []
+
+    for index, line in enumerate(output_data):
+        sim_out.append(test_class_model.discharge(line[8]/1000, input_data[index][2] / 3.7834625 * 10 - 0.982, line[0] / 1000))
+    
+    return sim_out
+    
+
+run_num = 30
+original = import_csv_and_convert(fr".\data\testing_outputs\{run_num}-output.csv")
+original_input = import_csv_and_convert(fr".\data\testing-inputs\ina_mock_{run_num}.csv")
+results = run_sim(original, original_input)
+r2 = original[:, 1]
+r3 = results - r2
+r3 = np.absolute(r3)
+print(f"Mean error: {np.mean(r3)}")
+
+# for x in range(int(capacity * 1000)):
+    # if liionDischarge(x/1000, curve_current, ((1/100) / 32.5 * 3600)) >= min_voltage:
+    #     results.append(liionDischarge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
         # high_cap_results.append(high_cap_class_model.discharge(x/1000, curve_current, ((x/1000) / 32.5 * 3600)))
         # r2.append(test_class_model.discharge(x/1000, curve_current, ((x/1000) / 32.5 * 3600)))
-    if test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)) >= min_voltage:
-        r2.append(test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)))
-    if test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)) >= min_voltage:
-        r3.append(test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)))
+    # if test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)) >= min_voltage:
+    #     r2.append(test_class_model.discharge(x/1000, 17.8, ((x/1000) / 32.5 * 3600)))
+    # if test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)) >= min_voltage:
+        # r3.append(test_class_model.discharge(x/1000, 40, ((x/1000) / 32.5 * 3600)))
     # if x/1000 < capacity*0.5:
     # low_cap_results.append(high_cap_class_model.discharge(x/1000, 13, ((x/1000) / 32.5 * 3600)))
         # low_cap_results.append(low_cap_class_model.discharge(x/1000, 6.5, ((x/1000) / 32.5 * 3600)))
 
-plt.plot(results, label="6.5A")
+plt.plot(results, label="Simulated")
 # plt.plot(high_cap_results, label="Capacity * 1.2")
 # plt.plot(low_cap_results, label="Capacity * 1.3")
-plt.plot(r2, label=f"17.8A")
-plt.plot(r3, label="40A")
+plt.plot(r2, label=f"Real")
+# plt.plot(r3, label="diff")
 plt.legend()
-plt.xlabel("Capacity Used (mAh)")
+plt.xlabel("Data point index")
 plt.ylabel("Voltage (V)")
 plt.grid(True)
 plt.title(f"Simulation of 6.5Ah, 1.2V NiMH Battery\nA={round(A, 4)}, B={round(B, 4)}, R={internal_resistance}, K={round(K, 4)}, E0={round(E0, 4)}")
