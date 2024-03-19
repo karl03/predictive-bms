@@ -6,9 +6,9 @@ Batteries:
 6 - 1500 cnhl (original test piece)	Mapped 5
 
 Flights:
-29 Mapped 1
-30 Mapped 2
-31 Mapped 3
-32 Mapped 4
-33 Mapped 5
-34 Mapped 6
+29 Bat 1 Mapped 1
+30 Bat 5 Mapped 2
+31 Bat 2 Mapped 3
+32 Bat 3 Mapped 4
+33 Bat 4 Mapped 5
+34 Bat 2 Mapped 6
