@@ -18,7 +18,6 @@ BattMonitor::BattMonitor(float voltage, float current, float cell_voltages[4], f
     state_->mAh_used = mAh_used;
     state_->mWh_used = mWh_used;
     state_->last_update = time_micros;
-    state_->batt_flags = 0;
 
     batt_model_ = batt_model;
     modified_batt_model_ = batt_model_modifiable;
@@ -57,31 +56,25 @@ void BattMonitor::updateConsumption(unsigned long time_micros, float voltage, fl
     fitted_voltage_diff_ = modified_batt_model_->Simulate(est_mAh_used_ * 0.001, state_->current * 0.001, state_->filtered_current * 0.001) - state_->voltage;
 
 
-    if (voltage_diff_ > max_voltage_variance_) {
-        state_->batt_flags = state_->batt_flags | UNDERPERFORMING;
-        if (fitted_voltage_diff_ > max_voltage_variance_) {
-            if (voltage_hit_ <= -5) {
-                state_->batt_flags = state_->batt_flags | LOW_CAPACITY;
-                est_mAh_used_ -= est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
-                est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
-                state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
-                modified_batt_model_->SetCapacity(state_->estimated_capacity);
-                voltage_hit_ = 0;
-            } else {
-                voltage_hit_ -= 1;
-            }
+    if (fitted_voltage_diff_ > max_voltage_variance_) {
+        if (voltage_hit_ <= -5) {
+            est_mAh_used_ -= est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
+            est_mWh_used_ -= est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
+            state_->estimated_capacity -= (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+            modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            voltage_hit_ = 0;
+        } else {
+            voltage_hit_ -= 1;
         }
-    } else if (voltage_diff_ < -max_voltage_variance_) {
-        if (fitted_voltage_diff_ < -max_voltage_variance_) {
-            if (voltage_hit_ >= 5) {
-                est_mAh_used_ += est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
-                est_mWh_used_ += est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
-                state_->estimated_capacity += (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
-                modified_batt_model_->SetCapacity(state_->estimated_capacity);
-                voltage_hit_ = 0;
-            } else {
-                voltage_hit_ += 1;
-            }
+    } else if (fitted_voltage_diff_ < -max_voltage_variance_) {
+        if (voltage_hit_ >= 5) {
+            est_mAh_used_ += est_initial_mAh_ * (capacity_step_percentage_ * 0.01);
+            est_mWh_used_ += est_initial_mWh_ * (capacity_step_percentage_ * 0.01);
+            state_->estimated_capacity += (batt_model_->GetCapacity() * (capacity_step_percentage_ * 0.01));
+            modified_batt_model_->SetCapacity(state_->estimated_capacity);
+            voltage_hit_ = 0;
+        } else {
+            voltage_hit_ += 1;
         }
     }
 

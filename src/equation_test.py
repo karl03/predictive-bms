@@ -126,7 +126,7 @@ def run_sim(output_data, input_data):
     return sim_out
     
 
-run_num = 30
+run_num = 31
 original = import_csv_and_convert(fr".\data\testing_outputs\{run_num}-output.csv")
 original_input = import_csv_and_convert(fr".\data\testing-inputs\ina_mock_{run_num}.csv")
 results = run_sim(original, original_input)

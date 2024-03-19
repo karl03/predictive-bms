@@ -1,7 +1,7 @@
 Todo
 
 Doing
-Re-plot results
+Re-plot results (run with new simulation values, generate mean errors and such, table with capacity estimations)
 Write dissertation
 
 Done

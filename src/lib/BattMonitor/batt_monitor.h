@@ -11,14 +11,6 @@
 
 class BattMonitor {
     public:
-        enum flags {
-            EMPTY = 1,
-            OVERCHARGED = 2,
-            UNDERPERFORMING = 4,
-            IMBALANCED = 8,
-            HIGH_RESISTANCE = 16,
-            LOW_CAPACITY = 32,
-        };
 
         BattMonitor(float voltage, float current, float cell_voltages[4], float mAh_used, float mWh_used, unsigned long time_micros, BattModel* batt_model, BattModel* batt_model_modifiable, int reaction_time_micros, float max_voltage_variance, float capacity_step_percentage);
         void updateConsumption(unsigned long time_micros, float voltage, float current_mA, float cell_voltages[4]);
@@ -49,7 +41,6 @@ class BattMonitor {
             float mAh_used;
             float mWh_used;
             unsigned long last_update;  // Last update of values in microseconds
-            int batt_flags;             // Overall battery flags
             float estimated_capacity;
         };
 
