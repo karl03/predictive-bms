@@ -71,7 +71,7 @@ capacity = 1.55
 nominal_voltage = 14.75
 nominal_capacity = 1.5
 # internal_resistance = 0.0005
-internal_resistance = 0.02
+internal_resistance = 0.0208
 exponential_voltage = 15.26
 exponential_capacity = 0.3
 # curve_current = 0.06340690796660907
@@ -126,7 +126,7 @@ def run_sim(output_data, input_data):
     return sim_out
     
 
-run_num = 31
+run_num = 30
 original = import_csv_and_convert(fr".\data\testing_outputs\{run_num}-output.csv")
 original_input = import_csv_and_convert(fr".\data\testing-inputs\ina_mock_{run_num}.csv")
 results = run_sim(original, original_input)
