@@ -1,0 +1,4 @@
+internal resistance: 0.02
+exponential capacity: 0.3
+nominal capacity: 1.5
+curve curren: 7

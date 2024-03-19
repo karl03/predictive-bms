@@ -16,14 +16,14 @@
 #define LONG_DECAY_SECONDS 1800     // Decay time for long-term exponential moving average
 #define MIN_FLYING_VOLTAGE 13.3     // Minimum voltage for flight time estimation
 
-#define INTERNAL_RESISTANCE 0.0208  // Internal resistance of battery (Ohms)
+#define INTERNAL_RESISTANCE 0.02    // Internal resistance of battery (Ohms)
 #define CAPACITY 1.55               // Battery capacity (Amp hours)
 #define NOMINAL_VOLTAGE 14.8        // Average of battery voltage throughout full discharge
 #define NOMINAL_ZONE_VOLTAGE 14.75  // Voltage at end of "nominal zone", just before final exponential voltage drop
-#define NOMINAL_CAPACITY 1.42       // Capacity used at end of "nominal zone" (Amp hours)
+#define NOMINAL_CAPACITY 1.5       // Capacity used at end of "nominal zone" (Amp hours)
 #define EXPONENTIAL_VOLTAGE 15.26   // Voltage at end of initial exponential zone
-#define EXPONENTIAL_CAPACITY 0.8    // Capacity at end of initial exponential zone
-#define CURVE_CURRENT 0.06340690796660907   // Discharge current during test used to extract parameters
+#define EXPONENTIAL_CAPACITY 0.3    // Capacity at end of initial exponential zone
+#define CURVE_CURRENT 7             // Discharge current during test used to extract parameters
 
 #define MAX_VOLTAGE 16.8            // Max and min voltages used for SoC estimation and comparison, ensure that the
 #define MIN_VOLTAGE 13.3            // number of millivolts between these is equal to the length of the lookup array.
