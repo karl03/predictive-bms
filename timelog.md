@@ -430,3 +430,12 @@ Note: I was ill and unable to complete work for weeks 9 and 10.
 
 * *3 hours* Dissertation work
 * *7 hours* Dissertation work
+
+### 19 Mar 2024
+
+* *2.5 hours* Dissertation work/ modifying code/ generating outputs
+* *8 hours* Dissertation work/ modifying code/ generating outputs
+
+### 20 Mar 2024
+
+* *4 hours* Dissertation work
