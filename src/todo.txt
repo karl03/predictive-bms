@@ -1,7 +1,6 @@
 Todo
 
 Doing
-Write dissertation
 
 Done
 Fix mocking timer
@@ -18,3 +17,4 @@ Fixed flight time remaining bugs
 Store results in good format and saved
 Modify cell-difference calculation to give an average rather than absolute value
 Re-plot results (run with new simulation values, generate mean errors and such, table with capacity estimations)
+Write dissertation

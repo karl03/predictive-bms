@@ -1,6 +1,6 @@
 # User manual
 
-### Hardware Setup
+## Hardware Setup
 
 #### Parts List
  The hardware required, and specific purchase links used are as follows:
@@ -25,3 +25,42 @@ The SD card adaptor is connected to the SPI pins of the ESP8266 (GPIO12, 13, 14,
 If using an external shunt resistor, this must be connected to the shunt positive and negative pins on the INA226.
 
 The main power connection from the drone is then wired through the current shunt in series, and in parallel to the buck/boost converter.
+
+The battery balance connector is attached to the INA3221, to allow measuring of individual cells.
+
+## Software Setup
+
+The project is built and uploaded using PlatformIO, via the VSCode extension.
+
+#### Compiling and Uploading
+
+1. Install the "PlatformIO" extension for VSCode.
+2. Navigate to the src directory (the outer one, not the inner one).
+3. Wait for the PlatformIO extension to find the platformio.ini file and initialise.
+4. Then within the extension menu, drop down either the "Flash_BMS" or "Discharge_Mode" menu, depending on which firmware you are uploading.
+5. Click "Upload" in the extension menu, with the ESP8266 plugged into the PC.
+6. The firmware will now be automatically compiled and uploaded to the board.
+
+#### Setting the Monitor Up
+
+1. Set a suitable SERIAL_TIMEOUT in "defines.h".
+2. Upload the "Discharge_Mode" firmware.
+3. Plug the monitor into a computer.
+4. Run the "logger.py" file on the computer via a python environment, setting a file name within the file.
+5. Plug a battery into the monitor, and fully discharge it via a constant load, ensuring that the "logger.py" file is running and receiving data.
+6. Once this is complete, the file name defined earlier should contain the discharge data.
+7. Once this data is obtained, modify the "plotter.py" file to set the file name to this file, and the max and min voltage settings to appropriate values.
+8. Run "plotter.py". This will print several values and display a graph of the discharge.
+9. Copy the two printed lists into "defines.h", setting the "MAH_AT_VOLTAGE" and "MWH_AT_VOLTAGE" parameters respectively.
+10. Set the "CURVE_CURRENT" parameter to the third printed value, which is the average discharge value over time.
+11. Set the "MAX_VOLTAGE" and "MIN_VOLTAGE" parameters in the "defines.h" file to those set in "plotter.py".
+12. Derive the battery values from the visual graph as described in the [model paper](https://ieeexplore.ieee.org/document/4544139).
+13. Enter these in the "defines.h" file, and set the remaining settings described within the file to your required values.
+
+#### Running the Monitor
+
+Once the setup has been performed, the monitor can be attached and used in flight.
+
+1. Set up desired communication methods by changing "USE_DISPLAY", "SD_LOGGING" and "SERIAL_TIMEOUT" parameters in "defines.h".
+2. Upload the software to the ESP8266 using the "Flash_BMS" menu.
+3. Now plug the monitor into the flight battery and balance connector, and it will run the estimation in flight, giving outputs via the methods set up.
